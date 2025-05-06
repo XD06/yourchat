@@ -1,0 +1,35 @@
+/* 
+  Element Plus 组件样式覆盖
+  这个文件包含对Element Plus默认样式的覆盖
+*/
+
+// 下拉菜单高度限制和滚动条
+.el-dropdown__popper.el-popper,
+.el-select__popper.el-popper,
+.el-cascader__dropdown.el-popper {
+  max-height: 60vh !important;
+  overflow-y: auto !important;
+  //margin-left: 60px;
+  max-width: fit-content;
+}
+
+// 下拉菜单内部滚动区域
+.el-popper .el-scrollbar__wrap,
+.el-scrollbar__view,
+.el-select-dropdown__wrap,
+.el-dropdown-menu {
+  max-height: inherit !important;
+}
+
+// 滚动条样式
+.el-scrollbar__thumb {
+  background-color: rgba(144, 147, 153, 0.5);
+  border-radius: 10px;
+}
+
+// 深色主题下的滚动条样式
+[data-theme="dark"] {
+  .el-scrollbar__thumb {
+    background-color: rgba(180, 180, 180, 0.3);
+  }
+} 
