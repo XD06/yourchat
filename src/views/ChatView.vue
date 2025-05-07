@@ -461,23 +461,58 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, nextTick, onMounted, onBeforeUnmount } from 'vue'
-import { 
-    ChatDotRound, ChatLineSquare, Expand, Fold, Setting, Lock, Refresh, Share, 
-    Plus, Delete, Download, MoreFilled, Edit, Calendar, Connection, Notebook, 
-    TrendCharts, DataAnalysis, Message, Document, ChatRound, User, Star, Search,
-    ArrowDown, Check, Menu
-} from '@element-plus/icons-vue'
+import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
 import { useChatStore } from '../stores/chat'
-import { chatApi } from '../utils/api'
-import { messageHandler } from '../utils/messageHandler'
+import { useSettingsStore } from '../stores/settings'
+import { ElMessageBox, ElMessage } from 'element-plus'
 import ChatMessage from '../components/ChatMessage.vue'
 import ChatInput from '../components/ChatInput.vue'
-import { useSettingsStore, fetchModelList } from '../stores/settings'
-import { ElMessage, ElDivider, ElDialog, ElAvatar, ElLink, ElTag } from 'element-plus'
+import { ArrowDown, Menu, Check, ArrowLeft, Setting, Plus, Edit, Star, Search, MoreFilled, ChatRound, Share, User, Fold, Expand, Refresh } from '@element-plus/icons-vue'
+import { v4 as uuidv4 } from 'uuid'
 
+// 状态管理
 const chatStore = useChatStore()
 const settingsStore = useSettingsStore()
+
+// 移动端检测 - 改进检测方法
+const isMobileView = ref(window.innerWidth <= 768)
+const isMobileSidebarOpen = ref(false)
+
+// 监听窗口大小变化来改变移动端视图状态
+const handleResize = () => {
+    isMobileView.value = window.innerWidth <= 768
+    
+    // 当从移动端切换到桌面端时，确保sidebar正确显示
+    if (!isMobileView.value) {
+        isMobileSidebarOpen.value = false
+    }
+}
+
+// 移动端侧边栏切换
+const toggleMobileSidebar = () => {
+    isMobileSidebarOpen.value = !isMobileSidebarOpen.value
+    // 添加/移除body的overflow以防止背景滚动
+    if (isMobileSidebarOpen.value) {
+        document.body.style.overflow = 'hidden'
+    } else {
+        document.body.style.overflow = ''
+    }
+}
+
+// 添加窗口大小变化监听
+onMounted(() => {
+    window.addEventListener('resize', handleResize)
+    // 初始检测
+    handleResize()
+})
+
+// 移除监听
+onBeforeUnmount(() => {
+    window.removeEventListener('resize', handleResize)
+    // 确保body overflow被还原
+    document.body.style.overflow = ''
+})
+
 const messages = computed(() => chatStore.messages)
 const isLoading = computed(() => chatStore.isLoading)
 const messagesContainer = ref(null)
@@ -508,40 +543,26 @@ const activeHistoryId = ref('current')
 // 用于中断请求的控制器 - 确保它在全局作用域中定义
 const activeController = ref(null);
 
-const isMobileView = ref(window.innerWidth <= 768);
-const isMobileSidebarOpen = ref(false);
-
+// 检测移动端视图，更新状态
 const checkMobileView = () => {
   isMobileView.value = window.innerWidth <= 768;
+  
+  // 如果从移动端切换到桌面端，确保侧边栏隐藏
   if (!isMobileView.value) {
-    isMobileSidebarOpen.value = false; // PC端自动关闭移动端侧边栏
+    isMobileSidebarOpen.value = false;
   }
-};
+}
 
-const toggleMobileSidebar = () => {
-    if (isMobileView.value) {
-        isMobileSidebarOpen.value = !isMobileSidebarOpen.value;
-    }
-};
-
-// 在组件挂载时从localStorage加载聊天历史
+// 监听窗口大小变化以更新移动端状态
 onMounted(() => {
-  const savedHistory = localStorage.getItem('chatHistory')
-  if (savedHistory) {
-    try {
-      chatHistory.value = JSON.parse(savedHistory)
-    } catch (e) {
-      console.error('加载聊天历史失败:', e)
-      chatHistory.value = []
-    }
-  }
   window.addEventListener('resize', checkMobileView);
-  checkMobileView(); // Initial check
+  checkMobileView(); // 初始化检查
 })
 
+// 组件卸载时清理事件监听
 onBeforeUnmount(() => {
   window.removeEventListener('resize', checkMobileView);
-});
+})
 
 // 保存聊天历史到localStorage
 const saveChatHistory = () => {
@@ -1324,20 +1345,129 @@ const toggleDarkMode = () => {
 </script>
 
 <style lang="scss" scoped>
-/* 外层容器 */
+/* 整体容器结构 */
 .chat-view-container {
     display: flex;
+    width: 100%;
     height: 100vh;
-    background-color: #f7f7f8;
     position: relative;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    overflow: hidden;
+    font-family: var(--font-family, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial);
+    background-color: var(--bg-color, #f3f4f6);
     
     &.sidebar-collapsed {
+        .icon-sidebar {
+            // 保持原样
+        }
+        
         .sidebar {
             width: 0;
             padding: 0;
             overflow: hidden;
         }
+        
+        .main-chat-area {
+            width: calc(100% - 52px); // 只减去图标栏的宽度
+        }
+    }
+}
+
+// 移动端侧边栏遮罩
+.mobile-sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 190; // 低于侧边栏，高于其他内容
+    display: none;
+    
+    &.active {
+        display: block; // 激活时显示
+        animation: fadeIn 0.3s ease;
+    }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* 主聊天区域样式 */
+.main-chat-area {
+    flex-grow: 1;
+    width: calc(100% - 332px); // 总宽度减去侧边栏(280px)和图标栏(52px)
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    transition: width 0.3s ease;
+    
+    @media (max-width: 768px) {
+        width: 100%; // 移动端占满全屏
+        height: 100vh; // 明确设置高度
+        margin-left: 0; // 移除左边距，确保全屏显示
+    }
+}
+
+/* 聊天内容区域 */
+.chat-content {
+    flex-grow: 1;
+    height: calc(100% - 135px); // 留出头部和输入区域的空间
+    overflow-y: auto;
+    padding: 1.5rem;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    
+    // 自定义滚动条
+    &::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+    }
+    
+    &::-webkit-scrollbar-thumb {
+        background-color: rgba(0, 0, 0, 0.2);
+        border-radius: 3px;
+    }
+    
+    &:hover::-webkit-scrollbar-thumb {
+        background-color: rgba(0, 0, 0, 0.3);
+    }
+    
+    @media (max-width: 768px) {
+        padding: 1rem 0.75rem; // 移动端减小内边距，增加可用宽度
+        height: calc(100% - 120px); // 调整移动端高度
+    }
+}
+
+/* 聊天消息区域 */
+.message-list {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    max-width: 900px; // 限制最大宽度，保持可读性
+    margin: 0 auto; // 居中显示
+    width: 100%; // 占满可用空间
+    
+    @media (max-width: 768px) {
+        max-width: 100%; // 移动端占满宽度
+        margin: 0; // 移除边距，充分利用空间
+    }
+}
+
+// 聊天输入区域
+.modern-chat-input {
+    padding: 0.75rem 1.5rem 1.5rem;
+    position: relative;
+    max-width: 900px;
+    margin: 0 auto;
+    width: 100%;
+    
+    @media (max-width: 768px) {
+        padding: 0.5rem 0.75rem 1rem; // 减小内边距
+        max-width: 100%; // 移动端占满宽度
     }
 }
 
@@ -1611,21 +1741,6 @@ const toggleDarkMode = () => {
         background-color: #e6f4ff;
         color: #1677ff;
         font-weight: 500;
-    }
-}
-
-/* 聊天区域 */
-.main-chat-area {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden; // Y轴滚动由messages-container处理，X轴防止意外溢出
-    background-color: #fff;
-    position: relative;
-    
-    // 移动端适配
-    @media (max-width: 768px) {
-        width: 100%;
     }
 }
 
@@ -2269,23 +2384,6 @@ const toggleDarkMode = () => {
 .parse-models-btn {
     margin-top: 8px;
     width: 100%;
-}
-
-// 添加一个全局的遮罩层，当移动端侧边栏打开时显示
-.mobile-sidebar-overlay {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0,0,0,0.4);
-    z-index: 199; // 低于侧边栏，高于聊天内容
-    @media (max-width: 768px) {
-        &.active {
-            display: block;
-        }
-    }
 }
 </style>
 <!-- <script>

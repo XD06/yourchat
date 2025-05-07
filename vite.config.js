@@ -1,4 +1,5 @@
 import { fileURLToPath, URL } from 'node:url'
+import { resolve } from 'path'
 
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
@@ -12,13 +13,48 @@ export default defineConfig({
       css: {
         preprocessorOptions: {
           scss: {
-            api: 'modern-compiler'
+            api: 'modern-compiler',
+            additionalData: `@import "@/assets/styles/variables.scss";`,
           }
         }
       },
   resolve: {
     alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url))
+      '@': resolve(__dirname, 'src'),
     }
+  },
+  build: {
+    // 构建优化
+    minify: 'terser', // 使用terser进行更好的压缩
+    terserOptions: {
+      compress: {
+        drop_console: true, // 移除console
+        drop_debugger: true // 移除debugger
+      }
+    },
+    rollupOptions: {
+      output: {
+        // 分包处理减小单个文件体积
+        manualChunks: {
+          'vendor': ['vue', 'vue-router', 'pinia'], 
+          'ui': ['element-plus'],
+          'highlight': ['highlight.js', 'markdown-it']
+        },
+        // 静态资源分类打包
+        chunkFileNames: 'assets/js/[name]-[hash].js',
+        entryFileNames: 'assets/js/[name]-[hash].js',
+        assetFileNames: 'assets/[ext]/[name]-[hash].[ext]'
+      }
+    },
+    // 启用gzip压缩
+    brotliSize: false,
+    chunkSizeWarningLimit: 2000, // 提高警告门槛
+    // 生成静态资源的manifest文件
+    manifest: true,
+  },
+  server: {
+    port: 3000,
+    open: true,
+    cors: true
   }
 })

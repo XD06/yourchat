@@ -476,482 +476,208 @@ const rolePopup = ref(null)
   background-color: transparent;
   width: 100%; // 继承父容器的宽度
   box-sizing: border-box; // 确保 padding 和 border 不会增加总宽度
-  
-  // 移动端适配 - 内部间距可以小一些
+  position: relative;
+  margin-top: auto; // 确保输入框始终在底部
+
+  // 移动端优化
   @media (max-width: 768px) {
-    // padding: 0.75rem 0.5rem; // 由 .modern-chat-input 控制
+    padding: 0.5rem 0.5rem 0.5rem 0.5rem; // 减小内边距
+    border-radius: 0; // 移除圆角
+    border-top: 1px solid rgba(0, 0, 0, 0.1); // 添加顶部边框增强分隔感
+    position: sticky; // 固定在底部
+    bottom: 0;
+    background-color: var(--chat-input-bg, #ffffff);
+    z-index: 100; // 确保输入框始终在顶层
+    backdrop-filter: blur(10px); // 模糊背景效果
+    margin-top: 1rem; // 添加与消息的间距
   }
 }
 
-// 输入框和按钮组合的样式
+// 输入区与按钮的容器
 .input-wrapper {
+  position: relative;
+  border-radius: 8px;
+  background-color: var(--chat-input-bg, #ffffff);
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
-  position: relative;
-  background-color: var(--chat-input-bg, white); // 使用CSS变量以支持主题切换
-  border-radius: 16px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  overflow: visible; // 允许角色弹窗等溢出
-  padding: 8px; // 给内部元素一些空间
-  
-  [data-theme="dark"] & {
-    --chat-input-bg: #2d2d33;
-    background-color: var(--chat-input-bg);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-    border: 1px solid #3a3a3c;
-  }
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
   
   @media (max-width: 768px) {
-    border-radius: 12px; // 移动端圆角可以小点
-    gap: 0.5rem;
-    padding: 6px;
+    box-shadow: none;
+    border-radius: 8px;
+    margin-bottom: 0;
   }
 }
 
+// 输入控制区域
 .input-control-area {
   display: flex;
-  gap: 0.75rem;
   align-items: flex-end;
-  position: relative;
-  padding: 12px 16px;
-  
-  // 移动端适配
+  width: 100%;
+  background-color: var(--chat-input-bg, #ffffff);
+  border: 1px solid var(--border-color, #dcdfe6);
+  border-radius: 8px;
+  box-sizing: border-box;
+  overflow: hidden;
+
   @media (max-width: 768px) {
-    padding: 10px 12px;
-    flex-direction: column;
-    gap: 0.5rem;
+    border-radius: 12px; // 增加圆角
+    margin-bottom: 5px; // 底部边距
   }
-  
-  .el-input {
-    flex: 1;
-    
-    :deep(.el-textarea__inner) {
-      transition: all 0.3s;
-      line-height: 1.6;
-      padding: 12px 0;
-      border: none;
-      border-radius: 0;
-      resize: none;
-      box-shadow: none;
-      font-size: 15px;
-      background-color: transparent;
-      
-      // 暗黑模式
-      [data-theme="dark"] & {
-        color: #e0e0e0;
-        
-        &::placeholder {
-          color: #777;
-        }
-      }
-      
-      &:focus {
-        box-shadow: none;
-      }
-      
-      // 移动端适配
-      @media (max-width: 768px) {
-        font-size: 14px;
-        padding: 8px 0;
-      }
-    }
-  }
-  
-  .input-actions {
-    display: flex;
-    gap: 8px;
-    margin-right: 4px;
-    align-items: flex-end;
-    margin-bottom: 8px;
-    
-    .role-btn {
-      color: #909399;
-      background-color: #f5f7fa;
-      
-      // 暗黑模式
-      [data-theme="dark"] & {
-        background-color: #3a3a3c;
-        color: #c0c0c0;
-      }
-      
-      &:hover {
-        background-color: #ecf5ff;
-        color: #4284f5;
-        
-        // 暗黑模式
-        [data-theme="dark"] & {
-          background-color: #4a4a4c;
-          color: #5c9cff;
-        }
-      }
+
+  :deep(.el-textarea__inner) {
+    resize: none;
+    padding: 12px 50px 12px 12px; // 右侧留出空间给按钮
+    border: none;
+    background-color: transparent;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    min-height: 60px; // 设定最小高度
+    max-height: 150px; // 设定最大高度
+
+    @media (max-width: 768px) {
+      padding: 10px 12px; // 简化内边距
+      min-height: 50px; // 减小最小高度
+      font-size: 0.9rem; // 略微减小字体
     }
   }
 }
 
-// 按钮组的样式
+// 按钮组样式
 .button-group {
   display: flex;
-  gap: 0.5rem;
-  align-items: flex-end;
-  
-  // 移动端适配
+  align-items: center;
+  gap: 6px;
+  padding-right: 10px;
+  position: absolute;
+  right: 0;
+  bottom: 10px;
+
   @media (max-width: 768px) {
-    width: 100%;
-    justify-content: space-between;
-  }
-  
-  // 为发送按钮添加特定样式
-  .send-button {
-    background-color: #202123 !important; 
-    border-color: #202123 !important;
-    color: white;
-    min-width: 80px;
-    transition: all 0.2s ease;
-    border-radius: 8px;
+    bottom: 5px; // 按钮位置上移
+    padding-right: 8px; // 减少右侧内边距
+    gap: 4px; // 减小按钮间距
     
-    // 暗黑模式
-    [data-theme="dark"] & {
-      background-color: #4284f5 !important;
-      border-color: #4284f5 !important;
-    }
-    
-    &:hover {
-      background-color: #353740 !important;
-      border-color: #353740 !important;
-      
-      // 暗黑模式
-      [data-theme="dark"] & {
-        background-color: #539bff !important;
-        border-color: #539bff !important;
-      }
-    }
-    
-    &:active {
-      opacity: 0.9;
-    }
-    
-    // 暂停按钮样式
-    &.pause-button {
-      background-color: #ef4444 !important;
-      border-color: #ef4444 !important;
-      
-      &:hover {
-        background-color: #dc2626 !important;
-        border-color: #dc2626 !important;
-      }
-    }
-    
-    // 移动端适配
-    @media (max-width: 768px) {
-      min-width: 0;
-      flex-grow: 1;
-    }
-  }
-  
-  .el-button {
-    border-radius: 8px;
-    background-color: #f5f5f7!important;
-    border: none;
-    color: #666;
-    
-    // 暗黑模式
-    [data-theme="dark"] & {
-      background-color: #3a3a3c !important;
-      color: #c0c0c0;
-    }
-    
-    &:hover {
-      background-color: #eaeaec!important;
-      color: #202123;
-      
-      // 暗黑模式
-      [data-theme="dark"] & {
-        background-color: #4a4a4c !important;
-        color: #e0e0e0;
+    // 缩小移动端的按钮尺寸
+    .el-button {
+      padding: 6px !important;
+      font-size: 12px !important;
+      height: auto !important;
+
+      .el-icon {
+        font-size: 16px !important; // 减小图标尺寸
       }
     }
   }
 }
 
-// Token计数器的样式
+// 发送按钮样式
+.send-button {
+  transition: all 0.3s ease;
+  margin-left: 4px;
+
+  @media (max-width: 768px) {
+    margin-left: 2px; // 减小间距
+    // 可以考虑在移动端仅显示图标，不显示文字
+    span:not(.el-icon) {
+      display: none; // 隐藏文字，只保留图标
+    }
+  }
+
+  &.pause-button {
+    background-color: #ff9800;
+    border-color: #ff9800;
+  }
+}
+
+// 文件上传区域样式
+.upload-area {
+  margin-bottom: 10px;
+  border-radius: 8px;
+  background-color: var(--chat-input-bg, #ffffff);
+  padding: 10px;
+  border: 1px solid var(--border-color, #dcdfe6);
+
+  @media (max-width: 768px) {
+    margin-bottom: 8px;
+    padding: 8px;
+  }
+  
+  // 省略其他上传区样式...
+}
+
+// 工具栏样式
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  
+  @media (max-width: 768px) {
+    margin-bottom: 5px; // 减少底部间距
+    
+    // 工具栏按钮也需要更小
+    .tool-btn {
+      padding: 4px 8px !important;
+      font-size: 12px !important;
+      
+      .el-icon {
+        font-size: 14px !important;
+      }
+    }
+  }
+}
+
+// Token计数器样式
 .token-counter {
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   color: #888;
   text-align: right;
-  padding: 0 8px 4px; // 调整padding使其在input-wrapper内部对齐
-  width: 100%;
-  box-sizing: border-box;
-  
-  // 暗黑模式
-  [data-theme="dark"] & {
-    color: #888; // 暗黑模式下颜色调整
-  }
-  
-  // 移动端适配
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+
   @media (max-width: 768px) {
-    padding: 0 6px 3px;
-  }
-  
-  .info-icon {
-    cursor: help;
-    color: #999;
-    
-    // 暗黑模式
-    [data-theme="dark"] & {
-      color: #777;
-    }
+    font-size: 0.7rem; // 更小的字体
+    margin-top: 2px;
+    opacity: 0.7; // 略微透明以减少视觉干扰
   }
 }
 
-.upload-area {
-  margin-bottom: 0;
-  padding: 1rem 1.5rem;
-  border-bottom: 1px solid #f0f2f5;
-  background-color: white;
-  
-  // 暗黑模式
-  [data-theme="dark"] & {
-    background-color: #2d2d33;
-    border-bottom: 1px solid #3a3a3c;
-  }
-  
-  // 移动端适配
-  @media (max-width: 768px) {
-    padding: 0.75rem 1rem;
-  }
-  
-  .upload-component {
-    display: flex;
-    justify-content: center;
-  }
-  
-  .preview-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-    margin-top: 1rem;
-    
-    // 移动端适配
-    @media (max-width: 768px) {
-      gap: 0.75rem;
-      margin-top: 0.75rem;
-    }
-    
-    .preview-item {
-      position: relative;
-      width: 100px;
-      height: 100px;
-      
-      // 移动端适配
-      @media (max-width: 768px) {
-        width: 80px;
-        height: 80px;
-      }
-      
-      .preview-image {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        border-radius: 8px;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-      }
-      
-      .file-preview {
-        width: 100%;
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        background-color: #f9fafb;
-        border-radius: 8px;
-        border: 1px solid #e5e7eb;
-        
-        // 暗黑模式
-        [data-theme="dark"] & {
-          background-color: #3a3a3c;
-          border-color: #4a4a4c;
-        }
-        
-        .el-icon {
-          font-size: 1.75rem;
-          margin-bottom: 0.5rem;
-          color: #666;
-          
-          // 暗黑模式
-          [data-theme="dark"] & {
-            color: #c0c0c0;
-          }
-        }
-        
-        span {
-          font-size: 0.8rem;
-          text-align: center;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          white-space: nowrap;
-          width: 90%;
-          color: #333;
-          
-          // 暗黑模式
-          [data-theme="dark"] & {
-            color: #e0e0e0;
-          }
-        }
-      }
-      
-      .delete-btn {
-        position: absolute;
-        top: -8px;
-        right: -8px;
-        padding: 4px;
-        transform: scale(0.8);
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      }
-    }
-  }
-}
-
-// 角色按钮容器，用于定位下拉菜单
-.role-button-container {
-  position: relative;
-}
-
-// 角色提示区域样式
+// 角色选择浮层
 .role-popup-container {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  //background-color: rgba(0, 0, 0, 0.5);
-  z-index: 1999;
-}
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-.role-popup {
-  position: absolute;
-  //top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  //width: 600px;
-  max-width: 90vw;
-  background-color: white;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-  padding: 16px;
-  max-height: 80vh;
-  overflow: auto;
-  
-  .role-prompt-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 12px;
-    
-    h4 {
-      font-size: 16px;
-      margin: 0;
-      color: #333;
-    }
-  }
-  
-  .role-categories {
-    display: flex;
-    gap: 12px;
-    margin-bottom: 16px;
-    border-bottom: 1px solid #eee;
-    padding-bottom: 8px;
-    
-    .role-category {
-      padding: 6px 12px;
-      cursor: pointer;
-      font-size: 14px;
-      color: #666;
-      transition: all 0.2s;
-      border-bottom: 2px solid transparent;
-      
-      &:hover {
-        color: #4284f5;
-      }
-      
-      &.active {
-        color: #4284f5;
-        font-weight: 500;
-        border-bottom-color: #4284f5;
-      }
-    }
-  }
-  
-  .role-list {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    
-    .role-item {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 16px;
-      border-radius: 8px;
-      background-color: #f9fafb;
-      cursor: pointer;
-      transition: all 0.2s;
-      border: 1px solid #eaeaea;
-      
-      &:hover {
-        background-color: #f0f2f5;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
-      }
-      
-      .role-icon {
-        width: 40px;
-        height: 40px;
-        border-radius: 8px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        font-weight: 500;
-        font-size: 14px;
-        flex-shrink: 0;
-      }
-      
-      .role-info {
-        flex: 1;
-        
-        .role-name {
-          font-weight: 500;
-          font-size: 14px;
-          margin-bottom: 4px;
-          color: #333;
-        }
-        
-        .role-desc {
-          font-size: 12px;
-          color: #666;
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-        }
-      }
-    }
-    
-    @media (max-width: 600px) {
-      grid-template-columns: 1fr;
-    }
-  }
-  
-  // 确保在移动端不会过宽
   @media (max-width: 768px) {
-    max-width: calc(100vw - 20px); // 考虑屏幕边缘留白
-    left: 50%;
-    transform: translateX(-50%); 
-    // bottom: auto; // 如果输入框不在屏幕底部，可能需要调整bottom或top
-    // top: 100%; // 例如，显示在输入框下方
-    // margin-top: 8px; 
+    // 移动端下的角色选择器应该从底部弹出
+    align-items: flex-end;
+  }
+
+  .role-popup {
+    background-color: var(--chat-input-bg, #ffffff);
+    border-radius: 10px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    width: 450px;
+    max-width: 80vw;
+    max-height: 70vh;
+    overflow-y: auto;
+    z-index: 2;
+    
+    @media (max-width: 768px) {
+      width: 100%; // 占满全宽
+      max-width: 100%;
+      max-height: 80vh;
+      border-radius: 16px 16px 0 0; // 只圆角上部
+    }
   }
 }
 
