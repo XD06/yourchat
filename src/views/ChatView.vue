@@ -181,16 +181,16 @@
                 <!-- 右侧功能按钮 -->
                 <div class="header-actions">
                     <el-button class="config-btn" type="default" @click="toggleSettings">
-                        Configuration
+                        <span class="button-text">Configuration</span>
                         <el-icon><Setting /></el-icon>
                     </el-button>
                     <el-button class="share-btn" type="default" @click="handleShare">
-                        Share
+                        <span class="button-text">Share</span>
                         <el-icon><Share /></el-icon>
                     </el-button>
                     <el-dropdown trigger="click">
                         <el-button class="action-btn" type="default">
-                            Actions
+                            <span class="button-text">Actions</span>
                             <el-icon><ArrowDown /></el-icon>
                         </el-button>
                         <template #dropdown>
@@ -317,7 +317,7 @@
             destroy-on-close
             class="settings-dialog"
         >
-            <el-form :model="settingsStore" label-position="top" class="settings-form">
+            <el-form :model="settingsForm" label-position="top" class="settings-form">
                 <!-- Removing dark mode section -->
                 <!-- <el-divider content-position="left">Appearance</el-divider>
                 <el-form-item label="Dark Mode">
@@ -329,7 +329,7 @@
                 
                 <el-divider content-position="left">Model Configuration</el-divider>
                 <el-form-item label="Model">
-                    <el-select v-model="settingsStore.model" class="w-full">
+                    <el-select v-model="settingsForm.model" class="w-full">
                         <el-option
                             v-for="model in modelOptions"
                             :key="model.value"
@@ -340,7 +340,7 @@
                 </el-form-item>
                 <el-form-item label="System Prompt">
                     <el-input
-                        v-model="settingsStore.systemPrompt"
+                        v-model="settingsForm.systemPrompt"
                         type="textarea"
                         :rows="3"
                         placeholder="设置默认的系统提示词（可选）"
@@ -351,7 +351,7 @@
                 </el-form-item>
                 <el-form-item label="Temperature">
                     <el-slider
-                        v-model="settingsStore.temperature"
+                        v-model="settingsForm.temperature"
                         :min="0"
                         :max="1"
                         :step="0.1"
@@ -360,7 +360,7 @@
                 </el-form-item>
                 <el-form-item label="Max Tokens">
                     <el-input-number
-                        v-model="settingsStore.maxTokens"
+                        v-model="settingsForm.maxTokens"
                         :min="1"
                         :max="4096"
                         :step="1"
@@ -368,7 +368,7 @@
                 </el-form-item>
                 <el-form-item label="Top P">
                     <el-slider
-                        v-model="settingsStore.topP"
+                        v-model="settingsForm.topP"
                         :min="0"
                         :max="1"
                         :step="0.1"
@@ -377,7 +377,7 @@
                 </el-form-item>
                 <el-form-item label="Top K">
                     <el-input-number
-                        v-model="settingsStore.topK"
+                        v-model="settingsForm.topK"
                         :min="1"
                         :max="100"
                         :step="1"
@@ -387,7 +387,7 @@
                 <el-divider content-position="left">API Credentials</el-divider>
                 <el-form-item label="API Key" required>
                     <el-input
-                        v-model="settingsStore.apiKey"
+                        v-model="settingsForm.apiKey"
                         type="password"
                         show-password
                         placeholder="Enter your API Key"
@@ -405,7 +405,7 @@
                 
                 <el-form-item label="API Endpoint">
                     <el-input
-                        v-model="settingsStore.apiEndpoint"
+                        v-model="settingsForm.apiEndpoint"
                         placeholder="API Endpoint URL"
                     />
                     <div class="form-item-tip">
@@ -428,7 +428,7 @@
                 
                 <el-form-item label="Stream Response">
                     <el-switch
-                        v-model="settingsStore.streamResponse"
+                        v-model="settingsForm.streamResponse"
                     />
                     <div class="form-item-tip">Show AI responses in real-time</div>
                 </el-form-item>
@@ -461,7 +461,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount, watch, nextTick } from 'vue'
 import { useChatStore } from '../stores/chat'
 import { useSettingsStore } from '../stores/settings'
 import { ElMessageBox, ElMessage } from 'element-plus'
@@ -469,6 +469,9 @@ import ChatMessage from '../components/ChatMessage.vue'
 import ChatInput from '../components/ChatInput.vue'
 import { ArrowDown, Menu, Check, ArrowLeft, Setting, Plus, Edit, Star, Search, MoreFilled, ChatRound, Share, User, Fold, Expand, Refresh } from '@element-plus/icons-vue'
 import { v4 as uuidv4 } from 'uuid'
+// 导入 messageHandler 用于处理消息
+import { messageHandler } from '../utils/messageHandler'
+import { fetchModelList } from '../stores/settings'
 
 // 状态管理
 const chatStore = useChatStore()
@@ -533,6 +536,41 @@ const isSidebarOpen = ref(true) // 默认打开
 // 设置面板状态
 const showSettings = ref(false)
 const isParsingModels = ref(false)
+
+// 添加本地表单状态对象，用于处理设置表单的数据
+const settingsForm = ref({
+    apiKey: '',
+    apiEndpoint: '',
+    model: '',
+    temperature: 0.7,
+    maxTokens: 1000,
+    topP: 0.7,
+    topK: 50,
+    streamResponse: true,
+    systemPrompt: ''
+})
+
+// 当设置面板打开时，初始化表单数据
+const initSettingsForm = () => {
+    settingsForm.value = {
+        apiKey: settingsStore.displayApiKey,
+        apiEndpoint: settingsStore.displayApiEndpoint,
+        model: settingsStore.model,
+        temperature: settingsStore.temperature,
+        maxTokens: settingsStore.maxTokens,
+        topP: settingsStore.topP,
+        topK: settingsStore.topK,
+        streamResponse: settingsStore.streamResponse,
+        systemPrompt: settingsStore.systemPrompt
+    }
+}
+
+// 监听设置面板的显示状态，打开时初始化表单
+watch(() => showSettings.value, (newValue) => {
+    if (newValue) {
+        initSettingsForm()
+    }
+})
 
 // 聊天历史记录
 const chatHistory = ref([])
@@ -825,8 +863,10 @@ const handleRegenerate = async (messageToRegenerate) => {
         };
         chatStore.messages.push(newAssistantMessage);
         
+        // 初始化变量，避免引用错误
+        let result = { success: false, controller: null, aborted: false };
+        
         // 调用API发送消息并获取响应 - 使用 actualApiKey 和 actualApiEndpoint
-        let result = { success: false, controller: null }; // 初始化变量，避免引用错误
         try {
             result = await messageHandler.sendMessage(
                 apiMessages,
@@ -1181,17 +1221,32 @@ const toggleSettings = () => {
 
 // 保存设置
 const saveSettings = () => {
-  // 这里可以添加验证逻辑
-  if (!settingsStore.apiKey && !settingsStore.actualApiKey) {
+  const customApiKey = settingsForm.value.apiKey;
+  const customApiEndpoint = settingsForm.value.apiEndpoint;
+  
+  // 检查是否有自定义值
+  const hasCustomValues = customApiKey || customApiEndpoint;
+  
+  // 验证API Key
+  if (!customApiKey && !settingsStore.actualApiKey) {
     ElMessage.warning('API Key is required for the application to work');
     return;
   }
   
-  // 设置自定义 API 凭证
-  settingsStore.setCustomAPI(settingsStore.apiKey, settingsStore.apiEndpoint);
+  if (hasCustomValues) {
+    // 用户提供了自定义值，启用自定义API
+    settingsStore.setCustomAPI(customApiKey, customApiEndpoint);
+    ElMessage.success('已保存自定义API设置');
+  } else if (settingsStore.userCustomizedAPI) {
+    // 用户清空了自定义值，回退到环境变量
+    settingsStore.clearCustomAPI();
+    ElMessage.success('已恢复使用环境变量API设置');
+  } else {
+    // 没有变化，只是保存其他设置
+    ElMessage.success('Settings saved successfully');
+  }
   
   // 保存设置后关闭对话框
-  ElMessage.success('Settings saved successfully');
   showSettings.value = false;
 }
 
@@ -1269,12 +1324,12 @@ const handleModelChange = (modelValue) => {
 
 // 添加模型解析功能
 const parseModels = async () => {
-    if (!settingsStore.actualApiKey) {
+    if (!settingsForm.value.apiKey && !settingsStore.actualApiKey) {
         ElMessage.warning('请先填写API Key');
         return;
     }
     
-    if (!settingsStore.actualApiEndpoint) {
+    if (!settingsForm.value.apiEndpoint && !settingsStore.actualApiEndpoint) {
         ElMessage.warning('请先填写API Endpoint');
         return;
     }
@@ -1282,9 +1337,12 @@ const parseModels = async () => {
     isParsingModels.value = true;
     
     try {
+        const apiKey = settingsForm.value.apiKey || settingsStore.actualApiKey;
+        const apiEndpoint = settingsForm.value.apiEndpoint || settingsStore.actualApiEndpoint;
+        
         const modelsList = await fetchModelList(
-            settingsStore.actualApiEndpoint,
-            settingsStore.actualApiKey
+            apiEndpoint,
+            apiKey
         );
         
         console.log('Fetched models:', modelsList);
@@ -1293,24 +1351,20 @@ const parseModels = async () => {
             // 使用store的action添加新模型，传入true作为第二个参数以清除现有模型
             const addedCount = settingsStore.addModels(modelsList, true);
             
-            // 确保第一个模型下拉列表更新 (header dropdown)
-            nextTick(() => {
-                // 如果当前选择的模型在新模型列表中不存在，则设置为第一个可用模型
-                if (!modelsList.includes(settingsStore.model)) {
-                    settingsStore.model = modelsList[0];
-                }
-                
-                // 强制更新下拉列表
-                const refreshTrigger = Date.now();
-                modelOptionsLastUpdated.value = refreshTrigger;
-                
-                ElMessage.success(`成功解析到 ${modelsList.length} 个模型，已更新模型列表`);
-            });
+            // 更新本地表单中的模型列表
+            modelOptionsLastUpdated.value = Date.now();
+            
+            // 如果当前选择的模型在新模型列表中不存在，则设置为第一个可用模型
+            if (!modelsList.includes(settingsForm.value.model)) {
+                settingsForm.value.model = modelsList[0];
+            }
+            
+            ElMessage.success(`成功解析到 ${modelsList.length} 个模型，已更新模型列表`);
         } else {
             ElMessage.info('未解析到任何模型，请检查API接口是否正确');
         }
     } catch (error) {
-       // console.error('解析模型失败:', error);
+        console.error('解析模型失败:', error);
         ElMessage.error(`解析模型失败！检查网络连通性重试`);
     } finally {
         isParsingModels.value = false;
@@ -1788,6 +1842,7 @@ const toggleDarkMode = () => {
             background-color: #f9fafb;
             border: 1px solid #e5e7eb;
             color: #333;
+            margin-left: 0px;
             
             &:hover {
                 background-color: #f0f2f5;
@@ -1795,6 +1850,27 @@ const toggleDarkMode = () => {
             
             .el-icon {
                 font-size: 14px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            gap: 4px; // 减小按钮间距
+            
+            .config-btn, .share-btn, .action-btn {
+                padding: 8px !important; // 减小内边距
+                min-width: 36px !important; // 确保按钮不会太小
+                margin-left: 0px;
+                
+                // 移动端隐藏按钮文字，只显示图标
+                .button-text {
+                    display: none;
+                }
+                
+                // 调整图标大小
+                .el-icon {
+                    font-size: 16px;
+                    margin: 0;
+                }
             }
         }
     }

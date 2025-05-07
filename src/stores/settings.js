@@ -36,7 +36,7 @@ export const useSettingsStore = defineStore('settings', {
         // 用户在界面上输入的API Key，初始为空
         apiKey: '',
         // 用户在界面上输入的API端点，初始为默认值
-        apiEndpoint: 'https://api.openai.com/v1/chat/completions',
+        apiEndpoint: '',
         // 标记用户是否自定义了API设置
         userCustomizedAPI: false,
         // 是否启用流式响应，默认为 true
@@ -64,10 +64,49 @@ export const useSettingsStore = defineStore('settings', {
     // 计算属性 - 获取实际使用的值
     getters: {
         // 获取实际使用的API Key - 如果用户自定义过则优先使用用户输入值，否则使用环境变量值
-        actualApiKey: (state) => state.userCustomizedAPI && state.apiKey ? state.apiKey : (ENV_API_KEY || state.apiKey),
+        actualApiKey: (state) => {
+            // 如果用户选择了自定义API，优先使用用户设置的值
+            if (state.userCustomizedAPI) {
+                return state.apiKey;
+            }
+            // 否则使用环境变量中的API Key
+            return ENV_API_KEY;
+        },
         
         // 获取实际使用的API端点 - 如果用户自定义过则优先使用用户输入值，否则使用环境变量值
-        actualApiEndpoint: (state) => state.userCustomizedAPI && state.apiEndpoint ? state.apiEndpoint : (ENV_API_URL || state.apiEndpoint)
+        actualApiEndpoint: (state) => {
+            // 如果用户选择了自定义API，优先使用用户设置的值
+            if (state.userCustomizedAPI) {
+                return state.apiEndpoint || ENV_API_URL;
+            }
+            // 否则使用环境变量中的API端点
+            return ENV_API_URL;
+        },
+        
+        // 获取显示在UI上的API Key值 - 用户自定义的显示实际值，环境变量的显示占位符
+        displayApiKey: (state) => {
+            // 如果用户选择了自定义API，返回用户设置的值
+            if (state.userCustomizedAPI) {
+                return state.apiKey;
+            }
+            // 否则返回空字符串，避免暴露环境变量中的API Key
+            return '';
+        },
+        
+        // 获取显示在UI上的API端点值 - 用户自定义的显示实际值，环境变量的显示占位符
+        displayApiEndpoint: (state) => {
+            // 如果用户选择了自定义API，返回用户设置的值
+            if (state.userCustomizedAPI) {
+                return state.apiEndpoint;
+            }
+            // 否则返回空字符串，避免暴露环境变量中的API端点
+            return '';
+        },
+        
+        // 判断是否有可用的API Key
+        hasApiKey: (state) => {
+            return !!state.actualApiKey || (state.userCustomizedAPI && !!state.apiKey);
+        }
     },
 
     // 定义 store 的动作
@@ -90,6 +129,13 @@ export const useSettingsStore = defineStore('settings', {
             this.apiKey = apiKey || '';
             this.apiEndpoint = apiEndpoint || 'https://api.openai.com/v1/chat/completions';
             this.userCustomizedAPI = true;
+        },
+        
+        // 清除自定义API设置，恢复使用环境变量
+        clearCustomAPI() {
+            this.apiKey = '';
+            this.apiEndpoint = '';
+            this.userCustomizedAPI = false;
         },
         
         // 添加新模型到选项列表
@@ -144,7 +190,7 @@ export const useSettingsStore = defineStore('settings', {
                 // 存储方式，这里使用的是 localStorage
                 storage: localStorage,
                 // 排除敏感信息，只持久化非敏感设置
-                paths: ['isDarkMode', 'temperature', 'maxTokens', 'model', 'streamResponse', 'topP', 'topK', 'systemPrompt', 'currentRole', 'modelOptions']
+                paths: ['isDarkMode', 'temperature', 'maxTokens', 'model', 'streamResponse', 'topP', 'topK', 'systemPrompt', 'currentRole', 'modelOptions', 'userCustomizedAPI', 'apiKey', 'apiEndpoint']
             },
         ],
     },

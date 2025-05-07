@@ -518,11 +518,12 @@ const rolePopup = ref(null)
 .mobile-input-wrapper {
   display: flex;
   align-items: center;
-  background-color: #f5f5f7;
+  background-color: var(--chat-input-bg, #f5f5f7);
   border-radius: 24px;
   padding: 8px 16px;
   margin: 8px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
   
   .mobile-input {
     flex: 1;
@@ -531,10 +532,10 @@ const rolePopup = ref(null)
     font-size: 16px;
     padding: 8px 12px;
     outline: none;
-    color: #333;
+    color: var(--text-color, #333);
     
     &::placeholder {
-      color: #888;
+      color: var(--placeholder-color, #888);
       font-size: 15px;
     }
   }
@@ -546,23 +547,23 @@ const rolePopup = ref(null)
     background: transparent;
     border: none;
     cursor: pointer;
-    color: #666;
+    color: var(--icon-color, #666);
     padding: 8px;
     transition: color 0.2s;
     
     &:hover {
-      color: #333;
+      color: var(--icon-hover-color, #333);
     }
     
     &.send-btn {
-      color: #1890ff;
+      color: var(--primary-color, #1890ff);
       
       &:hover {
-        color: #40a9ff;
+        color: var(--primary-hover-color, #40a9ff);
       }
       
       &:active {
-        color: #096dd9;
+        color: var(--primary-active-color, #096dd9);
       }
     }
     
@@ -571,69 +572,41 @@ const rolePopup = ref(null)
       height: 20px;
     }
   }
-  
-  [data-theme="dark"] & {
-    background-color: #2c2c2e;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-    
-    .mobile-input {
-      color: #e0e0e0;
-      
-      &::placeholder {
-        color: #888;
-      }
-    }
-    
-    .input-icon-btn {
-      color: #aaa;
-      
-      &:hover {
-        color: #ccc;
-      }
-      
-      &.send-btn {
-        color: #1890ff;
-        
-        &:hover {
-          color: #40a9ff;
-        }
-      }
-    }
-  }
 }
 
 // 聊天输入容器的样式
 .chat-input-container {
-  // padding: 1rem; // 由 .modern-chat-input 在 ChatView.vue 中控制外部间距
   background-color: transparent;
-  width: 100%; // 继承父容器的宽度
-  box-sizing: border-box; // 确保 padding 和 border 不会增加总宽度
+  width: 100%;
+  box-sizing: border-box;
   position: relative;
-  margin-top: auto; // 确保输入框始终在底部
+  margin-top: auto;
+  transition: all 0.3s ease;
 
   // 移动端优化
   @media (max-width: 768px) {
     padding: 8px 0;
-    position: sticky; // 固定在底部
+    position: sticky;
     bottom: 0;
     background-color: var(--bg-color, #ffffff);
-    z-index: 100; // 确保输入框始终在顶层
+    z-index: 100;
   }
 }
 
 // 输入区与按钮的容器
 .input-wrapper {
   position: relative;
-  border-radius: 8px;
+  border-radius: 12px;
   background-color: var(--chat-input-bg, #ffffff);
   display: flex;
   flex-direction: column;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
   overflow: hidden;
+  transition: all 0.3s ease;
   
   @media (max-width: 768px) {
     box-shadow: none;
-    border-radius: 8px;
+    border-radius: 12px;
     margin-bottom: 0;
   }
 }
@@ -645,29 +618,36 @@ const rolePopup = ref(null)
   width: 100%;
   background-color: var(--chat-input-bg, #ffffff);
   border: 1px solid var(--border-color, #dcdfe6);
-  border-radius: 8px;
+  border-radius: 12px;
   box-sizing: border-box;
   overflow: hidden;
+  transition: all 0.3s ease;
 
   @media (max-width: 768px) {
-    border-radius: 12px; // 增加圆角
-    margin-bottom: 5px; // 底部边距
+    border-radius: 16px;
+    margin-bottom: 5px;
   }
 
   :deep(.el-textarea__inner) {
     resize: none;
-    padding: 12px 50px 12px 12px; // 右侧留出空间给按钮
+    padding: 12px 50px 12px 12px;
     border: none;
     background-color: transparent;
     font-size: 0.95rem;
     line-height: 1.5;
-    min-height: 60px; // 设定最小高度
-    max-height: 150px; // 设定最大高度
+    min-height: 60px;
+    max-height: 150px;
+    color: var(--text-color, #333);
+    transition: all 0.3s ease;
+
+    &::placeholder {
+      color: var(--placeholder-color, #888);
+    }
 
     @media (max-width: 768px) {
-      padding: 10px 12px; // 简化内边距
-      min-height: 50px; // 减小最小高度
-      font-size: 0.9rem; // 略微减小字体
+      padding: 10px 12px;
+      min-height: 50px;
+      font-size: 0.9rem;
     }
   }
 }
@@ -681,20 +661,24 @@ const rolePopup = ref(null)
   position: absolute;
   right: 0;
   bottom: 10px;
+  transition: all 0.3s ease;
 
   @media (max-width: 768px) {
-    bottom: 5px; // 按钮位置上移
-    padding-right: 8px; // 减少右侧内边距
-    gap: 4px; // 减小按钮间距
+    bottom: 5px;
+    padding-right: 8px;
+    gap: 4px;
     
-    // 缩小移动端的按钮尺寸
     .el-button {
       padding: 6px !important;
       font-size: 12px !important;
       height: auto !important;
 
       .el-icon {
-        font-size: 16px !important; // 减小图标尺寸
+        font-size: 16px !important;
+      }
+      
+      span:not(.el-icon) {
+        display: none;
       }
     }
   }
@@ -702,37 +686,42 @@ const rolePopup = ref(null)
 
 // 发送按钮样式
 .send-button {
+  padding: 8px 16px;
   transition: all 0.3s ease;
-  margin-left: 4px;
-
+  
   @media (max-width: 768px) {
-    margin-left: 2px; // 减小间距
-    // 可以考虑在移动端仅显示图标，不显示文字
+    padding: 8px !important;
+    min-width: 32px !important;
+
     span:not(.el-icon) {
-      display: none; // 隐藏文字，只保留图标
+      display: none;
     }
   }
-
+  
   &.pause-button {
-    background-color: #ff9800;
-    border-color: #ff9800;
+    background-color: #f56c6c;
+    border-color: #f56c6c;
+    
+    &:hover {
+      background-color: #f78989;
+      border-color: #f78989;
+    }
   }
 }
 
 // 文件上传区域样式
 .upload-area {
   margin-bottom: 10px;
-  border-radius: 8px;
+  border-radius: 12px;
   background-color: var(--chat-input-bg, #ffffff);
   padding: 10px;
   border: 1px solid var(--border-color, #dcdfe6);
+  transition: all 0.3s ease;
 
   @media (max-width: 768px) {
     margin-bottom: 8px;
     padding: 8px;
   }
-  
-  // 省略其他上传区样式...
 }
 
 // 工具栏样式
@@ -742,9 +731,8 @@ const rolePopup = ref(null)
   margin-bottom: 8px;
   
   @media (max-width: 768px) {
-    margin-bottom: 5px; // 减少底部间距
+    margin-bottom: 5px;
     
-    // 工具栏按钮也需要更小
     .tool-btn {
       padding: 4px 8px !important;
       font-size: 12px !important;
@@ -759,17 +747,18 @@ const rolePopup = ref(null)
 // Token计数器样式
 .token-counter {
   font-size: 0.75rem;
-  color: #888;
+  color: var(--text-secondary, #888);
   text-align: right;
   margin-top: 4px;
   display: flex;
   align-items: center;
   justify-content: flex-end;
+  transition: all 0.3s ease;
 
   @media (max-width: 768px) {
-    font-size: 0.7rem; // 更小的字体
+    font-size: 0.7rem;
     margin-top: 2px;
-    opacity: 0.7; // 略微透明以减少视觉干扰
+    opacity: 0.7;
   }
 }
 
@@ -784,115 +773,239 @@ const rolePopup = ref(null)
   display: flex;
   align-items: center;
   justify-content: center;
+  background-color: rgba(0, 0, 0, 0.4);
+  transition: all 0.3s ease;
 
   @media (max-width: 768px) {
-    // 移动端下的角色选择器应该从底部弹出
     align-items: flex-end;
   }
 
   .role-popup {
-    background-color: var(--chat-input-bg, #ffffff);
-    border-radius: 10px;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    background-color: var(--popup-bg, #ffffff);
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
     width: 450px;
     max-width: 80vw;
     max-height: 70vh;
     overflow-y: auto;
     z-index: 2;
+    transition: all 0.3s ease;
     
     @media (max-width: 768px) {
-      width: 100%; // 占满全宽
+      width: 100%;
       max-width: 100%;
       max-height: 80vh;
-      border-radius: 16px 16px 0 0; // 只圆角上部
+      border-radius: 16px 16px 0 0;
     }
   }
 }
 
+// 角色分类与列表
+.role-categories {
+  display: flex;
+  overflow-x: auto;
+  gap: 8px;
+  padding: 10px;
+  border-bottom: 1px solid var(--border-color, #eaeaea);
+  
+  .role-category {
+    padding: 6px 12px;
+    border-radius: 16px;
+    cursor: pointer;
+    white-space: nowrap;
+    background-color: var(--category-bg, #f5f5f7);
+    color: var(--text-color, #333);
+    transition: all 0.3s ease;
+    
+    &.active {
+      background-color: var(--primary-color, #1890ff);
+      color: white;
+    }
+  }
+}
+
+.role-list {
+  padding: 10px;
+  
+  .role-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    
+    &:hover {
+      background-color: var(--item-hover-bg, #f5f5f7);
+    }
+    
+    .role-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+    }
+    
+    .role-info {
+      flex: 1;
+      
+      .role-name {
+        font-weight: 500;
+        color: var(--text-color, #333);
+      }
+      
+      .role-desc {
+        font-size: 0.8rem;
+        color: var(--text-secondary, #888);
+      }
+    }
+  }
+}
+
+// 角色提示弹窗标题
+.role-prompt-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border-color, #eaeaea);
+  
+  h4 {
+    margin: 0;
+    font-size: 16px;
+    color: var(--text-color, #333);
+  }
+}
+
+// 淡入淡出动画
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
 // 暗色模式
 [data-theme="dark"] {
-  .input-wrapper {
-    background-color: #2d2d33;
-  }
-  
-  .input-control-area {
-    .el-input {
-      :deep(.el-textarea__inner) {
-        color: #ddd;
+  .mobile-input-wrapper {
+    background-color: var(--dark-input-bg, #2c2c2e);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    
+    .mobile-input {
+      color: var(--dark-text-color, #e0e0e0);
+      
+      &::placeholder {
+        color: var(--dark-placeholder-color, #888);
       }
     }
     
-    .input-actions {
-      .role-btn {
-        background-color: #353740;
-        color: #aaa;
+    .input-icon-btn {
+      color: var(--dark-icon-color, #aaa);
+      
+      &:hover {
+        color: var(--dark-icon-hover-color, #ccc);
+      }
+      
+      &.send-btn {
+        color: var(--primary-color, #1890ff);
         
         &:hover {
-          background-color: #424450;
-          color: #ddd;
+          color: var(--primary-hover-color, #40a9ff);
         }
+      }
+    }
+  }
+
+  .input-wrapper {
+    background-color: var(--dark-input-bg, #2d2d33);
+  }
+  
+  .input-control-area {
+    background-color: var(--dark-input-bg, #2d2d33);
+    border-color: var(--dark-border-color, #424450);
+    
+    :deep(.el-textarea__inner) {
+      color: var(--dark-text-color, #ddd);
+      
+      &::placeholder {
+        color: var(--dark-placeholder-color, #888);
       }
     }
   }
   
   .button-group {
     .el-button {
-      background-color: #353740;
-      color: #aaa;
+      background-color: var(--dark-button-bg, #353740);
+      border-color: var(--dark-button-border, #424450);
+      color: var(--dark-button-color, #aaa);
       
       &:hover {
-        background-color: #424450;
-        color: #ddd;
+        background-color: var(--dark-button-hover-bg, #424450);
+        color: var(--dark-button-hover-color, #ddd);
       }
     }
   }
   
   .token-counter {
-    color: #777;
-    
-    .info-icon {
-      color: #666;
-    }
+    color: var(--dark-text-secondary, #777);
   }
   
   .upload-area {
-    background-color: #2d2d33;
-    border-color: #424450;
+    background-color: var(--dark-input-bg, #2d2d33);
+    border-color: var(--dark-border-color, #424450);
+  }
+  
+  .role-popup {
+    background-color: var(--dark-popup-bg, #202123);
+    border-color: var(--dark-border-color, #353740);
+  }
+  
+  .role-categories {
+    border-color: var(--dark-border-color, #353740);
     
-    .preview-item {
-      .file-preview {
-        background-color: #353740;
-        border-color: #424450;
-        
-        .el-icon {
-          color: #aaa;
+    .role-category {
+      background-color: var(--dark-category-bg, #353740);
+      color: var(--dark-text-color, #ddd);
+      
+      &.active {
+        background-color: var(--primary-color, #1890ff);
+        color: white;
+      }
+    }
+  }
+  
+  .role-list {
+    .role-item {
+      &:hover {
+        background-color: var(--dark-item-hover-bg, #353740);
+      }
+      
+      .role-info {
+        .role-name {
+          color: var(--dark-text-color, #ddd);
         }
         
-        span {
-          color: #ddd;
+        .role-desc {
+          color: var(--dark-text-secondary, #888);
         }
       }
     }
   }
   
-  .role-popup-container {
-    background-color: rgba(0, 0, 0, 0.5);
-  }
-  
-  .role-popup {
-    background-color: #202123;
-    border-color: #353740;
-  }
-}
-
-// 暗色模式下的角色按钮
-[data-theme="dark"] .input-actions .role-btn {
-  background-color: #2d2d33;
-  color: #aaa;
-  
-  &:hover {
-    background-color: #353740;
-    color: #61a0ff;
+  .role-prompt-header {
+    border-color: var(--dark-border-color, #353740);
+    
+    h4 {
+      color: var(--dark-text-color, #ddd);
+    }
   }
 }
 </style>
