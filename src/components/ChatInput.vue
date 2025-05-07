@@ -1,7 +1,34 @@
 <template>
   <!-- 聊天输入容器 -->
   <div class="chat-input-container">
-    <div class="toolbar">
+    <!-- 移动端风格的简洁输入框 -->
+    <div class="mobile-input-wrapper" v-if="isMobileView">
+      <button class="input-icon-btn mic-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+          <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+          <line x1="12" y1="19" x2="12" y2="23"></line>
+          <line x1="8" y1="23" x2="16" y2="23"></line>
+        </svg>
+      </button>
+      <input 
+        v-model="messageText"
+        class="mobile-input"
+        type="text"
+        :placeholder="placeholder"
+        @keydown.enter.exact.prevent="handleSend"
+      />
+      <button class="input-icon-btn send-btn" @click="handleSend">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="22" y1="2" x2="11" y2="13"></line>
+          <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+        </svg>
+      </button>
+    </div>
+    
+    <!-- 桌面端输入框和工具栏 -->
+    <div v-else>
+      <div class="toolbar" v-if="!isMobileView">
         <div class="toolbar-actions">
           <el-button 
             class="tool-btn role-btn"
@@ -16,103 +43,101 @@
           </el-button>
         </div>
       </div>
-    <!-- 输入框和按钮的组合 -->
-    <div class="input-wrapper">
-      <!-- 添加文件上传区域 -->
-      <div class="upload-area" v-if="showUpload">
-        <el-upload
-          class="upload-component"
-          :action="null"
-          :auto-upload="false"
-          :on-change="handleFileChange"
-          :show-file-list="false"
-          multiple
-        >
-          <template #trigger>
-            <el-button type="primary" :icon="Plus">添加文件</el-button>
-          </template>
-        </el-upload>
-        
-        <!-- 预览区域 -->
-        <div class="preview-list" v-if="selectedFiles.length">
-          <div v-for="(file, index) in selectedFiles" :key="index" class="preview-item">
-            <!-- 图片预览 -->
-            <img v-if="isImage(file)" :src="getPreviewUrl(file)" class="preview-image"/>
-            <!-- 文件名预览 -->
-            <div v-else class="file-preview">
-              <el-icon><Document /></el-icon>
-              <span>{{ file.name }}</span>
+      <!-- 输入框和按钮的组合 -->
+      <div class="input-wrapper">
+        <!-- 添加文件上传区域 -->
+        <div class="upload-area" v-if="showUpload">
+          <el-upload
+            class="upload-component"
+            :action="null"
+            :auto-upload="false"
+            :on-change="handleFileChange"
+            :show-file-list="false"
+            multiple
+          >
+            <template #trigger>
+              <el-button type="primary" :icon="Plus">添加文件</el-button>
+            </template>
+          </el-upload>
+          
+          <!-- 预览区域 -->
+          <div class="preview-list" v-if="selectedFiles.length">
+            <div v-for="(file, index) in selectedFiles" :key="index" class="preview-item">
+              <!-- 图片预览 -->
+              <img v-if="isImage(file)" :src="getPreviewUrl(file)" class="preview-image"/>
+              <!-- 文件名预览 -->
+              <div v-else class="file-preview">
+                <el-icon><Document /></el-icon>
+                <span>{{ file.name }}</span>
+              </div>
+              <!-- 删除按钮 -->
+              <el-button 
+                class="delete-btn" 
+                type="danger" 
+                :icon="Delete" 
+                circle
+                @click="removeFile(index)"
+              />
             </div>
-            <!-- 删除按钮 -->
-            <el-button 
-              class="delete-btn" 
-              type="danger" 
-              :icon="Delete" 
-              circle
-              @click="removeFile(index)"
-            />
+          </div>
+        </div>
+        
+        <div class="input-control-area">
+          <el-input
+            v-model="messageText"
+            type="textarea"
+            :rows="2"
+            :autosize="{ minRows: 2, maxRows: 5 }"
+            :placeholder="placeholder"
+            resize="none"
+            @keydown.enter.exact.prevent="handleSend"
+            @keydown.enter.shift.exact="newline"
+            @input="adjustHeight"
+            ref="inputRef"
+          />
+          
+          <div class="button-group">
+            <!-- 添加切换上传区域的按钮 -->
+            <el-tooltip content="上传文件" placement="top">
+              <el-button
+                circle
+                :icon="Upload"
+                @click="toggleUpload"
+              />
+            </el-tooltip>
+            
+            <el-tooltip content="清空对话" placement="top">
+              <el-button
+                circle
+                type="danger"
+                :icon="Delete"
+                @click="handleClear"
+              />
+            </el-tooltip>
+            
+            <el-button
+              class="send-button"
+              :class="{ 'pause-button': isGenerating }"
+              type="primary"
+              @click="isGenerating ? handlePause() : handleSend()"
+            >
+              <template #icon>
+                <el-icon>
+                  <component :is="isGenerating ? 'VideoPause' : 'Position'"></component>
+                </el-icon>
+              </template>
+              {{ isGenerating ? '暂停' : '发送' }}
+            </el-button>
           </div>
         </div>
       </div>
-      
-      <!-- 工具栏区域 -->
-
-
-      <div class="input-control-area">
-        <el-input
-          v-model="messageText"
-          type="textarea"
-          :rows="2"
-          :autosize="{ minRows: 2, maxRows: 5 }"
-          :placeholder="placeholder"
-          resize="none"
-          @keydown.enter.exact.prevent="handleSend"
-          @keydown.enter.shift.exact="newline"
-          @input="adjustHeight"
-          ref="inputRef"
-        />
-        
-        <div class="button-group">
-          <!-- 添加切换上传区域的按钮 -->
-          <el-tooltip content="上传文件" placement="top">
-            <el-button
-              circle
-              :icon="Upload"
-              @click="toggleUpload"
-            />
-          </el-tooltip>
-          
-          <el-tooltip content="清空对话" placement="top">
-            <el-button
-              circle
-              type="danger"
-              :icon="Delete"
-              @click="handleClear"
-            />
-          </el-tooltip>
-          
-          <el-button
-            class="send-button"
-            :class="{ 'pause-button': isGenerating }"
-            type="primary"
-            @click="isGenerating ? handlePause() : handleSend()"
-          >
-            <template #icon>
-              <el-icon>
-                <component :is="isGenerating ? 'VideoPause' : 'Position'"></component>
-              </el-icon>
-            </template>
-            {{ isGenerating ? '暂停' : '发送' }}
-          </el-button>
-        </div>
+      <!-- Token计数器 -->
+      <div class="token-counter" v-if="!isMobileView">
+        已使用 Token: {{ tokenCount.total }} (提示: {{ tokenCount.prompt }}, 回复: {{ tokenCount.completion }})
+        <el-tooltip content="Token 计算基于本地算法，可能与实际使用略有差异" placement="top">
+          <el-icon class="info-icon"><InfoFilled /></el-icon>
+        </el-tooltip>
       </div>
-    </div>
-    <!-- Token计数器 -->
-    <div class="token-counter">
-      已使用 Token: {{ tokenCount.total }} (提示: {{ tokenCount.prompt }}, 回复: {{ tokenCount.completion }})
-      <el-tooltip content="Token 计算基于本地算法，可能与实际使用略有差异" placement="top">
-        <el-icon class="info-icon"><InfoFilled /></el-icon>
-      </el-tooltip>
     </div>
     
     <!-- 角色选择浮层，像三点菜单一样实现 -->
@@ -162,7 +187,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { Delete, Position, Upload, Plus, Document, InfoFilled, VideoPause, Close } from '@element-plus/icons-vue'
 import { Avatar } from '@element-plus/icons-vue'
 import { useChatStore } from '../stores/chat'
@@ -196,8 +221,27 @@ watch(() => props.loading, (newValue) => {
   isGenerating.value = newValue
 })
 
+// 检测是否为移动端视图
+const isMobileView = ref(window.innerWidth <= 768)
+
+// 监听窗口大小变化来改变移动端视图状态
+const handleResize = () => {
+  isMobileView.value = window.innerWidth <= 768
+}
+
+// 组件挂载时添加窗口大小变化监听器
+onMounted(() => {
+  window.addEventListener('resize', handleResize)
+  handleResize() // 初始化检查
+})
+
+// 组件销毁前移除监听器
+onUnmounted(() => {
+  window.removeEventListener('resize', handleResize)
+})
+
 // 输入框的占位符
-const placeholder = `输入消息，按Enter发送
+const placeholder = isMobileView.value ? '输入聊天内容...' : `输入消息，按Enter发送
 Shift + Enter 换行`
 
 // 计算属性，用于获取聊天存储中的Token计数
@@ -288,9 +332,9 @@ const roleCategories = [
   }
 ]
 
-// 当前选中的角色分类
+// 计算属性，获取当前激活的角色分类
 const activeCategory = computed(() => {
-  return roleCategories[activeCategoryIndex.value] || roleCategories[0]
+  return roleCategories[activeCategoryIndex.value]
 })
 
 // 切换角色选择区域显示
@@ -470,6 +514,94 @@ const rolePopup = ref(null)
 </script>
 
 <style lang="scss" scoped>
+// 移动端输入框样式
+.mobile-input-wrapper {
+  display: flex;
+  align-items: center;
+  background-color: #f5f5f7;
+  border-radius: 24px;
+  padding: 8px 16px;
+  margin: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  
+  .mobile-input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    font-size: 16px;
+    padding: 8px 12px;
+    outline: none;
+    color: #333;
+    
+    &::placeholder {
+      color: #888;
+      font-size: 15px;
+    }
+  }
+  
+  .input-icon-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: #666;
+    padding: 8px;
+    transition: color 0.2s;
+    
+    &:hover {
+      color: #333;
+    }
+    
+    &.send-btn {
+      color: #1890ff;
+      
+      &:hover {
+        color: #40a9ff;
+      }
+      
+      &:active {
+        color: #096dd9;
+      }
+    }
+    
+    svg {
+      width: 20px;
+      height: 20px;
+    }
+  }
+  
+  [data-theme="dark"] & {
+    background-color: #2c2c2e;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    
+    .mobile-input {
+      color: #e0e0e0;
+      
+      &::placeholder {
+        color: #888;
+      }
+    }
+    
+    .input-icon-btn {
+      color: #aaa;
+      
+      &:hover {
+        color: #ccc;
+      }
+      
+      &.send-btn {
+        color: #1890ff;
+        
+        &:hover {
+          color: #40a9ff;
+        }
+      }
+    }
+  }
+}
+
 // 聊天输入容器的样式
 .chat-input-container {
   // padding: 1rem; // 由 .modern-chat-input 在 ChatView.vue 中控制外部间距
@@ -481,15 +613,11 @@ const rolePopup = ref(null)
 
   // 移动端优化
   @media (max-width: 768px) {
-    padding: 0.5rem 0.5rem 0.5rem 0.5rem; // 减小内边距
-    border-radius: 0; // 移除圆角
-    border-top: 1px solid rgba(0, 0, 0, 0.1); // 添加顶部边框增强分隔感
+    padding: 8px 0;
     position: sticky; // 固定在底部
     bottom: 0;
-    background-color: var(--chat-input-bg, #ffffff);
+    background-color: var(--bg-color, #ffffff);
     z-index: 100; // 确保输入框始终在顶层
-    backdrop-filter: blur(10px); // 模糊背景效果
-    margin-top: 1rem; // 添加与消息的间距
   }
 }
 
