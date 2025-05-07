@@ -156,47 +156,79 @@
                 <!-- 移动端汉堡按钮 -->
                 <el-button class="mobile-menu-button" @click="toggleMobileSidebar" :icon="Menu" text circle v-if="isMobileView"></el-button>
                 
-                <!-- 模型信息和设置 -->
-                <el-dropdown trigger="click" @command="handleModelChange">
-                    <div class="model-info" style="cursor: pointer;">
-                        <span class="model-name">{{ getModelDisplayName() }}</span>
-                        <el-tag type="info" size="small" effect="plain" class="model-tag">Plus</el-tag>
-                        <el-icon class="model-dropdown-icon"><ArrowDown /></el-icon>
+                <!-- 左侧模型信息和状态区域 -->
+                <div class="header-left">
+                    <!-- 模型信息和设置 -->
+                    <div class="model-status">
+                        <div class="status-indicator online"></div>
+                        <span class="status-text">Online</span>
                     </div>
-                    <template #dropdown>
-                        <el-dropdown-menu>
-                            <el-dropdown-item 
-                                v-for="model in modelOptions" 
-                                :key="model.value" 
-                                :command="model.value"
-                                :class="{ 'is-active': settingsStore.model === model.value }"
-                            >
-                                {{ model.label }}
-                                <el-icon v-if="settingsStore.model === model.value"><Check /></el-icon>
-                            </el-dropdown-item>
-                        </el-dropdown-menu>
-                    </template>
-                </el-dropdown>
+                    
+                    <el-dropdown trigger="click" @command="handleModelChange">
+                        <div class="model-info" style="cursor: pointer;">
+                            <span class="model-name">{{ getModelDisplayName() }}</span>
+                            <el-tag type="success" size="small" effect="dark" class="model-tag">Active</el-tag>
+                            <el-icon class="model-dropdown-icon"><ArrowDown /></el-icon>
+                        </div>
+                        <template #dropdown>
+                            <el-dropdown-menu>
+                                <el-dropdown-item 
+                                    v-for="model in modelOptions" 
+                                    :key="model.value" 
+                                    :command="model.value"
+                                    :class="{ 'is-active': settingsStore.model === model.value }"
+                                >
+                                    {{ model.label }}
+                                    <el-icon v-if="settingsStore.model === model.value"><Check /></el-icon>
+                                </el-dropdown-item>
+                            </el-dropdown-menu>
+                        </template>
+                    </el-dropdown>
+                </div>
+                
+                <!-- 中间标题区域 - 只在PC显示 -->
+                <div class="header-center" v-if="!isMobileView">
+                    <div class="conversation-info">
+                        <span class="conversation-title">{{ currentChatTitle || 'New Chat' }}</span>
+                        <div class="conversation-stats">
+                            <span class="stats-item">
+                                <el-icon><ChatDotRound /></el-icon>
+                                {{ messages.length }} messages
+                            </span>
+                            <span class="stats-divider">•</span>
+                            <span class="stats-item">
+                                <el-icon><Clock /></el-icon>
+                                {{ formatTimestamp() }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
                 
                 <!-- 右侧功能按钮 -->
                 <div class="header-actions">
+                    <el-button class="action-btn theme-btn" type="default" @click="toggleDarkMode" title="Toggle Dark Mode">
+                        <el-icon><Moon v-if="settingsStore.isDarkMode" /><Sunny v-else /></el-icon>
+                    </el-button>
+                    
                     <el-button class="config-btn" type="default" @click="toggleSettings">
-                        <span class="button-text">Configuration</span>
+                        <span class="button-text">Settings</span>
                         <el-icon><Setting /></el-icon>
                     </el-button>
+                    
                     <el-button class="share-btn" type="default" @click="handleShare">
                         <span class="button-text">Share</span>
                         <el-icon><Share /></el-icon>
                     </el-button>
+                    
                     <el-dropdown trigger="click">
-                        <el-button class="action-btn" type="default">
-                            <span class="button-text">Actions</span>
-                            <el-icon><ArrowDown /></el-icon>
+                        <el-button class="action-btn" type="primary">
+                            <span class="button-text">New</span>
+                            <el-icon><Plus /></el-icon>
                         </el-button>
                         <template #dropdown>
                             <el-dropdown-menu>
                                 <el-dropdown-item @click="handleNewChat">
-                                    <el-icon><Plus /></el-icon> New Chat
+                                    <el-icon><ChatRound /></el-icon> New Chat
                                 </el-dropdown-item>
                                 <el-dropdown-item @click="handleRefresh">
                                     <el-icon><Refresh /></el-icon> Refresh
@@ -467,7 +499,7 @@ import { useSettingsStore } from '../stores/settings'
 import { ElMessageBox, ElMessage } from 'element-plus'
 import ChatMessage from '../components/ChatMessage.vue'
 import ChatInput from '../components/ChatInput.vue'
-import { ArrowDown, Menu, Check, ArrowLeft, Setting, Plus, Edit, Star, Search, MoreFilled, ChatRound, Share, User, Fold, Expand, Refresh } from '@element-plus/icons-vue'
+import { ArrowDown, Menu, Check, ArrowLeft, Setting, Plus, Edit, Star, Search, MoreFilled, ChatRound, Share, User, Fold, Expand, Refresh, ChatDotRound, Clock, Moon, Sunny } from '@element-plus/icons-vue'
 import { v4 as uuidv4 } from 'uuid'
 // 导入 messageHandler 用于处理消息
 import { messageHandler } from '../utils/messageHandler'
@@ -1395,6 +1427,12 @@ const parseModels = async () => {
 const toggleDarkMode = () => {
   settingsStore.toggleDarkMode();
 };
+
+// 格式化时间戳
+const formatTimestamp = () => {
+  const now = new Date();
+  return `${now.toLocaleDateString()} ${now.toLocaleTimeString()}`;
+}
 </script>
 
 <style lang="scss" scoped>
@@ -1805,6 +1843,16 @@ const toggleDarkMode = () => {
     padding: 12px 24px;
     border-bottom: 1px solid #eaeaea;
     background-color: white;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+    position: relative;
+    z-index: 10;
+    
+    // 暗黑模式
+    [data-theme="dark"] & {
+        background-color: #202123;
+        border-bottom-color: #333;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+    }
 
     // 移动端样式
     @media (max-width: 768px) {
@@ -1819,34 +1867,155 @@ const toggleDarkMode = () => {
         }
     }
     
+    // 左侧区域
+    .header-left {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        
+        .model-status {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: #666;
+            
+            [data-theme="dark"] & {
+                color: #aaa;
+            }
+            
+            .status-indicator {
+                width: 8px;
+                height: 8px;
+                border-radius: 50%;
+                
+                &.online {
+                    background-color: #10b981;
+                    box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+                    animation: pulse 2s infinite;
+                }
+                
+                &.offline {
+                    background-color: #ef4444;
+                }
+                
+                &.busy {
+                    background-color: #f59e0b;
+                }
+            }
+            
+            .status-text {
+                font-weight: 500;
+            }
+        }
+    }
+    
+    // 中间标题区域
+    .header-center {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        max-width: 40%;
+        text-align: center;
+        
+        .conversation-info {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            
+            .conversation-title {
+                font-size: 16px;
+                font-weight: 600;
+                color: #333;
+                margin-bottom: 2px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                max-width: 100%;
+                
+                [data-theme="dark"] & {
+                    color: #e0e0e0;
+                }
+            }
+            
+            .conversation-stats {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                font-size: 12px;
+                color: #666;
+                
+                [data-theme="dark"] & {
+                    color: #aaa;
+                }
+                
+                .stats-item {
+                    display: flex;
+                    align-items: center;
+                    gap: 4px;
+                    
+                    .el-icon {
+                        font-size: 12px;
+                    }
+                }
+                
+                .stats-divider {
+                    color: #d1d5db;
+                    
+                    [data-theme="dark"] & {
+                        color: #555;
+                    }
+                    margin-top: -2px;
+                }
+            }
+        }
+    }
+    
     .model-info {
         display: flex;
         align-items: center;
         padding: 6px 10px;
         border-radius: 6px;
         transition: background-color 0.2s;
+        background-color: #f9f9f9;
+        
+        [data-theme="dark"] & {
+            background-color: #2d2d33;
+        }
         
         &:hover {
-            background-color: #f5f7fa;
+            background-color: #f0f2f5;
+            
+            [data-theme="dark"] & {
+                background-color: #383842;
+            }
         }
         
         .model-name {
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 500;
             color: #333;
+            
+            [data-theme="dark"] & {
+                color: #e0e0e0;
+            }
         }
         
         .model-tag {
             margin-left: 8px;
             height: auto;
             padding: 2px 8px;
-            font-size: 12px;
+            font-size: 11px;
         }
         
         .model-dropdown-icon {
             margin-left: 6px;
             font-size: 12px;
             color: #909399;
+            
+            [data-theme="dark"] & {
+                color: #aaa;
+            }
         }
     }
     
@@ -1864,12 +2033,51 @@ const toggleDarkMode = () => {
             color: #333;
             margin-left: 0px;
             
+            [data-theme="dark"] & {
+                background-color: #2d2d33;
+                border-color: #444;
+                color: #e0e0e0;
+            }
+            
             &:hover {
                 background-color: #f0f2f5;
+                
+                [data-theme="dark"] & {
+                    background-color: #383842;
+                }
             }
             
             .el-icon {
                 font-size: 14px;
+            }
+        }
+
+        .theme-btn {
+            padding: 8px 8px;
+            transition: transform 0.3s;
+            
+            &:hover {
+                transform: rotate(15deg);
+            }
+            
+            [data-theme="dark"] & .el-icon {
+                color: #FFD43B;
+            }
+        }
+        
+        .action-btn[type="primary"] {
+            background-color: #4284f5;
+            border-color: #4284f5;
+            color: white;
+            
+            &:hover {
+                background-color: #3472dc;
+                border-color: #3472dc;
+            }
+            
+            [data-theme="dark"] & {
+                background-color: #4284f5;
+                border-color: #3470db;
             }
         }
         
@@ -1896,15 +2104,31 @@ const toggleDarkMode = () => {
     }
 }
 
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4);
+    }
+    70% {
+        box-shadow: 0 0 0 6px rgba(16, 185, 129, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+    }
+}
+
 /* 消息区域 */
 .messages-container {
     flex: 1; // 占据剩余空间
     overflow-y: auto;
     padding: 16px 8px 20px; // 底部留出一些空间，但主要由输入框高度决定
     position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center; // Center child items horizontally
     
     @media (max-width: 768px) {
         padding: 12px 8px 10px;
+        align-items: stretch; // Full width on mobile
     }
 
     &::-webkit-scrollbar {
