@@ -124,6 +124,17 @@ onMounted(() => {
     backface-visibility: hidden;
     -webkit-transform-style: preserve-3d;
     transform-style: preserve-3d;
+    /* 加强抗锯齿渲染 */
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+    /* 消除任何可能的模糊效果 */
+    -webkit-filter: blur(0);
+    filter: blur(0);
+    /* 使用硬件加速 */
+    will-change: transform;
+    /* 设置渲染图层 */
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
   }
   
   .loading-title {
@@ -163,12 +174,14 @@ onMounted(() => {
 
 @keyframes pulse {
   0%, 100% { 
-    transform: scale(1); 
+    transform: scale(1) translateZ(0); 
     filter: none;
+    box-shadow: none;
   }
   50% { 
-    transform: scale(1.05); 
+    transform: scale(1.03) translateZ(0); /* 减小缩放幅度，降低边缘问题 */
     filter: none;
+    box-shadow: none;
   }
 }
 
