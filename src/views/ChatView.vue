@@ -543,27 +543,6 @@ const activeHistoryId = ref('current')
 // 用于中断请求的控制器 - 确保它在全局作用域中定义
 const activeController = ref(null);
 
-// 检测移动端视图，更新状态
-const checkMobileView = () => {
-  isMobileView.value = window.innerWidth <= 768;
-  
-  // 如果从移动端切换到桌面端，确保侧边栏隐藏
-  if (!isMobileView.value) {
-    isMobileSidebarOpen.value = false;
-  }
-}
-
-// 监听窗口大小变化以更新移动端状态
-onMounted(() => {
-  window.addEventListener('resize', checkMobileView);
-  checkMobileView(); // 初始化检查
-})
-
-// 组件卸载时清理事件监听
-onBeforeUnmount(() => {
-  window.removeEventListener('resize', checkMobileView);
-})
-
 // 保存聊天历史到localStorage
 const saveChatHistory = () => {
   localStorage.setItem('chatHistory', JSON.stringify(chatHistory.value))
