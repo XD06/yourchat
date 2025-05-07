@@ -17,7 +17,7 @@ const md = new MarkdownIt({
         // 添加语言标识和复制按钮，保持与ChatMessage.vue一致
         return `<pre class="code-block" data-lang="${lang}">
           <div class="code-header">
-            <span class="code-lang">${lang}</span>
+          <span class="code-lang">${lang}</span>
             <button class="copy-btn">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>

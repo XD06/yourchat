@@ -31,36 +31,55 @@ const loadingMessage = ref('正在加载应用...')
 // 应用初始化并处理加载状态
 const initApp = async () => {
   try {
-    // 模拟资源加载和应用初始化
+    // 减少模拟加载的时间，但增加网络超时检测
     loadingMessage.value = '加载配置...'
-    await new Promise(resolve => setTimeout(resolve, 600))
+    await new Promise(resolve => setTimeout(resolve, 400))
     
     loadingMessage.value = '初始化界面...'
-    await new Promise(resolve => setTimeout(resolve, 400))
+    await new Promise(resolve => setTimeout(resolve, 300))
     
     // 加载设置并应用主题
     const isDarkMode = settingsStore.isDarkMode
     document.documentElement.setAttribute('data-theme', isDarkMode ? 'dark' : 'light')
     
-    loadingMessage.value = '准备就绪！'
-    await new Promise(resolve => setTimeout(resolve, 300))
+    // 检查API配置
+    if (!settingsStore.actualApiEndpoint || !settingsStore.actualApiKey) {
+      loadingMessage.value = '请在设置中配置API...'
+      // 仍然继续加载应用
+      await new Promise(resolve => setTimeout(resolve, 300))
+    } else {
+      loadingMessage.value = '准备就绪！'
+      await new Promise(resolve => setTimeout(resolve, 200))
+    }
     
     // 标记应用已加载完成
     isAppLoaded.value = true
   } catch (error) {
     console.error('应用初始化错误:', error)
     loadingMessage.value = '加载失败，请刷新页面重试'
+    // 即使发生错误，5秒后也强制显示应用
+    setTimeout(() => {
+      isAppLoaded.value = true
+    }, 5000)
   }
 }
 
 // 在组件挂载前开始初始化
 onBeforeMount(() => {
-  // 如果有网络问题，设置一个超时机制
+  // 网络超时处理 - 更快地提示网络问题
   setTimeout(() => {
     if (!isAppLoaded.value) {
       loadingMessage.value = '加载时间较长，请检查网络连接...'
+      
+      // 再等待5秒后，如果仍未加载完成，则强制显示应用
+      setTimeout(() => {
+        if (!isAppLoaded.value) {
+          loadingMessage.value = '网络状况不佳，但仍将继续加载...'
+          isAppLoaded.value = true
+        }
+      }, 5000)
     }
-  }, 5000)
+  }, 3000) // 缩短到3秒
 })
 
 // 组件挂载时初始化应用
@@ -101,6 +120,10 @@ onMounted(() => {
   .loading-logo {
     margin-bottom: 20px;
     animation: pulse 2s infinite ease-in-out;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    -webkit-transform-style: preserve-3d;
+    transform-style: preserve-3d;
   }
   
   .loading-title {
@@ -139,8 +162,14 @@ onMounted(() => {
 }
 
 @keyframes pulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.05); }
+  0%, 100% { 
+    transform: scale(1); 
+    filter: none;
+  }
+  50% { 
+    transform: scale(1.05); 
+    filter: none;
+  }
 }
 
 // Dark mode for loading screen

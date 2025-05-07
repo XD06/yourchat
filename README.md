@@ -8,24 +8,15 @@ MyChat 是一个基于 Vue.js 的AI聊天应用程序，支持多种大型语言
 
 ## 功能特点
 
-- 🤖 支持多种AI语言模型 (OpenAI、GLM等)
+- 🤖 支持多种AI语言模型 (openai及其兼容等)
 - 🌓 支持黑暗模式 / 明亮模式
 - 📱 完全响应式设计，移动端友好
 - 🔑 安全的API密钥处理，支持环境变量或自定义值
 - 🌊 流式响应支持
 - 💬 聊天消息管理
+- markdown渲染，代码块高亮
 - 🎭 内置AI角色选择
 - 📊 Token用量统计
-- 📂 文件上传与图片分享支持
-
-## 技术栈
-
-- Vue 3
-- Pinia (状态管理)
-- Vue Router
-- Element Plus UI
-- SCSS
-- Vite (构建工具)
 
 ## 快速开始
 
@@ -108,8 +99,9 @@ npm run build
 
 MIT License
 
-## 致谢
-
+## 相关
+- [AIchat](https://github.com/wjc7jx/AIchat)
 - [Vue.js](https://vuejs.org/)
 - [Element Plus](https://element-plus.org/)
 - [OpenAI API](https://openai.com/)
+

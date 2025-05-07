@@ -417,13 +417,13 @@ onMounted(() => {
       }
     }
   }
-
+  
   // AI消息靠左
   &.role-assistant {
     justify-content: flex-start;
     .message-bubble {
       background-color: rgb(255, 255, 255);
-      color: #333;
+        color: #333;
       border-radius: 16px 16px 16px 4px;
       @media (max-width: 768px) {
         border-radius: 12px 12px 12px 3px;
@@ -433,7 +433,7 @@ onMounted(() => {
         background-color: #2d2d33;
         color: #e0e0e0;
         border: 1px solid #383838;
-      }
+    }
     }
     .avatar {
       margin-right: 10px;
@@ -442,13 +442,13 @@ onMounted(() => {
       }
     }
   }
-
+  
   // 正在重新生成时的样式
   &.regenerating {
     opacity: 0.7;
+    }
   }
-}
-
+  
 .avatar {
   width: 36px;
   height: 36px;
@@ -465,17 +465,17 @@ onMounted(() => {
   }
 
   &.assistant-avatar {
-    background-color: #1890ff; // AI头像背景色
-    color: white;
+    background-color: transparent; // AI头像背景色
+  color: white;
     font-size: 20px;
     svg {
-      width: 22px;
-      height: 22px;
-    }
+      width: 35px;
+      height: 35px;
+  }
   }
 
   &.user-avatar {
-    background-color: #f5f5f5; // 用户头像背景色
+    background-color: transparent; // 用户头像背景色
     color: #555;
     img {
       width: 100%;
@@ -487,7 +487,7 @@ onMounted(() => {
 }
 
 .message-content {
-  display: flex;
+        display: flex;
   flex-direction: column;
   max-width: 80%; // 限制消息内容最大宽度，避免过长
 
@@ -498,8 +498,8 @@ onMounted(() => {
 }
 
 .message-header {
-  display: flex;
-  align-items: center;
+          display: flex;
+          align-items: center;
   margin-bottom: 0.3rem;
   font-size: 0.75rem;
   color: #888;
@@ -509,16 +509,16 @@ onMounted(() => {
   }
 
   .message-role {
-    font-weight: 500;
+        font-weight: 500;
     margin-right: 8px;
-  }
-}
+      }
+    }
 
 .thinking-bubble {
   padding: 8px 12px;
   border-radius: 10px;
   background-color: rgba(0, 0, 0, 0.03);
-  margin-bottom: 8px;
+    margin-bottom: 8px;
   font-size: 0.85rem;
   color: #555;
   border: 1px solid rgba(0,0,0,0.05);
@@ -528,9 +528,9 @@ onMounted(() => {
     border-color: rgba(255,255,255,0.1);
     color: #ccc;
   }
-
+  
   .thinking-header {
-    display: flex;
+  display: flex;
     align-items: center;
     justify-content: space-between;
     cursor: default;
@@ -542,7 +542,7 @@ onMounted(() => {
     }
     .thinking-title {
       flex-grow: 1;
-      display: flex;
+  display: flex;
       align-items: center;
     }
     .toggle-thinking-btn {
@@ -573,11 +573,11 @@ onMounted(() => {
     line-height: 1.5;
     [data-theme="dark"] & {
       border-top-color: rgba(255,255,255,0.1);
+        }
+      }
     }
-  }
-}
-
-.message-bubble {
+    
+      .message-bubble {
   padding: 0.7rem 1rem;
   word-wrap: break-word;
   overflow-wrap: break-word; // 确保长单词或链接能换行
@@ -588,14 +588,14 @@ onMounted(() => {
   }
 
   .message-text {
-    white-space: pre-wrap; // 保持消息中的换行和空格
+   // white-space: pre-wrap; // 保持消息中的换行和空格
     font-size: 0.95rem;
     line-height: 1.6;
 
     @media (max-width: 768px) {
       font-size: 0.9rem;
-    }
-
+      }
+      
     // 代码块优化
     :deep(pre.code-block) {
       margin: 0.8rem 0;
@@ -615,16 +615,18 @@ onMounted(() => {
         font-size: 0.8em;
         margin: 0.6rem 0;
       }
-
-      .code-header {
+        
+        .code-header {
+        margin-top: -20px;
         display: flex;
         justify-content: space-between;
         align-items: center;
         padding: 6px 12px; // 调整内边距使其更紧凑
-        background-color: inherit; // 继承父元素的背景色
+        background-color: #80808036; // 继承父元素的背景色
         font-size: 0.9em; // 相对于 pre 的字体大小
         color: #555;
         border-bottom: 1px solid #e3e3e3; // 与外边框颜色一致
+        font-family: 'Fira Code', 'JetBrains Mono', monospace;
 
         [data-theme="dark"] & {
           color: #bbb;
@@ -646,11 +648,12 @@ onMounted(() => {
         align-items: center;
         justify-content: center;
         &:hover { opacity: 1; }
-      }
-      code {
+          }
+        code {
         padding: 12px !important; // 调整代码区域的内边距
         display: block;
         overflow-x: auto;
+        font-family: 'Fira Code', 'JetBrains Mono', monospace;
         margin: 0; // 移除可能存在的默认margin
         background-color: inherit; // 继承父元素的背景色
         color: #333; // 默认代码颜色
@@ -658,23 +661,23 @@ onMounted(() => {
             color: #e0e0e0; // 暗黑模式代码颜色
         }
       }
-    }
-
+      }
+      
     :deep(p) {
       margin-bottom: 0.5em; // 段落间距
       &:last-child {
         margin-bottom: 0;
-      }
+        }
     }
     :deep(ul), :deep(ol) {
       margin: 0.5em 0 0.5em 1.5em;
       padding-left: 1em;
-    }
+        }
     :deep(li) {
       margin-bottom: 0.25em;
+        }
+      }
     }
-  }
-}
 
 .message-actions {
   display: flex;
@@ -702,11 +705,11 @@ onMounted(() => {
       font-size: 14px;
     }
   }
-}
-
+  }
+  
 .message-loading {
-  display: flex;
-  align-items: center;
+    display: flex;
+    align-items: center;
   justify-content: center;
   padding: 0.5rem 0;
   .loading-dot {
@@ -715,7 +718,7 @@ onMounted(() => {
     margin: 0 2px;
     background-color: currentColor; // 使用父元素的颜色
     border-radius: 50%;
-    display: inline-block;
+        display: inline-block;
     animation: loading-blink 1.4s infinite both;
     &:nth-child(2) {
       animation-delay: 0.2s;
@@ -765,6 +768,6 @@ onMounted(() => {
     // 用户消息的气泡颜色不同，所以token提示也需要调整
     .message-container.role-user & {
         color: rgba(255,255,255,0.7);
-    }
+  }
 }
 </style>
