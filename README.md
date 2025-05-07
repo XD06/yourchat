@@ -34,7 +34,7 @@ MyChat 是一个基于 Vue.js 的AI聊天应用程序，支持多种大型语言
 
 ### 环境要求
 
-- Node.js 16+ 
+- Node.js 18+ 
 
 ### 安装与运行
 
@@ -87,6 +87,18 @@ npm run build
    - `VITE_DEFAULT_MODEL`
 
 4. 部署!
+
+#### Vercel部署疑难解答
+
+如果您在Vercel上部署时遇到问题，请检查以下几点:
+
+- 确保Node.js版本设置为18+
+- 在Vercel项目设置中的"Build & Development Settings"部分，设置:
+  - Framework Preset: Vite
+  - Build Command: npm run vercel-build
+  - Output Directory: dist
+- 确保所有环境变量正确设置
+- 如果遇到CORS问题，可能需要更新Content-Security-Policy头部
 
 ### Netlify 部署
 

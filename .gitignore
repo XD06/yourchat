@@ -37,3 +37,10 @@ dist-ssr
 /cypress/screenshots/
 
 *.tsbuildinfo
+
+# Vercel
+.vercel
+.now
+
+# Build artifacts
+stats.html

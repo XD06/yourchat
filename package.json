@@ -9,7 +9,8 @@
     "preview": "vite preview",
     "analyze": "cross-env ANALYZE=true vite build",
     "clean-repo": "bash ./setup-clean-repo.sh",
-    "clean-repo:win": "setup-clean-repo.bat"
+    "clean-repo:win": "setup-clean-repo.bat",
+    "vercel-build": "vite build"
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.1",
@@ -38,7 +39,7 @@
     "vite-plugin-compression": "^0.5.1"
   },
   "engines": {
-    "node": ">=16.0.0"
+    "node": ">=18.0.0"
   },
   "browserslist": [
     "> 1%",

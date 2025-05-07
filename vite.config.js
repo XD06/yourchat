@@ -37,7 +37,6 @@ export default defineConfig({
   css: {
     preprocessorOptions: {
       scss: {
-        api: 'modern-compiler',
         additionalData: `@use "@/assets/styles/variables.scss" as *;`,
       }
     },
@@ -55,7 +54,7 @@ export default defineConfig({
   // 路径别名
   resolve: {
     alias: {
-      '@': resolve(__dirname, 'src'),
+      '@': fileURLToPath(new URL('./src', import.meta.url)),
       'vue-demi': resolve(__dirname, 'node_modules/vue-demi/lib/index.mjs'),
     }
   },
@@ -100,6 +99,9 @@ export default defineConfig({
         chunkFileNames: 'assets/js/[name]-[hash].js',
         entryFileNames: 'assets/js/[name]-[hash].js',
         assetFileNames: (assetInfo) => {
+          const info = assetInfo.name.split('.');
+          const ext = info[info.length - 1];
+          
           if (/\.(png|jpe?g|gif|svg|webp|avif)$/.test(assetInfo.name)) {
             return 'assets/img/[name]-[hash][extname]'
           }
@@ -109,7 +111,7 @@ export default defineConfig({
           if (/\.css$/.test(assetInfo.name)) {
             return 'assets/css/[name]-[hash][extname]'
           }
-          return `assets/[ext]/[name]-[hash][extname]`
+          return `assets/other/[name]-[hash][extname]`
         }
       }
     },
@@ -141,5 +143,8 @@ export default defineConfig({
     strictPort: false,
     cors: true,
     host: true
-  }
+  },
+  
+  // 确保Vercel能正确构建Vue应用
+  base: './'
 })
