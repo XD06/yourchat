@@ -20,7 +20,7 @@
       body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
       #app { height: 100%; width: 100%; position: relative; }
       /* 轻量级加载指示器，应用加载前显示 */
-      body::before {
+      body.loading::before {
         content: '';
         position: fixed;
         top: 50%;
@@ -40,7 +40,7 @@
     <!-- 异步加载非关键CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/firacode@6.2.0/distr/fira_code.css" media="print" onload="this.media='all'">
   </head>
-  <body>
+  <body class="loading">
     <div id="app"></div>
     <script type="module" src="/src/main.js"></script>
     <!-- 添加缓存优化设置 -->
@@ -53,6 +53,14 @@
           window.APP_LOADED = true;
         });
       }
+      
+      // 监听应用加载完成，移除加载动画
+      window.addEventListener('load', function() {
+        // 延迟一小段时间以确保Vue已经渲染
+        setTimeout(function() {
+          document.body.classList.remove('loading');
+        }, 500);
+      });
     </script>
   </body>
 </html>

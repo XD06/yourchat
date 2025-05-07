@@ -20,13 +20,21 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeMount, nextTick } from 'vue'
+import { ref, onMounted, onBeforeMount, nextTick, watch } from 'vue'
 import { useSettingsStore } from './stores/settings'
 import AppLogo from './components/AppLogo.vue'
 
 const settingsStore = useSettingsStore()
 const isAppLoaded = ref(false)
 const loadingMessage = ref('初始化应用...')
+
+// 监听应用加载状态，移除body上的loading类
+watch(isAppLoaded, (newVal) => {
+  if (newVal === true) {
+    // 移除body上的loading类
+    document.body.classList.remove('loading')
+  }
+})
 
 // 简化的应用初始化流程，确保DOM渲染稳定性
 const initApp = async () => {
@@ -176,6 +184,8 @@ onMounted(() => {
 .app-loaded .loading-screen {
   opacity: 0;
   pointer-events: none;
+  visibility: hidden; // 完全隐藏元素
+  transition: opacity 0.3s ease, visibility 0.3s ease; // 同时过渡可见性属性
 }
 </style>
 
