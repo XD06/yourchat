@@ -207,7 +207,7 @@ const md = markdownIt({
         console.error('Highlight error:', error)
       }
     }
-    // 无法识别语言时，仍添加复制按钮但使用通用标签
+    // 无法识别语言时，使用相同的结构以保持一致性
     return `<pre class="code-block" data-lang="plaintext">
       <div class="code-header">
         <span class="code-lang">plaintext</span>
@@ -386,107 +386,69 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
-/* 消息容器样式 */
 .message-container {
   display: flex;
-  margin-bottom: 32px;
-  position: relative;
-  
-  /* 用户消息样式 - 右侧布局 */
+  margin-bottom: 1.5rem;
+  align-items: flex-start; // 确保头像和内容顶部对齐
+
+  // 移动端优化：减小外边距
+  @media (max-width: 768px) {
+    margin-bottom: 1rem;
+  }
+
+  // 用户消息靠右
   &.role-user {
-    flex-direction: row-reverse;
-    justify-content: flex-start;
-    
-    .message-bubble {
-      background-color: #f0f2f5;
-      border-radius: 16px 4px 16px 16px;
-      border: none;
-      
-      .message-text {
-        color: #333;
-      }
-    }
-    
-    /* 用户消息内容右对齐 */
+    justify-content: flex-end;
     .message-content {
       align-items: flex-end;
-      margin-right: 12px;
-      margin-left: 0;
     }
-    
-    /* 用户消息头部右对齐 */
-    .message-header {
-      flex-direction: row-reverse;
-      
-      .message-role {
-        margin-left: 8px;
-        margin-right: 0;
-        color: #666;
+    .message-bubble {
+      background-color: #4284f5;
+      color: white;
+      border-radius: 16px 16px 4px 16px; // 调整圆角，更有聊天气泡感
+      @media (max-width: 768px) {
+        border-radius: 12px 12px 3px 12px;
+      }
+    }
+    .avatar {
+      margin-left: 10px;
+      @media (max-width: 768px) {
+        margin-left: 6px;
       }
     }
   }
-  
-  /* AI消息样式 */
+
+  // AI消息靠左
   &.role-assistant {
+    justify-content: flex-start;
     .message-bubble {
-      background-color: #f9fafb;
-      border-radius: 4px 16px 16px 16px;
-      border: none;
-      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
-      
-      .message-text {
-        padding-left:10px;
-        color: #333;
+      background-color: rgb(255, 255, 255);
+      color: #333;
+      border-radius: 16px 16px 16px 4px;
+      @media (max-width: 768px) {
+        border-radius: 12px 12px 12px 3px;
       }
-      
-      /* Token计数样式 */
-      .token-count {
-        position: absolute;
-        bottom: -18px;
-        right: 8px;
-        font-size: 11px;
-        color: #999;
-        padding: 2px 6px;
-        border-radius: 10px;
+      // 暗黑模式下的AI气泡
+      [data-theme="dark"] & {
+        background-color: #2d2d33;
+        color: #e0e0e0;
+        border: 1px solid #383838;
       }
     }
- 
-    /* AI消息内容左对齐 */
-    .message-content {
-      margin-right: 0;
-      margin-left: 12px;
-    }
-    
-    .message-header {
-      .message-role {
-        color: #666;
+    .avatar {
+      margin-right: 10px;
+      @media (max-width: 768px) {
+        margin-right: 6px;
       }
     }
   }
-  
-  /* 正在重新生成的消息样式 */
+
+  // 正在重新生成时的样式
   &.regenerating {
-    .message-bubble {
-      border: 1px dashed #4284f5;
-    }
-    
-    .message-loading {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-    }
-  }
-  
-  /* 最新消息样式 */
-  &.latest-message {
-    .message-bubble {
-      border-left-width: 0;
-    }
+    opacity: 0.7;
   }
 }
 
-/* 头像样式 */
 .avatar {
   width: 36px;
   height: 36px;
@@ -494,439 +456,315 @@ onMounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
-}
+  font-weight: bold;
+  flex-shrink: 0; // 防止头像被压缩
 
-.user-avatar {
-  //background-color: #202123;
-  color: white;
-  font-weight: 600;
-  
-  .avatar-letter {
-    font-size: 16px;
+  @media (max-width: 768px) {
+    width: 30px;
+    height: 30px;
   }
-}
 
-.assistant-avatar {
-  background-color: transparent;
-  color: white;
-  
-  .el-icon {
+  &.assistant-avatar {
+    background-color: #1890ff; // AI头像背景色
+    color: white;
     font-size: 20px;
+    svg {
+      width: 22px;
+      height: 22px;
+    }
+  }
+
+  &.user-avatar {
+    background-color: #f5f5f5; // 用户头像背景色
+    color: #555;
+    img {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+    }
   }
 }
 
-/* 消息头部 */
+.message-content {
+  display: flex;
+  flex-direction: column;
+  max-width: 80%; // 限制消息内容最大宽度，避免过长
+
+  // 移动端消息内容占满可用空间
+  @media (max-width: 768px) {
+    max-width: calc(100% - 40px); // 减去头像和一些间距
+  }
+}
+
 .message-header {
   display: flex;
-  justify-content: space-between;
-  margin-bottom: 6px;
-  
+  align-items: center;
+  margin-bottom: 0.3rem;
+  font-size: 0.75rem;
+  color: #888;
+
+  [data-theme="dark"] & {
+    color: #aaa;
+  }
+
   .message-role {
     font-weight: 500;
-    font-size: 13px;
-  }
-  
-  .message-time {
-    font-size: 12px;
-    color: #999;
+    margin-right: 8px;
   }
 }
 
-/* 消息气泡 */
+.thinking-bubble {
+  padding: 8px 12px;
+  border-radius: 10px;
+  background-color: rgba(0, 0, 0, 0.03);
+  margin-bottom: 8px;
+  font-size: 0.85rem;
+  color: #555;
+  border: 1px solid rgba(0,0,0,0.05);
+
+  [data-theme="dark"] & {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255,255,255,0.1);
+    color: #ccc;
+  }
+
+  .thinking-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: default;
+    .thinking-icon {
+      margin-right: 6px;
+      .el-icon {
+        animation: spin 1.5s linear infinite;
+      }
+    }
+    .thinking-title {
+      flex-grow: 1;
+      display: flex;
+      align-items: center;
+    }
+    .toggle-thinking-btn {
+      padding: 0;
+      font-size: 0.9rem;
+      color: #888;
+      [data-theme="dark"] & {
+        color: #aaa;
+      }
+    }
+  }
+  .thinking-dots span {
+    opacity: 0;
+    animation: blink 1s infinite;
+    &:nth-child(2) { animation-delay: 0.2s; }
+    &:nth-child(3) { animation-delay: 0.4s; }
+  }
+
+  .thinking-content {
+    margin-top: 6px;
+    padding-top: 6px;
+    border-top: 1px dashed rgba(0,0,0,0.08);
+    white-space: pre-wrap; // 保持思考内容的格式
+    word-break: break-all;
+    max-height: 150px; // 限制思考内容最大高度
+    overflow-y: auto;
+    font-size: 0.8rem;
+    line-height: 1.5;
+    [data-theme="dark"] & {
+      border-top-color: rgba(255,255,255,0.1);
+    }
+  }
+}
+
 .message-bubble {
-  padding: 12px 16px;
-  border-radius: 14px;
+  padding: 0.7rem 1rem;
+  word-wrap: break-word;
+  overflow-wrap: break-word; // 确保长单词或链接能换行
   position: relative;
-  
+
+  @media (max-width: 768px) {
+    padding: 0.6rem 0.8rem;
+  }
+
   .message-text {
-    font-size: 14px;
+    white-space: pre-wrap; // 保持消息中的换行和空格
+    font-size: 0.95rem;
     line-height: 1.6;
-    word-break: break-word;
-    overflow-wrap: break-word;
-    padding-left: 10px;
-    
-    :deep(.code-block) {
-      margin: 12px 0;
+
+    @media (max-width: 768px) {
+      font-size: 0.9rem;
+    }
+
+    // 代码块优化
+    :deep(pre.code-block) {
+      margin: 0.8rem 0;
       border-radius: 8px;
-      background-color: #f8f9fa;
-      overflow: hidden;
-      font-size: 13px;
-      line-height: 1.5;
-      border: 1px solid #eee;
-      position: relative;
-      
+      font-size: 0.85em;
+      overflow: hidden; // 让内部的 code-header 和 code 来控制滚动和边距
+      max-width: 100%;
+      background-color: #f8f9fa; // 统一的背景色
+      border: 1px solid #e3e3e3; // 添加边框
+
+      [data-theme="dark"] & {
+        background-color: #1e1e1e; // 暗黑模式下的背景色
+        border: 1px solid #333;
+      }
+
+      @media (max-width: 768px) {
+        font-size: 0.8em;
+        margin: 0.6rem 0;
+      }
+
       .code-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        background-color: #f1f3f5;
-        padding: 6px 12px;
-        font-family: sans-serif;
-        font-size: 12px;
-        color: #666;
-        border-bottom: 1px solid #eee;
-        
+        padding: 6px 12px; // 调整内边距使其更紧凑
+        background-color: inherit; // 继承父元素的背景色
+        font-size: 0.9em; // 相对于 pre 的字体大小
+        color: #555;
+        border-bottom: 1px solid #e3e3e3; // 与外边框颜色一致
+
+        [data-theme="dark"] & {
+          color: #bbb;
+          border-bottom-color: #333;
+        }
         .code-lang {
-          text-transform: uppercase;
-          font-weight: 500;
-        }
-        
-        .copy-btn {
-          background: transparent;
-          border: none;
-          cursor: pointer;
-          padding: 2px;
-          border-radius: 4px;
-          color: #666;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          transition: all 0.2s;
-          
-          &:hover {
-            background-color: rgba(0,0,0,0.05);
-            color: #4284f5;
-          }
-          
-          &:active {
-            transform: scale(0.95);
-          }
+            font-weight: 500;
+            text-transform: uppercase;
         }
       }
-      
+      .copy-btn {
+        background: none;
+        border: none;
+        color: inherit;
+        cursor: pointer;
+        opacity: 0.7;
+        padding: 2px; // 确保按钮有足够的点击区域
+        display: flex; // 使图标居中
+        align-items: center;
+        justify-content: center;
+        &:hover { opacity: 1; }
+      }
       code {
+        padding: 12px !important; // 调整代码区域的内边距
         display: block;
-        padding: 12px;
-        background-color: transparent;
-        font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+        overflow-x: auto;
+        margin: 0; // 移除可能存在的默认margin
+        background-color: inherit; // 继承父元素的背景色
+        color: #333; // 默认代码颜色
+        [data-theme="dark"] & {
+            color: #e0e0e0; // 暗黑模式代码颜色
+        }
       }
     }
-    
-    :deep(code) {
-      background-color: #f1f3f5;
-      border-radius: 4px;
-      padding: 2px 5px;
-      font-size: 0.9em;
-      font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+
+    :deep(p) {
+      margin-bottom: 0.5em; // 段落间距
+      &:last-child {
+        margin-bottom: 0;
+      }
     }
-    
-    :deep(table) {
-      width: 100%;
-      border-collapse: collapse;
-      margin: 12px 0;
-      border-radius: 8px;
-      overflow: hidden;
-      
-      th, td {
-        border: 1px solid #eee;
-        padding: 10px;
-        text-align: left;
-      }
-      
-      th {
-        background-color: #f9fafb;
-        font-weight: 500;
-      }
-      
-      tr:nth-child(even) {
-        background-color: #f9f9fb;
-      }
+    :deep(ul), :deep(ol) {
+      margin: 0.5em 0 0.5em 1.5em;
+      padding-left: 1em;
+    }
+    :deep(li) {
+      margin-bottom: 0.25em;
     }
   }
 }
 
-/* 加载动画 */
-.message-loading {
-  .loading-dot {
-    display: inline-block;
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background-color: #ccc;
-    margin: 0 4px;
-    animation: loading 1.4s infinite ease-in-out both;
-    
-    &:nth-child(1) {
-      animation-delay: -0.32s;
-    }
-    
-    &:nth-child(2) {
-      animation-delay: -0.16s;
-    }
+.message-actions {
+  display: flex;
+  align-items: center;
+  margin-top: 0.3rem;
+  opacity: 0;
+  transition: opacity 0.2s;
+  
+  .message-container:hover & {
+    opacity: 1;
   }
-}
 
-@keyframes loading {
-  0%, 80%, 100% {
-    transform: scale(0);
-  }
-  40% {
-    transform: scale(1);
-  }
-}
-
-/* 编辑模式 */
-.message-editing {
-  .el-textarea {
-    width: 100%;
-    margin-bottom: 8px;
-    
-    :deep(.el-textarea__inner) {
-      border-color: var(--primary-color);
+  .action-button {
+    color: #999;
+    padding: 2px 4px;
+    min-height: auto;
+    [data-theme="dark"] & {
+      color: #888;
+      &:hover { color: #bbb; }
+    }
+    &:hover {
+      color: #555;
+    }
+    .el-icon {
       font-size: 14px;
     }
   }
-  
-  .editing-actions {
+}
+
+.message-loading {
   display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 0;
+  .loading-dot {
+    width: 6px;
+    height: 6px;
+    margin: 0 2px;
+    background-color: currentColor; // 使用父元素的颜色
+    border-radius: 50%;
+    display: inline-block;
+    animation: loading-blink 1.4s infinite both;
+    &:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+    &:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+  }
+}
+
+@keyframes loading-blink {
+  0%, 80%, 100% {
+    opacity: 0.3;
+  }
+  40% {
+    opacity: 1;
+  }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.message-editing {
+  .editing-actions {
+    margin-top: 8px;
+    display: flex;
     justify-content: flex-end;
     gap: 8px;
   }
 }
 
-/* 消息操作按钮 - 修复位置问题 */
-.message-actions {
-  position: relative;
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 4px;
-  opacity: 0;
-  transition: opacity 0.2s;
-  z-index: 10;
-  
-  .action-button {
-    margin-left: 4px;
-    color: #999;
-    padding: 4px;
-    background: rgba(255, 255, 255, 0.7);
-    border-radius: 4px;
-    
-    &:hover {
-      color: #4284f5;
-      background: white;
+.token-count {
+    position: absolute;
+    bottom: 4px;
+    right: 8px;
+    font-size: 0.65rem;
+    color: rgba(255,255,255,0.6);
+    background-color: rgba(0,0,0,0.2);
+    padding: 1px 4px;
+    border-radius: 3px;
+    [data-theme="dark"] &.role-assistant & {
+        color: rgba(0,0,0,0.5);
+        background-color: rgba(255,255,255,0.15);
     }
-  }
-}
-
-/* 鼠标悬停时显示操作按钮 */
-.message-container:hover .message-actions {
-  opacity: 1;
-}
-
-/* 暗色模式调整 */
-[data-theme="dark"] {
-  .message-container {
-    &.role-user {
-      .message-bubble {
-        background-color: #2a2a2a;
-        
-        .message-text {
-          color: #ddd;
-        }
-      }
-      
-      .message-header .message-role {
-        color: #aaa;
-      }
-      
-      .message-actions .action-button {
-        background: rgba(45, 45, 45, 0.7);
-        
-        &:hover {
-          background: #333;
-          color: #61a0ff;
-        }
-      }
+    // 用户消息的气泡颜色不同，所以token提示也需要调整
+    .message-container.role-user & {
+        color: rgba(255,255,255,0.7);
     }
-    
-    &.role-assistant {
-      .message-bubble {
-        background-color: #1e1e1e;
-        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
-        
-        .message-text {
-          color: #ddd;
-        }
-        
-        .token-count {
-          color: #777;
-        }
-      }
-      
-      .message-header .message-role {
-        color: #aaa;
-      }
-      
-      .message-actions .action-button {
-        background: rgba(45, 45, 45, 0.7);
-        
-        &:hover {
-          background: #333;
-          color: #61a0ff;
-        }
-      }
-    }
-  }
-  
-  .message-header .message-time {
-    color: #888;
-  }
-  
-  .message-bubble {
-    .message-text {
-      :deep(.code-block) {
-        background-color: #1a1a1a;
-        border-color: #333;
-        
-        .code-header {
-          background-color: #2a2a2a;
-          color: #aaa;
-          border-color: #333;
-          
-          .copy-btn {
-            color: #aaa;
-            
-            &:hover {
-              background-color: rgba(255,255,255,0.05);
-              color: #61a0ff;
-            }
-          }
-        }
-        
-        code {
-          color: #ddd;
-        }
-      }
-      
-      :deep(code) {
-        background-color: #2a2a2a;
-        color: #ddd;
-      }
-      
-      :deep(pre) {
-        background-color: #1a1a1a;
-        border-color: #333;
-      }
-      
-      :deep(blockquote) {
-        border-left-color: #444;
-        color: #aaa;
-      }
-      
-      :deep(table) {
-        th, td {
-          border-color: #333;
-        }
-        
-        th {
-          background-color: #2a2a2a;
-        }
-        
-        tr:nth-child(even) {
-          background-color: #2a2a2a;
-        }
-      }
-    }
-  }
-}
-
-/* 思考内容样式 */
-.thinking-bubble {
-  width: fit-content;
-  font-style: oblique;
-  margin-bottom: 12px;
-  border-radius: 8px;
-  padding: 0px 1px;
-  background-color: #353740;
-  transition: all 0.3s ease;
-  
-  &.thinking-active {
-    background-color: #353740;
-    border-left: 3px solid #409eff;
-  }
-  
-  .thinking-header {
-    display: flex;
-    align-items: center;
-    font-size: 13px;
-    color: #f5f3f3;
-    margin-bottom: 4px;
-    
-    .thinking-icon {
-      margin-right: 4px;
-      color: #f6f6f9;
-    }
-    
-    .thinking-title {
-      font-weight: 500;
-      
-      .thinking-dots {
-        display: inline-block;
-        width: 16px;
-        animation: thinking-dots 1.4s infinite;
-      }
-    }
-    
-    .toggle-thinking-btn {
-      margin-left: auto;
-      color: #f5f2f2;
-      font-size: 12px;
-      padding: 2px 8px;
-    }
-  }
-  
-  .thinking-content {
-    background-color: #f5f5f5;
-    border-radius: 8px;
-    padding: 12px 16px;
-    font-size: 12px;
-    color: #666;
-    line-height: 1.6;
-    margin-top: 8px;
-    transition: all 0.2s;
-  }
-}
-
-@keyframes thinking-dots {
-  0%, 20% { content: '.'; }
-  40% { content: '..'; }
-  60%, 100% { content: '...'; }
-}
-
-/* 暗色模式下的思考内容 */
-[data-theme="dark"] {
-  .thinking-bubble {
-    background-color: rgba(41, 53, 72, 0.6);
-    border-color: #18222f;
-    
-    &.thinking-active {
-      background-color: rgba(41, 53, 72, 0.9);
-      border-left: 3px solid #61a0ff;
-    }
-    
-    .thinking-header {
-      background-color: #18222f;
-      border-color: #293548;
-      
-      .thinking-title {
-        color: #555657;
-      }
-      
-      .toggle-thinking-btn {
-        color: #5a5b5d;
-      }
-    }
-    
-    .thinking-content {
-      color: #aaa;
-      background-color: rgba(24, 34, 47, 0.8);
-      
-      code {
-        background-color: #2a2a2a;
-        color: #f08c98;
-      }
-    }
-  }
 }
 </style>

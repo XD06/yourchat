@@ -472,13 +472,14 @@ const rolePopup = ref(null)
 <style lang="scss" scoped>
 // 聊天输入容器的样式
 .chat-input-container {
-  padding: 1rem;
+  // padding: 1rem; // 由 .modern-chat-input 在 ChatView.vue 中控制外部间距
   background-color: transparent;
-  width: 100%;
+  width: 100%; // 继承父容器的宽度
+  box-sizing: border-box; // 确保 padding 和 border 不会增加总宽度
   
-  // 移动端适配
+  // 移动端适配 - 内部间距可以小一些
   @media (max-width: 768px) {
-    padding: 0.75rem 0.5rem;
+    // padding: 0.75rem 0.5rem; // 由 .modern-chat-input 控制
   }
 }
 
@@ -488,22 +489,23 @@ const rolePopup = ref(null)
   flex-direction: column;
   gap: 0.75rem;
   position: relative;
-  background-color: white;
+  background-color: var(--chat-input-bg, white); // 使用CSS变量以支持主题切换
   border-radius: 16px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  overflow: hidden;
+  overflow: visible; // 允许角色弹窗等溢出
+  padding: 8px; // 给内部元素一些空间
   
-  // 暗黑模式
   [data-theme="dark"] & {
-    background-color: #2d2d33;
+    --chat-input-bg: #2d2d33;
+    background-color: var(--chat-input-bg);
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
     border: 1px solid #3a3a3c;
   }
   
-  // 移动端适配
   @media (max-width: 768px) {
-    border-radius: 12px;
+    border-radius: 12px; // 移动端圆角可以小点
     gap: 0.5rem;
+    padding: 6px;
   }
 }
 
@@ -677,21 +679,18 @@ const rolePopup = ref(null)
   font-size: 0.8rem;
   color: #888;
   text-align: right;
-  padding-top: 8px;
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  gap: 4px;
+  padding: 0 8px 4px; // 调整padding使其在input-wrapper内部对齐
+  width: 100%;
+  box-sizing: border-box;
   
   // 暗黑模式
   [data-theme="dark"] & {
-    color: #aaa;
+    color: #888; // 暗黑模式下颜色调整
   }
   
   // 移动端适配
   @media (max-width: 768px) {
-    font-size: 0.7rem;
-    padding-top: 6px;
+    padding: 0 6px 3px;
   }
   
   .info-icon {
@@ -943,6 +942,16 @@ const rolePopup = ref(null)
     @media (max-width: 600px) {
       grid-template-columns: 1fr;
     }
+  }
+  
+  // 确保在移动端不会过宽
+  @media (max-width: 768px) {
+    max-width: calc(100vw - 20px); // 考虑屏幕边缘留白
+    left: 50%;
+    transform: translateX(-50%); 
+    // bottom: auto; // 如果输入框不在屏幕底部，可能需要调整bottom或top
+    // top: 100%; // 例如，显示在输入框下方
+    // margin-top: 8px; 
   }
 }
 

@@ -1,8 +1,8 @@
 ﻿<template>
     <!-- 添加动态类以控制侧边栏状态 -->
-    <div class="chat-view-container" :class="{ 'sidebar-collapsed': !isSidebarOpen }">
-        <!-- 左侧垂直图标栏 -->
-        <div class="icon-sidebar">
+    <div class="chat-view-container" :class="{ 'sidebar-collapsed': !isSidebarOpen && !isMobileView, 'mobile-sidebar-active': isMobileSidebarOpen }">
+        <!-- 左侧垂直图标栏 (PC端显示) -->
+        <div class="icon-sidebar" v-if="!isMobileView">
             <div class="icon-item main-icon">
                 <el-avatar :size="36" class="blue-avatar">
                     <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="50" height="50" viewBox="0 0 50 50">
@@ -59,7 +59,7 @@
         </div>
         
         <!-- 左侧边栏 - 重新设计，模仿截图风格 -->
-        <div class="sidebar">
+        <div class="sidebar" :class="{'sidebar-open-mobile': isMobileSidebarOpen}">
             <!-- 顶部搜索区域 -->
             <div class="sidebar-header">
                 <div class="app-title">
@@ -146,10 +146,16 @@
             </div>
         </div>
 
+        <!-- 移动端遮罩层 -->
+        <div class="mobile-sidebar-overlay" :class="{active: isMobileSidebarOpen}" @click="toggleMobileSidebar"></div>
+
         <!-- 右侧主聊天区域 -->
         <div class="main-chat-area">
             <!-- 聊天头部 - 重新设计，更简洁 -->
             <div class="chat-header">
+                <!-- 移动端汉堡按钮 -->
+                <el-button class="mobile-menu-button" @click="toggleMobileSidebar" :icon="Menu" text circle v-if="isMobileView"></el-button>
+                
                 <!-- 模型信息和设置 -->
                 <el-dropdown trigger="click" @command="handleModelChange">
                     <div class="model-info" style="cursor: pointer;">
@@ -455,12 +461,12 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, nextTick, onMounted } from 'vue'
+import { ref, computed, watch, nextTick, onMounted, onBeforeUnmount } from 'vue'
 import { 
     ChatDotRound, ChatLineSquare, Expand, Fold, Setting, Lock, Refresh, Share, 
     Plus, Delete, Download, MoreFilled, Edit, Calendar, Connection, Notebook, 
     TrendCharts, DataAnalysis, Message, Document, ChatRound, User, Star, Search,
-    ArrowDown, Check
+    ArrowDown, Check, Menu
 } from '@element-plus/icons-vue'
 import { useChatStore } from '../stores/chat'
 import { chatApi } from '../utils/api'
@@ -502,6 +508,22 @@ const activeHistoryId = ref('current')
 // 用于中断请求的控制器 - 确保它在全局作用域中定义
 const activeController = ref(null);
 
+const isMobileView = ref(window.innerWidth <= 768);
+const isMobileSidebarOpen = ref(false);
+
+const checkMobileView = () => {
+  isMobileView.value = window.innerWidth <= 768;
+  if (!isMobileView.value) {
+    isMobileSidebarOpen.value = false; // PC端自动关闭移动端侧边栏
+  }
+};
+
+const toggleMobileSidebar = () => {
+    if (isMobileView.value) {
+        isMobileSidebarOpen.value = !isMobileSidebarOpen.value;
+    }
+};
+
 // 在组件挂载时从localStorage加载聊天历史
 onMounted(() => {
   const savedHistory = localStorage.getItem('chatHistory')
@@ -513,7 +535,13 @@ onMounted(() => {
       chatHistory.value = []
     }
   }
+  window.addEventListener('resize', checkMobileView);
+  checkMobileView(); // Initial check
 })
+
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', checkMobileView);
+});
 
 // 保存聊天历史到localStorage
 const saveChatHistory = () => {
@@ -1135,9 +1163,15 @@ const handleDeleteChat = (chatId) => {
 
 // 切换侧边栏函数
 const toggleSidebar = () => {
-  isSidebarOpen.value = !isSidebarOpen.value
-  showSettings.value = false // 收起边栏时关闭设置面板
-}
+  // 这个函数现在主要用于PC端的侧边栏折叠
+  if (!isMobileView.value) {
+    isSidebarOpen.value = !isSidebarOpen.value;
+    showSettings.value = false; // 收起边栏时关闭设置面板
+  } else {
+    // 移动端调用新的toggleMobileSidebar
+    toggleMobileSidebar();
+  }
+};
 
 // 切换设置面板
 const toggleSettings = () => {
@@ -1276,8 +1310,8 @@ const parseModels = async () => {
             ElMessage.info('未解析到任何模型，请检查API接口是否正确');
         }
     } catch (error) {
-        console.error('解析模型失败:', error);
-        ElMessage.error(`解析模型失败: ${error.message}`);
+       // console.error('解析模型失败:', error);
+        ElMessage.error(`解析模型失败！检查网络连通性重试`);
     } finally {
         isParsingModels.value = false;
     }
@@ -1315,6 +1349,10 @@ const toggleDarkMode = () => {
     flex-direction: column;
     align-items: center;
     padding: 16px 0;
+    // 移动端隐藏图标栏，后续可通过按钮控制显示
+    @media (max-width: 768px) {
+        display: none; 
+    }
     
     .icon-item {
         width: 36px;
@@ -1402,6 +1440,21 @@ const toggleDarkMode = () => {
     flex-direction: column;
     border-right: 1px solid #e5e7eb;
     overflow: hidden;
+    transition: width 0.3s ease; // 添加过渡效果
+
+    // 移动端隐藏侧边栏，后续可通过按钮控制显示
+    @media (max-width: 768px) {
+        position: fixed; // 改为fixed，使其可以覆盖内容
+        left: -280px; // 默认隐藏在左侧
+        top: 0;
+        bottom: 0;
+        height: 100%;
+        z-index: 200; // 比聊天输入框高，比可能的遮罩层低
+        box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+        &.sidebar-open-mobile {
+            left: 0; // 打开时滑入
+        }
+    }
     
     /* 侧边栏头部 */
     .sidebar-header {
@@ -1566,9 +1619,14 @@ const toggleDarkMode = () => {
     flex: 1;
     display: flex;
     flex-direction: column;
-    overflow: hidden;
+    overflow: hidden; // Y轴滚动由messages-container处理，X轴防止意外溢出
     background-color: #fff;
     position: relative;
+    
+    // 移动端适配
+    @media (max-width: 768px) {
+        width: 100%;
+    }
 }
 
 /* 聊天头部 */
@@ -1579,6 +1637,19 @@ const toggleDarkMode = () => {
     padding: 12px 24px;
     border-bottom: 1px solid #eaeaea;
     background-color: white;
+
+    // 移动端样式
+    @media (max-width: 768px) {
+        padding: 10px 12px;
+    }
+
+    .mobile-menu-button {
+        display: none; // 默认隐藏
+        @media (max-width: 768px) {
+            display: inline-flex; // 移动端显示
+            margin-right: 10px;
+        }
+    }
     
     .model-info {
         display: flex;
@@ -1637,12 +1708,15 @@ const toggleDarkMode = () => {
 
 /* 消息区域 */
 .messages-container {
-    flex: 1;
+    flex: 1; // 占据剩余空间
     overflow-y: auto;
-    padding: 24px 15% 160px;
+    padding: 16px 8px 20px; // 底部留出一些空间，但主要由输入框高度决定
     position: relative;
-    padding-left: 10%;
     
+    @media (max-width: 768px) {
+        padding: 12px 8px 10px;
+    }
+
     &::-webkit-scrollbar {
         width: 6px;
     }
@@ -1666,6 +1740,21 @@ const toggleDarkMode = () => {
     .welcome-container {
         text-align: center;
         max-width: 800px;
+        
+        // 移动端欢迎页适配
+        @media (max-width: 768px) {
+            padding: 20px 10px;
+            .welcome-title {
+                font-size: 28px;
+            }
+            .welcome-subtitle {
+                font-size: 14px;
+            }
+            .task-cards,
+            .quick-actions {
+                gap: 8px;
+            }
+        }
         
         .welcome-avatar {
             background-color: #4284f5;
@@ -1701,6 +1790,10 @@ const toggleDarkMode = () => {
                 padding: 16px;
                 text-align: left;
                 box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+                 @media (max-width: 768px) {
+                    min-width: calc(50% - 4px); // 移动端一行两个
+                    padding: 12px;
+                }
             }
             
             .task-card {
@@ -1808,6 +1901,10 @@ const toggleDarkMode = () => {
                     font-size: 16px;
                     color: #666;
                 }
+                 @media (max-width: 768px) {
+                    font-size: 12px;
+                    padding: 6px 12px;
+                }
             }
         }
     }
@@ -1815,16 +1912,22 @@ const toggleDarkMode = () => {
 
 /* 聊天输入框 */
 .modern-chat-input {
-    position: absolute;
-    bottom: 5px;
-    left: 48%;
-    transform: translateX(-50%);
-    width: 60%;
-    max-width: 800px;
-    border-radius: 16px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-    background-color: white;
-    z-index: 10;
+    // 这个类现在主要由 ChatInput.vue 内部控制样式
+    // 在 ChatView.vue 中，它会自然地填充 .main-chat-area 的宽度
+    // 但我们还是给它一个基本的下边距，尤其是在没有其他内容撑开时
+    margin-bottom: 10px; 
+    padding-left: 10px; // 左右留一些边距，使其不紧贴边缘
+    padding-right: 10px;
+
+    [data-theme="dark"] & {
+      // 确保在暗黑模式下，如果 ChatInput.vue 没有设置背景，这里不会有冲突
+    }
+    
+    @media (max-width: 768px) {
+        margin-bottom: 0; // 移动端底部通常没有额外边距
+        padding-left: 5px;
+        padding-right: 5px;
+    }
 }
 
 /* 免责声明 */
@@ -2166,6 +2269,23 @@ const toggleDarkMode = () => {
 .parse-models-btn {
     margin-top: 8px;
     width: 100%;
+}
+
+// 添加一个全局的遮罩层，当移动端侧边栏打开时显示
+.mobile-sidebar-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0,0,0,0.4);
+    z-index: 199; // 低于侧边栏，高于聊天内容
+    @media (max-width: 768px) {
+        &.active {
+            display: block;
+        }
+    }
 }
 </style>
 <!-- <script>
