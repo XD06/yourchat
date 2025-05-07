@@ -26,80 +26,50 @@ import AppLogo from './components/AppLogo.vue'
 
 const settingsStore = useSettingsStore()
 const isAppLoaded = ref(false)
-const loadingMessage = ref('正在初始化...')
+const loadingMessage = ref('初始化应用...')
 
-// 优化后的应用初始化
+// 简化的应用初始化流程，确保DOM渲染稳定性
 const initApp = async () => {
   try {
     // 立即应用主题，不等待
     const isDarkMode = settingsStore.isDarkMode
     document.documentElement.setAttribute('data-theme', isDarkMode ? 'dark' : 'light')
     
-    // 减少不必要的等待时间
-    loadingMessage.value = '检查配置...'
-    
     // 确保DOM已更新
     await nextTick()
     
-    // 检查API配置但不阻塞应用加载
+    // 无需延迟，允许页面立即显示
+    // 仅做基本的API检查
     if (!settingsStore.actualApiEndpoint || !settingsStore.actualApiKey) {
-      loadingMessage.value = '未检测到API配置'
       console.warn('API配置缺失，可能需要在设置中配置')
-    } else {
-      loadingMessage.value = '应用已就绪'
     }
     
-    // 不再使用人为延迟，立即准备显示应用
-    await nextTick()
-    
-    // 为了保证平滑过渡，增加一个短暂的延迟
+    // 设置延迟只是为了确保平滑过渡
     setTimeout(() => {
       isAppLoaded.value = true
-    }, 300)
+    }, 100)
   } catch (error) {
     console.error('应用初始化错误:', error)
-    loadingMessage.value = '初始化遇到问题，将继续加载...'
-    
-    // 即使发生错误，也尝试加载应用
-    setTimeout(() => {
-      isAppLoaded.value = true
-    }, 1000)
+    // 即使出错也显示应用
+    isAppLoaded.value = true
   }
 }
 
-// 网络超时处理优化
+// 优化后的加载流程
 onBeforeMount(() => {
-  // 更快的超时检测
+  // 设置较短的超时以确保应用始终能够加载
   setTimeout(() => {
     if (!isAppLoaded.value) {
-      loadingMessage.value = '加载时间较长，即将完成...'
-      
-      // 再等待较短时间后继续
-      setTimeout(() => {
-        if (!isAppLoaded.value) {
-          console.warn('应用加载超时，强制显示')
-          isAppLoaded.value = true
-        }
-      }, 2000) // 减少到2秒
+      console.warn('应用加载超时，强制显示')
+      isAppLoaded.value = true
     }
-  }, 2000) // 减少到2秒
-  
-  // 预初始化应用
-  initApp()
+  }, 1000)
 })
 
-// 可选的补充初始化
+// 在mounted时初始化应用
 onMounted(() => {
-  // 如果onBeforeMount的initApp已经完成了加载，这里可以不再执行
-  if (!isAppLoaded.value) {
-    console.log('应用在mounted钩子中继续初始化')
-    // 用于确保应用在任何情况下都能加载完成
-    setTimeout(() => {
-      if (!isAppLoaded.value) {
-        isAppLoaded.value = true
-      }
-    }, 1500)
-  }
+  // 开始初始化
+  initApp()
 })
 </script>
 

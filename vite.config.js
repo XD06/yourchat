@@ -49,14 +49,14 @@ export default defineConfig({
   
   // 配置依赖优化选项
   optimizeDeps: {
-    include: ['vue', 'vue-router', 'pinia', 'element-plus'],
-    exclude: ['vue-demi']
+    include: ['vue', 'vue-router', 'pinia', 'element-plus', 'vue-demi'],
   },
   
   // 路径别名
   resolve: {
     alias: {
       '@': resolve(__dirname, 'src'),
+      'vue-demi': resolve(__dirname, 'node_modules/vue-demi/lib/index.mjs'),
     }
   },
   
