@@ -1233,6 +1233,18 @@ const saveSettings = () => {
     return;
   }
   
+  // 保存所有设置到 store
+  settingsStore.temperature = settingsForm.value.temperature;
+  settingsStore.maxTokens = settingsForm.value.maxTokens;
+  settingsStore.model = settingsForm.value.model;
+  settingsStore.topP = settingsForm.value.topP;
+  settingsStore.topK = settingsForm.value.topK;
+  settingsStore.streamResponse = settingsForm.value.streamResponse;
+  settingsStore.systemPrompt = settingsForm.value.systemPrompt;
+  
+  // 强制刷新模型选择器显示
+  modelOptionsLastUpdated.value = Date.now();
+  
   if (hasCustomValues) {
     // 用户提供了自定义值，启用自定义API
     settingsStore.setCustomAPI(customApiKey, customApiEndpoint);
@@ -1243,7 +1255,7 @@ const saveSettings = () => {
     ElMessage.success('已恢复使用环境变量API设置');
   } else {
     // 没有变化，只是保存其他设置
-    ElMessage.success('Settings saved successfully');
+    ElMessage.success('设置已保存');
   }
   
   // 保存设置后关闭对话框
@@ -1300,6 +1312,8 @@ const saveCurrentChat = () => {
 
 // 获取模型显示名称
 const getModelDisplayName = () => {
+    // 强制模型选项刷新的依赖项
+    const _ = modelOptionsLastUpdated.value;
     const model = settingsStore.model;
     const option = settingsStore.modelOptions.find(opt => opt.value === model);
     return option ? option.label : 'AI Chat';
@@ -1318,8 +1332,14 @@ const getRandomColor = (id) => {
 // 处理模型变更
 const handleModelChange = (modelValue) => {
   // 设置新选择的模型
-  settingsStore.model = modelValue
-  ElMessage.success(`模型已切换为: ${getModelDisplayName()}`)
+  settingsStore.model = modelValue;
+  // 同步更新设置表单中的模型
+  if (settingsForm.value) {
+    settingsForm.value.model = modelValue;
+  }
+  // 刷新模型显示
+  modelOptionsLastUpdated.value = Date.now();
+  ElMessage.success(`模型已切换为: ${getModelDisplayName()}`);
 }
 
 // 添加模型解析功能
