@@ -20,10 +20,10 @@ export const chatApi = {
             temperature: settingsStore.temperature,
             max_tokens: settingsStore.maxTokens,
             stream,
-            top_p: 0.7,
-            top_k: 50,
-            frequency_penalty: 0.5,
-            n: 1,
+           // top_p: 0.7,
+           // top_k: 50,
+            //frequency_penalty: 0.5,
+            //n: 1,
         }
 
         try {

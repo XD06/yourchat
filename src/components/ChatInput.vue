@@ -17,6 +17,10 @@
         type="text"
         :placeholder="placeholder"
         @keydown.enter.exact.prevent="handleSend"
+        autocomplete="off"
+        autocorrect="off"
+        spellcheck="false"
+        autocapitalize="off"
       />
       <button class="input-icon-btn send-btn" @click="handleSend">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -27,116 +31,117 @@
     </div>
     
     <!-- 桌面端输入框和工具栏 -->
-    <div v-else>
-      <div class="toolbar" v-if="!isMobileView">
-        <div class="toolbar-actions">
-          <el-button 
-            class="tool-btn role-btn"
-            size="small" 
-            type="text" 
-            style="color: black;bottom: 10px;"
-            title="快速选择ai角色"
-            @click.stop="toggleRolePrompt"
+    <div v-else class="desktop-input-container">
+      <!-- 明确分隔的工具栏 -->
+      <div class="toolbar">
+        <div class="toolbar-left">
+          <div class="toolbar-btn role-btn" @click.stop="toggleRolePrompt" title="快速选择AI角色">
+            <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAACXBIWXMAAAsTAAALEwEAmpwYAAAE1klEQVR4nO2be4hVRRjAf1u6JqvpRpa4PU0r1JCwcv/wAT2IMNGCTNBKiiQyKSrKCsR/tgeUZLHGYhBBD4oUxEdK4CMVNXpuTzHD3PCPSsvaWNPyxgffhcMwc87cc+ece8zzg4Hde2a++ea7c+b7Zua7UFJSUpINg4GrgDuAp4GVwDbgc2AfcAj4W8sh/ewzrSN1O4C5KkNkFZ5BwPXAs8DHwL9AJWARA3UBtwGtFISBqtAa4FjgAceVf4DtwPxGzY5xwKvAXzkO2lV6gRXA2DwGfg2wATjhoViffkui3BPALKAdGAWcp9O4n5ZW/WyU1pmlbVaojD6P/kSn9cDVWQy8DXg3YeAyLbcADwMTgeaA/TerYR4BtmpfcYZ4BxgRqvN5wJGYDmVVvx8YRn6cAywAvojR63fgrhCdVRzlfWASjWcysDFGz7qpGGUPcC3F4zrVLXMDDKC4DMjDAC7O1EVqp7qmP4Bu4BngAmrnQg2qulXWceCw/v98jMyGGOBm4GCCS3wMaPLoT+os8nB9YpSZKfWtiUqCwAcjYe9+YJ3OAltk2JVghCb1/Wa7T4BbgbOBs4D7gJ91HzG5kQa4U/3uB8BU49n5wHuW9vJKuHjOUv9loL+lrgRPa4FvjZgjNwNcBvR4+NoXLTIk0jO53VLvlQTZpwPLgLs99E1NxSHwHmC4R/vTgE2GDDGcSY9RZ2cN0eQMD31TUwkgcITu+asyDiQY4LeUniOUvpkIvEkHeUD/rvV5oQ1wMbAU+EpjgF79+wV9lpY0cnM3wEJ1Ry5/Lc8eSNFvWrm5G2BBgqJHdbdYK2nlNuQVuEinZXdkqlZDVnmWljRyC7sI5kVpAMoZQPkKUK4BlIsgpRegdIMEoNdwK3IJGkXuBltozL2kHMVFGWTo+meIjvYZQkcbz0fqtfYV5MflwG7t29QlqqvoXjc7DKHTLHWW6EyRWyQfllgCFvnMh3nal63+JEPmLgKw3BD6kmM6VmfKawmvhG3wPkZoUdnVb1b6NHnckPcmAZhpCP1Bj7lMpkfqfA2MqXHwcUYYozKrdaQvGxsMWZI/UDdDLEfcckRtY02kjvlK+AzeZoTqlK8+kz5sDNctctx6lZo3DMEfOc73R3re5actfZaFz2XgbwjIBIsy93oqErK41oihelESrZvmECYW8/067EhCiC6IPgPyNZhr4UMXZjM3wIxX6ma0ZXpvd9zaTK/x2/Qxgmvha7dkjDxFRiy2KNZJ4ximx+hRffZmeYXfT/OATCOIYfLmDGCzoYfcU96YdcfnAj9ZjPAo+SGv3WqLDpJPkAsTHIlTHZ45APV+8ystfW/SGZobUxyJkq+rkkmY7Xxo1TQ5s2235g3kzg265TQV2q2JjyENMB743tJur+ctdabZo79YFJM4YXYAAzRpTG+bbV9qEmfDuRT4zuG/33Zkd/sYoE3zEW1yt2oEWBiGGJuhaOmxuKc4A8hi9lBMhmpn4FTcYDSp4q4N0SrgkhgDSPtb9Arc1v6I/gCj8IwFPnUM4qgjGWqaZoO5QuG1mnh10tCsGWFxmd0+RRbYOZzEjAc+TDHw45pXmGcWeqbIbu5Hj4Gf0N8miGf539GiB5e2uEGO3d4CruQUYDDwJPCrnuR0FCWgyZuBRfXnJSWcGvwH9Aa6pQMH/okAAAAASUVORK5CYII=" alt="anonymous-mask">
+        </div>
+
+          <!-- 这里可以添加更多的工具按钮 -->
+           <div class = "toolbar-btn"><!--预留生图模式-->
+            <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAACXBIWXMAAAsTAAALEwEAmpwYAAACwElEQVR4nO2ZTYiNURjHf75G8r2QJjQmMwuzmRQSCiVKkg2WmpLP2KEUhowFG5nE2JndbDS7WUmaZLJSKIQwpSiaMYxxm5mjU8+p0+m99573686Zen/1dO993/Px/M/7Puc851woKCgoCJ1GoAsYBMYBlbONS1/3pO9U7AZGauC0KmO/gF1pRn4qnVeWiIYkAroCcF6J3U0iYDAAx5XY5yQCahGwytO0L7FRgVls8nDiD3ARWAPUyeclYHQ6CNDObyrT12YPEVMuQI98JdpDF6BfF8N14DfQYV1rCl2AfucNI9YiZZg7nZ5Ah4i4Zl1rDl2Anm0qcSV0AaMy20SxBfhbSwE6AM8DrcByYAfw0FNEuwSsjokmGflqzmcq4Aewvkydyzk8OZWlgG8y6pU4G6qAr0CLdX8mcAf4Duxx6p4BJkMS8EWmOcMsoNu6/w/Y79Q/BkxEPMHjwFpgBbAX6M9bwEdnbzoH6InooAQccto4bKXlH4DVEf3MBh7kJeAtsMq6VldlttHOtjntHAReASsr9DUD6MxawGug3vo9D+jzGCn92hyNGGW7nV7ZZa1zRNzOUsAy6/t84FGMgNMBfDqizQXAY6vcT2CjU+ZGVgIMi2IEmm0DTgK3GHgaUW4Y2OqRViRiCfAsgfP9ItxuZ6DKZmen0/e5tAKWAs8TOP8EWOi8ii886o0B+xwfTlrrSWxeJnC+T4LUUC+TgW/9sQgRJ0REbOI63yubEoOeft8laKcEHHB8actbQI8scAZ9FPg+gfPKWk/0IpgK34OtbkktDM2SeqiUNgEcSSPA52jxviR1hhZJ+lRGNgmcSiqg2uFup6yehlbJTLNyXlki3JjwolFODaIavemU3SAbHZWDDTspTeo/OK46ZfQ+dygn54eAbaSkQc7nPwEXnHvbc/gTpAS8AW45mXBBQUEB4fEfLQH7e+z+yuEAAAAASUVORK5CYII=" alt="image">
+      </div>
+           <div class= "toolbar-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="23" height="23" viewBox="0 0 64 64"
+style="fill:#FAB005;">
+<path d="M 5 8 L 5 51 C 5 53.209 6.791 55 9 55 L 53.398438 55 C 55.445437 55 57.162953 53.455922 57.376953 51.419922 L 61 17 L 53 17 L 53 13 L 25 13 L 20 8 L 5 8 z M 56 21 L 53 51 L 11 51 L 14.042969 28.943359 L 30.224609 28.363281 L 33.355469 21.552734 L 56 21 z"></path>
+</svg></div>
+        </div>
+        <div class="toolbar-right">
+          <!-- 右侧工具按钮 -->
+        </div>
+      </div>
+
+    <!-- 输入框和按钮的组合 -->
+    <div class="input-wrapper">
+        <!-- 预览区域 - 只在有选择的文件时显示 -->
+        <div class="preview-list" v-if="selectedFiles.length">
+          <div v-for="(file, index) in selectedFiles" :key="index" class="preview-item">
+            <!-- 图片预览 -->
+            <img v-if="isImage(file)" :src="getPreviewUrl(file)" class="preview-image"/>
+            <!-- 文件名预览 -->
+            <div v-else class="file-preview">
+              <el-icon><Document /></el-icon>
+              <span>{{ file.name }}</span>
+            </div>
+            <!-- 删除按钮 -->
+            <el-button 
+              class="delete-btn" 
+              type="danger" 
+              :icon="Delete" 
+              circle
+              @click="removeFile(index)"
+            />
+        </div>
+      </div>
+
+      <div class="input-control-area">
+        <el-input
+          v-model="messageText"
+          type="textarea"
+          :rows="2"
+          :autosize="{ minRows: 2, maxRows: 5 }"
+          :placeholder="placeholder"
+          resize="none"
+          @keydown.enter.exact.prevent="handleSend"
+          @keydown.enter.shift.exact="newline"
+          @input="adjustHeight"
+          ref="inputRef"
+        />
+        
+        <div class="button-group">
+            <!-- 修改上传按钮直接触发文件选择 -->
+          <el-tooltip content="上传文件" placement="top">
+              <div class="upload-button-wrapper">
+                <el-upload
+                  ref="uploadRef"
+                  :action="null"
+                  :auto-upload="false"
+                  :on-change="handleFileChange"
+                  :show-file-list="false"
+                  multiple
+                >
+            <el-button
+              circle
+              :icon="Upload"
+            />
+                </el-upload>
+              </div>
+          </el-tooltip>
+          
+          <el-tooltip content="清空对话" placement="top">
+            <el-button
+              circle
+              type="danger"
+              :icon="Delete"
+              @click="handleClear"
+            />
+          </el-tooltip>
+          
+          <el-button
+            class="send-button"
+            :class="{ 'pause-button': isGenerating }"
+            type="primary"
+            @click="isGenerating ? handlePause() : handleSend()"
           >
-            <el-icon><Avatar /></el-icon>
-            <!-- <span>角色</span> -->
+            <template #icon>
+              <el-icon>
+                <component :is="isGenerating ? 'VideoPause' : 'Position'"></component>
+              </el-icon>
+            </template>
+            {{ isGenerating ? '暂停' : '发送' }}
           </el-button>
         </div>
       </div>
-      <!-- 输入框和按钮的组合 -->
-      <div class="input-wrapper">
-        <!-- 添加文件上传区域 -->
-        <div class="upload-area" v-if="showUpload">
-          <el-upload
-            class="upload-component"
-            :action="null"
-            :auto-upload="false"
-            :on-change="handleFileChange"
-            :show-file-list="false"
-            multiple
-          >
-            <template #trigger>
-              <el-button type="primary" :icon="Plus">添加文件</el-button>
-            </template>
-          </el-upload>
-          
-          <!-- 预览区域 -->
-          <div class="preview-list" v-if="selectedFiles.length">
-            <div v-for="(file, index) in selectedFiles" :key="index" class="preview-item">
-              <!-- 图片预览 -->
-              <img v-if="isImage(file)" :src="getPreviewUrl(file)" class="preview-image"/>
-              <!-- 文件名预览 -->
-              <div v-else class="file-preview">
-                <el-icon><Document /></el-icon>
-                <span>{{ file.name }}</span>
-              </div>
-              <!-- 删除按钮 -->
-              <el-button 
-                class="delete-btn" 
-                type="danger" 
-                :icon="Delete" 
-                circle
-                @click="removeFile(index)"
-              />
-            </div>
-          </div>
-        </div>
-        
-        <div class="input-control-area">
-          <el-input
-            v-model="messageText"
-            type="textarea"
-            :rows="2"
-            :autosize="{ minRows: 2, maxRows: 5 }"
-            :placeholder="placeholder"
-            resize="none"
-            @keydown.enter.exact.prevent="handleSend"
-            @keydown.enter.shift.exact="newline"
-            @input="adjustHeight"
-            ref="inputRef"
-          />
-          
-          <div class="button-group">
-            <!-- 添加切换上传区域的按钮 -->
-            <el-tooltip content="上传文件" placement="top">
-              <el-button
-                circle
-                :icon="Upload"
-                @click="toggleUpload"
-              />
-            </el-tooltip>
-            
-            <el-tooltip content="清空对话" placement="top">
-              <el-button
-                circle
-                type="danger"
-                :icon="Delete"
-                @click="handleClear"
-              />
-            </el-tooltip>
-            
-            <el-button
-              class="send-button"
-              :class="{ 'pause-button': isGenerating }"
-              type="primary"
-              @click="isGenerating ? handlePause() : handleSend()"
-            >
-              <template #icon>
-                <el-icon>
-                  <component :is="isGenerating ? 'VideoPause' : 'Position'"></component>
-                </el-icon>
-              </template>
-              {{ isGenerating ? '暂停' : '发送' }}
-            </el-button>
-          </div>
-        </div>
-      </div>
-      <!-- Token计数器 -->
+    </div>
+    <!-- Token计数器 -->
       <div class="token-counter" v-if="!isMobileView">
-        已使用 Token: {{ tokenCount.total }} (提示: {{ tokenCount.prompt }}, 回复: {{ tokenCount.completion }})
-        <el-tooltip content="Token 计算基于本地算法，可能与实际使用略有差异" placement="top">
-          <el-icon class="info-icon"><InfoFilled /></el-icon>
-        </el-tooltip>
+      已使用 Token: {{ tokenCount.total }} (提示: {{ tokenCount.prompt }}, 回复: {{ tokenCount.completion }})
+      <el-tooltip content="Token 计算基于本地算法，可能与实际使用略有差异" placement="top">
+        <el-icon class="info-icon"><InfoFilled /></el-icon>
+      </el-tooltip>
       </div>
     </div>
     
@@ -374,15 +379,10 @@ const selectRole = (role) => {
   }
 }
 
-// 切换上传区域显示
-const toggleUpload = () => {
-  showUpload.value = !showUpload.value
-  showRolePrompt.value = false // 关闭角色选择
-}
-
-// 处理文件选择
+// 修改 handleFileChange 函数以在选择文件后显示预览
 const handleFileChange = (file) => {
   selectedFiles.value.push(file.raw)
+  // 如果需要，可以在这里添加文件预览的逻辑
 }
 
 // 移除文件
@@ -524,6 +524,13 @@ const rolePopup = ref(null)
   margin: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
+  -webkit-tap-highlight-color: transparent;
+  
+  /* Fix for iOS and Android devices */
+  &:active, &:focus-within {
+    background-color: var(--chat-input-bg, #f5f5f7) !important;
+    outline: none !important;
+  }
   
   .mobile-input {
     flex: 1;
@@ -537,6 +544,15 @@ const rolePopup = ref(null)
     &::placeholder {
       color: var(--placeholder-color, #888);
       font-size: 15px;
+    }
+    
+    /* Fix for white box on focus in mobile */
+    &:focus {
+      outline: none;
+      background-color: transparent !important;
+      box-shadow: none !important;
+      -webkit-appearance: none;
+      -webkit-tap-highlight-color: transparent;
     }
   }
   
@@ -582,6 +598,7 @@ const rolePopup = ref(null)
   position: relative;
   margin-top: auto;
   transition: all 0.3s ease;
+  -webkit-tap-highlight-color: transparent;
 
   // 移动端优化
   @media (max-width: 768px) {
@@ -590,6 +607,76 @@ const rolePopup = ref(null)
     bottom: 0;
     background-color: var(--bg-color, #ffffff);
     z-index: 100;
+    
+    /* Prevent white box on tap in mobile browsers */
+    &:active, &:focus-within {
+      -webkit-tap-highlight-color: transparent;
+      outline: none;
+    }
+    
+    /* Fix for iOS auto-zoom on input focus */
+    input, textarea {
+      font-size: 16px; /* Prevent iOS zoom on focus */
+      -webkit-appearance: none;
+    }
+  }
+}
+
+// 桌面端容器
+.desktop-input-container {
+  background-color: transparent;
+  display: flex;
+  flex-direction: column;
+}
+
+// 全新的工具栏样式
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 35px;
+  padding: 0 16px;
+  margin-bottom: 10px;
+  background-color: transparent;
+  border-radius: 10px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid #eaeaea;
+  
+  .toolbar-left, .toolbar-right {
+  display: flex;
+  align-items: center;
+    gap: 30px;
+  }
+  
+  .toolbar-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    cursor: pointer;
+    background-color: transparent;
+    transition: all 0.2s ease;
+    
+    &:hover {
+      background-color: #ebebeb;
+    }
+    
+    img {
+      width: 22px;
+      height: 22px;
+      object-fit: contain;
+      display: block;
+    }
+  }
+  
+  .role-btn {
+  background-color: transparent;
+    
+    &:hover {
+      background-color: #e0e8f0;
+    }
   }
 }
 
@@ -598,11 +685,12 @@ const rolePopup = ref(null)
   position: relative;
   border-radius: 12px;
   background-color: var(--chat-input-bg, #ffffff);
-  display: flex;
-  flex-direction: column;
+        display: flex;
+        flex-direction: column;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
   overflow: hidden;
   transition: all 0.3s ease;
+  margin-bottom: 5px;
   
   @media (max-width: 768px) {
     box-shadow: none;
@@ -616,9 +704,10 @@ const rolePopup = ref(null)
   display: flex;
   align-items: flex-end;
   width: 100%;
-  background-color: var(--chat-input-bg, #ffffff);
-  border: 1px solid var(--border-color, #dcdfe6);
-  border-radius: 12px;
+  background-color: var(--chat-input-bg, #f0f2f5);
+  border: 1px solid var(--border-color, #e0e0e6);
+  border-radius: 8px;
+  padding: 4px 8px;
   box-sizing: border-box;
   overflow: hidden;
   transition: all 0.3s ease;
@@ -626,16 +715,20 @@ const rolePopup = ref(null)
   @media (max-width: 768px) {
     border-radius: 16px;
     margin-bottom: 5px;
+    padding: 0;
+    background-color: var(--chat-input-bg, #ffffff);
+    border: 1px solid var(--border-color, #dcdfe6);
   }
 
   :deep(.el-textarea__inner) {
     resize: none;
-    padding: 12px 50px 12px 12px;
-    border: none;
-    background-color: transparent;
+    padding: 10px 12px;
+    border: none !important;
+    background-color: transparent !important;
+    box-shadow: none !important;
     font-size: 0.95rem;
     line-height: 1.5;
-    min-height: 60px;
+    min-height: calc(0.95rem * 1.5 + 20px);
     max-height: 150px;
     color: var(--text-color, #333);
     transition: all 0.3s ease;
@@ -655,28 +748,41 @@ const rolePopup = ref(null)
 // 按钮组样式
 .button-group {
   display: flex;
-  align-items: center;
-  gap: 6px;
-  padding-right: 10px;
-  position: absolute;
-  right: 0;
-  bottom: 10px;
+        align-items: center;
+  gap: 8px;
+  margin-left: 8px;
+  padding-bottom: 5px;
+
+  .el-button {
+    &.is-circle {
+      background-color: var(--button-icon-bg, #e9e9eb);
+      border-color: var(--button-icon-bg, #e9e9eb);
+      color: var(--button-icon-color, #606266);
   transition: all 0.3s ease;
+      
+      &:hover {
+        background-color: var(--button-icon-hover-bg, #dcdfe6);
+        border-color: var(--button-icon-hover-bg, #dcdfe6);
+      }
+    }
+  }
 
   @media (max-width: 768px) {
+    position: absolute;
+    right: 0;
     bottom: 5px;
     padding-right: 8px;
     gap: 4px;
+    margin-left: 0;
+    padding-bottom: 0;
     
     .el-button {
       padding: 6px !important;
       font-size: 12px !important;
       height: auto !important;
-
-      .el-icon {
+        .el-icon {
         font-size: 16px !important;
       }
-      
       span:not(.el-icon) {
         display: none;
       }
@@ -684,11 +790,29 @@ const rolePopup = ref(null)
   }
 }
 
-// 发送按钮样式
+// 发送按钮特定样式
 .send-button {
-  padding: 8px 16px;
+  padding: 8px 12px;
+  background-color: var(--primary-color, #007bff);
+  border-color: var(--primary-color, #007bff);
+  color: white;
+  border-radius: 6px;
   transition: all 0.3s ease;
   
+  &:hover {
+    background-color: var(--primary-hover-color, #0056b3);
+    border-color: var(--primary-hover-color, #0056b3);
+  }
+  
+  &.pause-button {
+    background-color: #f56c6c;
+    border-color: #f56c6c;
+    &:hover {
+      background-color: #f78989;
+      border-color: #f78989;
+    }
+  }
+
   @media (max-width: 768px) {
     padding: 8px !important;
     min-width: 32px !important;
@@ -696,50 +820,11 @@ const rolePopup = ref(null)
     span:not(.el-icon) {
       display: none;
     }
-  }
-  
-  &.pause-button {
-    background-color: #f56c6c;
-    border-color: #f56c6c;
-    
+    background-color: var(--el-color-primary);
+    border-color: var(--el-color-primary);
     &:hover {
-      background-color: #f78989;
-      border-color: #f78989;
-    }
-  }
-}
-
-// 文件上传区域样式
-.upload-area {
-  margin-bottom: 10px;
-  border-radius: 12px;
-  background-color: var(--chat-input-bg, #ffffff);
-  padding: 10px;
-  border: 1px solid var(--border-color, #dcdfe6);
-  transition: all 0.3s ease;
-
-  @media (max-width: 768px) {
-    margin-bottom: 8px;
-    padding: 8px;
-  }
-}
-
-// 工具栏样式
-.toolbar {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 8px;
-  
-  @media (max-width: 768px) {
-    margin-bottom: 5px;
-    
-    .tool-btn {
-      padding: 4px 8px !important;
-      font-size: 12px !important;
-      
-      .el-icon {
-        font-size: 14px !important;
-      }
+      background-color: var(--el-color-primary-light-3);
+      border-color: var(--el-color-primary-light-3);
     }
   }
 }
@@ -778,9 +863,9 @@ const rolePopup = ref(null)
 
   @media (max-width: 768px) {
     align-items: flex-end;
-  }
+}
 
-  .role-popup {
+.role-popup {
     background-color: var(--popup-bg, #ffffff);
     border-radius: 12px;
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
@@ -801,65 +886,65 @@ const rolePopup = ref(null)
 }
 
 // 角色分类与列表
-.role-categories {
-  display: flex;
+  .role-categories {
+    display: flex;
   overflow-x: auto;
   gap: 8px;
   padding: 10px;
   border-bottom: 1px solid var(--border-color, #eaeaea);
-  
-  .role-category {
-    padding: 6px 12px;
+    
+    .role-category {
+      padding: 6px 12px;
     border-radius: 16px;
-    cursor: pointer;
+      cursor: pointer;
     white-space: nowrap;
     background-color: var(--category-bg, #f5f5f7);
     color: var(--text-color, #333);
     transition: all 0.3s ease;
-    
-    &.active {
+      
+      &.active {
       background-color: var(--primary-color, #1890ff);
       color: white;
+      }
     }
   }
-}
-
-.role-list {
-  padding: 10px;
   
-  .role-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background-color 0.2s;
+  .role-list {
+  padding: 10px;
     
-    &:hover {
-      background-color: var(--item-hover-bg, #f5f5f7);
-    }
-    
-    .role-icon {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
+    .role-item {
       display: flex;
       align-items: center;
-      justify-content: center;
-      color: white;
-      font-weight: bold;
-    }
-    
-    .role-info {
-      flex: 1;
+    gap: 10px;
+    padding: 10px;
+      border-radius: 8px;
+      cursor: pointer;
+    transition: background-color 0.2s;
       
-      .role-name {
-        font-weight: 500;
-        color: var(--text-color, #333);
+      &:hover {
+      background-color: var(--item-hover-bg, #f5f5f7);
       }
       
-      .role-desc {
+      .role-icon {
+        width: 40px;
+        height: 40px;
+      border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+      font-weight: bold;
+      }
+      
+      .role-info {
+        flex: 1;
+        
+        .role-name {
+          font-weight: 500;
+        color: var(--text-color, #333);
+        }
+        
+        .role-desc {
         font-size: 0.8rem;
         color: var(--text-secondary, #888);
       }
@@ -895,6 +980,28 @@ const rolePopup = ref(null)
 
 // 暗色模式
 [data-theme="dark"] {
+  .toolbar {
+    background-color: #2d2d30;
+    border-color: #3e3e41;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    
+    .toolbar-btn {
+      background-color: #3a3a3c;
+      
+      &:hover {
+        background-color: #4a4a4c;
+      }
+    }
+    
+    .role-btn {
+      background-color: #383840;
+      
+      &:hover {
+        background-color: #464652;
+      }
+    }
+  }
+  
   .mobile-input-wrapper {
     background-color: var(--dark-input-bg, #2c2c2e);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
@@ -909,8 +1016,8 @@ const rolePopup = ref(null)
     
     .input-icon-btn {
       color: var(--dark-icon-color, #aaa);
-      
-      &:hover {
+        
+        &:hover {
         color: var(--dark-icon-hover-color, #ccc);
       }
       
@@ -929,14 +1036,14 @@ const rolePopup = ref(null)
   }
   
   .input-control-area {
-    background-color: var(--dark-input-bg, #2d2d33);
-    border-color: var(--dark-border-color, #424450);
+    background-color: var(--dark-input-bg, #2c2c2e);
+    border-color: var(--dark-border-color, #3c3c3e);
     
     :deep(.el-textarea__inner) {
-      color: var(--dark-text-color, #ddd);
+      color: var(--dark-text-color, #e0e0e0);
       
       &::placeholder {
-        color: var(--dark-placeholder-color, #888);
+        color: var(--dark-placeholder-color, #777);
       }
     }
   }
@@ -1006,6 +1113,98 @@ const rolePopup = ref(null)
     h4 {
       color: var(--dark-text-color, #ddd);
     }
+  }
+}
+
+// 文件预览列表样式
+.preview-list {
+  padding: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  background-color: rgba(0, 0, 0, 0.02);
+  border-bottom: 1px solid #eaeaea;
+  
+  [data-theme="dark"] & {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-color: #3e3e41;
+  }
+  
+  .preview-item {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid #eaeaea;
+    background-color: #fff;
+    
+    [data-theme="dark"] & {
+      border-color: #3e3e41;
+      background-color: #2d2d30;
+    }
+    
+    .preview-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .file-preview {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      padding: 10px;
+      text-align: center;
+      
+      .el-icon {
+        font-size: 24px;
+        margin-bottom: 5px;
+        color: #909399;
+      }
+      
+      span {
+        font-size: 0.8rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 90%;
+      }
+    }
+    
+    .delete-btn {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      padding: 4px;
+      font-size: 12px;
+      background-color: rgba(255, 255, 255, 0.8);
+      border: none;
+      
+      &:hover {
+        background-color: #f56c6c;
+        color: white;
+      }
+      
+      [data-theme="dark"] & {
+        background-color: rgba(45, 45, 48, 0.8);
+        
+        &:hover {
+          background-color: #f56c6c;
+        }
+      }
+    }
+  }
+}
+
+// 上传按钮包装器样式
+.upload-button-wrapper {
+  display: inline-block;
+  
+  :deep(.el-upload) {
+    display: block;
   }
 }
 </style>

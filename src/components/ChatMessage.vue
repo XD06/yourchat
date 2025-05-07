@@ -152,9 +152,8 @@
     </div>
   </div>
 </template>
-
 <script setup>
-import { ref, computed, getCurrentInstance, onMounted, nextTick } from 'vue'
+import { ref, computed, getCurrentInstance, onMounted, nextTick, watch } from 'vue'
 import { useChatStore } from '../stores/chat'
 import { ElMessage } from 'element-plus'
 import { 
@@ -168,6 +167,8 @@ import {
 } from '@element-plus/icons-vue'
 import hljs from 'highlight.js'
 import markdownIt from 'markdown-it'
+// 导入代码执行工具
+import { openCodeModal } from '../utils/codeExecutor'
 
 const props = defineProps({
   message: {
@@ -190,33 +191,56 @@ const md = markdownIt({
     if (lang && hljs.getLanguage(lang)) {
       try {
         const highlighted = hljs.highlight(str, { language: lang, ignoreIllegals: true }).value;
-        // 添加复制按钮和正确的语言标签
-        return `<pre class="code-block" data-lang="${lang}">
-          <div class="code-header">
-            <span class="code-lang">${lang}</span>
-            <button class="copy-btn">
+        
+        // 添加复制按钮和正确的语言标签，对HTML代码块添加运行按钮
+        const isHtml = lang.toLowerCase() === 'html';
+        let headerContent = `<span class="code-lang">${lang}</span>
+          <div class="code-actions">`;
+        
+        // 只为HTML代码块添加运行按钮
+        if (isHtml) {
+          headerContent += `
+            <button class="run-btn" title="在沙盒中运行代码">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="5 3 19 12 5 21 5 3"></polygon>
+              </svg>
+            </button>`;
+        }
+        
+        // 所有代码块都有复制按钮
+        headerContent += `
+            <button class="copy-btn" title="复制代码">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
                 <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
               </svg>
             </button>
+          </div>`;
+        
+        return `<pre class="code-block" data-lang="${lang}">
+          <div class="code-header">
+            ${headerContent}
           </div>
           <code>${highlighted}</code>
         </pre>`;
       } catch (error) {
-        console.error('Highlight error:', error)
+        console.error('Highlight error:', error);
+        return `<pre class="code-block"><code>${md.utils.escapeHtml(str)}</code></pre>`;
       }
     }
-    // 无法识别语言时，使用相同的结构以保持一致性
+    
+    // 无法识别语言时，使用简化的结构
     return `<pre class="code-block" data-lang="plaintext">
       <div class="code-header">
         <span class="code-lang">plaintext</span>
-        <button class="copy-btn">
+        <div class="code-actions">
+          <button class="copy-btn" title="复制代码">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
             <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
           </svg>
         </button>
+        </div>
       </div>
       <code>${md.utils.escapeHtml(str)}</code>
     </pre>`;
@@ -335,13 +359,54 @@ const isLatestMessage = computed(() => {
 onMounted(() => {
   nextTick(() => {
     if (messageText.value) {
+      setupCodeBlockInteractions();
+    }
+  });
+});
+
+// 监视消息内容的变化，确保在内容更新后重新绑定事件
+watch(() => props.message.content, () => {
+  nextTick(() => {
+    if (messageText.value) {
+      setupCodeBlockInteractions();
+    }
+  });
+});
+
+// 设置代码块的交互功能
+const setupCodeBlockInteractions = () => {
+  console.log('Setting up code block interactions');
+  
       // 添加复制功能处理
       const copyButtons = messageText.value.querySelectorAll('.copy-btn');
       copyButtons.forEach(button => {
-        button.addEventListener('click', (e) => {
+    // 移除旧的事件监听器以避免重复绑定
+    button.removeEventListener('click', handleCopyClick);
+    button.addEventListener('click', handleCopyClick);
+  });
+  
+  // 添加运行HTML代码块功能
+  const runButtons = messageText.value.querySelectorAll('.run-btn');
+  console.log(`Found ${runButtons.length} run buttons`);
+  runButtons.forEach(button => {
+    // 移除旧的事件监听器以避免重复绑定
+    button.removeEventListener('click', handleRunClick);
+    button.addEventListener('click', handleRunClick);
+  });
+  
+  // 高亮代码块
+  const codeBlocks = messageText.value.querySelectorAll('.code-block code');
+  codeBlocks.forEach(block => {
+    hljs.highlightElement(block);
+  });
+};
+
+// 处理复制按钮点击
+const handleCopyClick = (e) => {
           e.stopPropagation();
           e.preventDefault();
           
+  const button = e.currentTarget;
           const codeBlock = button.closest('.code-block');
           if (codeBlock) {
             const codeElement = codeBlock.querySelector('code');
@@ -372,17 +437,25 @@ onMounted(() => {
                 });
             }
           }
-        });
-      });
+};
       
-      // 高亮代码块
-      const codeBlocks = messageText.value.querySelectorAll('.code-block code');
-      codeBlocks.forEach(block => {
-        hljs.highlightElement(block);
-      });
+// 处理运行按钮点击
+const handleRunClick = (e) => {
+  e.stopPropagation();
+  e.preventDefault();
+  console.log('Run button clicked');
+  
+  const button = e.currentTarget;
+  const codeBlock = button.closest('.code-block');
+  if (codeBlock) {
+    const codeElement = codeBlock.querySelector('code');
+    if (codeElement) {
+      const htmlCode = codeElement.textContent || '';
+      console.log('Opening code modal with HTML code');
+      openCodeModal(htmlCode);
     }
-  });
-});
+    }
+};
 </script>
 
 <style lang="scss" scoped>
@@ -464,8 +537,8 @@ onMounted(() => {
   flex-shrink: 0; // 防止头像被压缩
 
   @media (max-width: 768px) {
-    width: 30px;
-    height: 30px;
+    width: 36px;
+    height: 36px;
   }
 
   &.assistant-avatar {
@@ -573,6 +646,7 @@ onMounted(() => {
   .thinking-content {
     margin-top: 6px;
     padding-top: 6px;
+    font-style:oblique ;
     border-top: 1px dashed rgba(0,0,0,0.08);
     white-space: pre-wrap; // 保持思考内容的格式
     word-break: break-all;
@@ -580,6 +654,7 @@ onMounted(() => {
     overflow-y: auto;
     font-size: 0.8rem;
     line-height: 1.5;
+    scrollbar-width: none;
     [data-theme="dark"] & {
       border-top-color: rgba(255,255,255,0.1);
         }
@@ -614,6 +689,7 @@ onMounted(() => {
       max-width: 100%;
       background-color: #f8f9fa; // 统一的背景色
       border: 1px solid #e3e3e3; // 添加边框
+     
 
       [data-theme="dark"] & {
         background-color: #1e1e1e; // 暗黑模式下的背景色
@@ -666,6 +742,7 @@ onMounted(() => {
         margin: 0; // 移除可能存在的默认margin
         background-color: inherit; // 继承父元素的背景色
         color:#7e2379; // 默认代码颜色
+        scrollbar-width: thin; // 滚动条宽度;
         [data-theme="dark"] & {
             color: #e0e0e0; // 暗黑模式代码颜色
         }
@@ -777,6 +854,364 @@ onMounted(() => {
     // 用户消息的气泡颜色不同，所以token提示也需要调整
     .message-container.role-user & {
         color: rgba(255,255,255,0.7);
+  }
+}
+
+// 添加表格样式
+:deep(table) {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1em 0;
+  font-size: 0.9em;
+  font-family: sans-serif;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+  border-radius: 6px;
+  overflow-y: auto;
+  border: 1px solid #dddddd;
+  display: block;
+  scrollbar-width: thin;
+}
+
+:deep(thead tr) {
+  background: linear-gradient(90deg, #e74c3c 0%, #f39c12 50%, #2c7a65 100%);
+  color: #ffffff;
+  text-align: left;
+}
+
+:deep(th) {
+  position: relative;
+  padding: 12px 15px;
+  border-right: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+:deep(th:nth-child(3n+1)) {
+  background-color: rgba(231, 76, 60, 0.2); /* Red tint */
+}
+
+:deep(th:nth-child(3n+2)) {
+  background-color: rgba(243, 156, 18, 0.2); /* Orange tint */
+}
+
+:deep(th:nth-child(3n+3)) {
+  background-color: rgba(44, 122, 101, 0.2); /* Green tint */
+}
+
+:deep(th:last-child) {
+  border-right: none;
+}
+
+:deep(td) {
+  padding: 12px 15px;
+  border-right: 1px solid #dddddd;
+}
+
+:deep(td:last-child) {
+  border-right: none;
+}
+
+:deep(tbody tr) {
+  border-bottom: 1px solid #dddddd;
+}
+
+:deep(tbody tr:nth-of-type(even)) {
+  background-color: #f8f8f8;
+}
+
+:deep(tbody tr:hover) {
+  background-color: #f1f1f1;
+}
+
+// :deep(tbody tr:nth-of-type(3n+1) td:first-child) {
+//  // border-left: 3px solid #e74c3c; /* Red accent */
+// }
+
+// :deep(tbody tr:nth-of-type(3n+2) td:first-child) {
+//  // border-left: 3px solid #f39c12; /* Orange accent */
+// }
+
+// :deep(tbody tr:nth-of-type(3n+3) td:first-child) {
+//  // border-left: 3px solid #2c7a65; /* Green accent */
+// }
+
+:deep(tbody tr:last-of-type) {
+  border-bottom: 2px solid #2c7a65; /* Green theme color to match header */
+}
+
+// 暗色主题下的表格样式
+[data-theme="dark"] {
+  :deep(table) {
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    border: 1px solid #444;
+  }
+  
+  :deep(thead tr) {
+    background: linear-gradient(90deg, #c0392b 0%, #d35400 50%, #1e8449 100%);
+    color: #e0e0e0;
+  }
+  
+  :deep(th) {
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  :deep(th:nth-child(3n+1)) {
+    background-color: rgba(192, 57, 43, 0.2); /* Darker red tint for dark mode */
+  }
+  
+  :deep(th:nth-child(3n+2)) {
+    background-color: rgba(211, 84, 0, 0.2); /* Darker orange tint for dark mode */
+  }
+  
+  :deep(th:nth-child(3n+3)) {
+    background-color: rgba(30, 132, 73, 0.2); /* Darker green tint for dark mode */
+  }
+  
+  :deep(th:last-child) {
+    border-right: none;
+  }
+  
+  :deep(td) {
+    border-right: 1px solid #444;
+  }
+  
+  :deep(td:last-child) {
+    border-right: none;
+  }
+  
+  :deep(tbody tr) {
+    border-bottom: 1px solid #444;
+  }
+  
+  :deep(tbody tr:nth-of-type(even)) {
+    background-color: #2a2a2a;
+  }
+  
+  :deep(tbody tr:hover) {
+    background-color: #333333;
+  }
+  
+  // :deep(tbody tr:nth-of-type(3n+1) td:first-child) {
+  //  // border-left: 3px solid #e74c3c; /* Red accent preserved in dark mode */
+  // }
+  
+  // :deep(tbody tr:nth-of-type(3n+2) td:first-child) {
+  // //  border-left: 3px solid #f39c12; /* Orange accent preserved in dark mode */
+  // }
+  
+  // :deep(tbody tr:nth-of-type(3n+3) td:first-child) {
+  // //  border-left: 3px solid #27ae60; /* Green accent preserved in dark mode */
+  // }
+  
+  :deep(tbody tr:last-of-type) {
+    border-bottom: 2px solid #2c7a65; /* Green theme color to match header */
+  }
+  
+  :deep(td), :deep(th) {
+    color: #e0e0e0;
+  }
+}
+
+// 代码块按钮样式改进
+:deep(.code-block) {
+  .code-header {
+    margin-top: -20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 12px;
+    background-color: #80808036;
+    font-size: 0.9em;
+    color: #555;
+    border-bottom: 1px solid #e3e3e3;
+    font-family: 'Fira Code', 'JetBrains Mono', monospace;
+
+    [data-theme="dark"] & {
+      color: #bbb;
+      border-bottom-color: #333;
+    }
+    
+    .code-lang {
+      font-weight: 500;
+      text-transform: uppercase;
+    }
+    
+    .code-actions {
+      display: flex;
+      gap: 8px;
+    }
+  }
+  
+  .copy-btn, .run-btn {
+    background: none;
+    border: none;
+    color: inherit;
+    cursor: pointer;
+    opacity: 0.7;
+    padding: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    &:hover {
+      opacity: 1;
+    }
+  }
+  
+  .run-btn {
+    color: #28a745;
+    
+    [data-theme="dark"] & {
+      color: #4caf50;
+    }
+    
+    &:hover {
+      color: #218838;
+      
+      [data-theme="dark"] & {
+        color: #3d8b40;
+      }
+    }
+  }
+}
+
+// 代码执行模态框样式
+.code-modal {
+  display: none;
+  position: fixed;
+  z-index: 2000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.6);
+  align-items: center;
+  justify-content: center;
+  
+  .modal-content {
+    background-color: #fefefe;
+    margin: auto;
+    padding: 0;
+    border: 1px solid #888;
+    width: 85%;
+    max-width: 800px;
+    height: 80vh;
+    max-height: 600px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    
+    [data-theme="dark"] & {
+      background-color: #202123;
+      border-color: #444;
+    }
+  }
+  
+  .modal-header {
+    padding: 10px 10px;
+    background-color: #171818e8;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #dee2e6;
+    
+    h3 {
+      margin: 0;
+      font-size: 1.2em;
+    }
+    
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .close-btn, .fullscreen-btn {
+      color: #fff;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+      line-height: 1;
+      
+      &:hover, &:focus {
+        color: #eee;
+        text-decoration: none;
+      }
+    }
+  }
+  
+  .modal-body {
+    flex: 1;
+    padding: 0;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  #code-sandbox {
+    flex: 1;
+    width: 100%;
+    height: 100%;
+    border: none;
+    background: #ffffff;
+    
+    [data-theme="dark"] & {
+      background: #333;
+    }
+  }
+  
+  #status-bar {
+    padding: 8px 15px;
+    font-size: 0.9em;
+    min-height: 1.5em;
+    background-color: #f1f3f5;
+    border-top: 1px solid #dee2e6;
+    white-space: pre-wrap;
+    word-break: break-word;
+    max-height: 150px;
+    overflow-y: auto;
+    color: #333;
+    
+    [data-theme="dark"] & {
+      background-color: #2a2a2a;
+      border-color: #444;
+      color: #ddd;
+    }
+    
+    .status-running {
+      color: #007bff;
+    }
+    
+    .status-success {
+      color: #28a745;
+    }
+    
+    .status-error {
+      color: #dc3545;
+      font-weight: bold;
+    }
+    
+    .status-timeout {
+      color: #fd7e14;
+      font-weight: bold;
+    }
+    
+    .log-message {
+      margin-left: 10px;
+      font-family: monospace;
+      font-size: 0.9em;
+      display: block;
+      margin-top: 3px;
+    }
+  }
+  
+  &.fullscreen .modal-content {
+    width: 100% !important;
+    height: 100% !important;
+    max-width: none;
+    max-height: none;
+    border-radius: 0;
   }
 }
 </style>

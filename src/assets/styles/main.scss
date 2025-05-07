@@ -10,6 +10,7 @@ body {
   color: var(--text-color-primary);
   line-height: 1.6;
   transition: background-color 0.3s, color 0.3s;
+
 }
 
 .fade-enter-active,
@@ -32,3 +33,202 @@ body {
   transform: translateY(10px);
   opacity: 0;
 }
+
+/* Code Execution Modal Styles */
+.code-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6); /* Darker, more modern overlay */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000; /* Ensure it's above other elements */
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.code-modal.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+.modal-content {
+  z-index: 2000;
+  min-width: 300px;
+  max-width: 90%;
+  background-color: var(--chat-bg-color, #fff); /* Use CSS variable for theme consistency */
+  color: var(--text-color, #333);
+  border-radius: 12px; /* Softer, modern corners */
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); /* More pronounced shadow */
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* Important for child flex items and rounded corners */
+  width: 70%; /* Default width, will be overridden by JS */
+  height: 70%; /* Default height, will be overridden by JS */
+  max-width: 90vw; /* Ensure it doesn't exceed viewport width */
+  max-height: 90vh; /* Ensure it doesn't exceed viewport height */
+  transition: width 0.3s ease, height 0.3s ease; /* Smooth resize */
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--border-color, #eee);
+  background-color: var(--secondary-bg-color, #f7f7f7); /* Subtle header background */
+}
+
+.modal-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-color-strong, #111);
+}
+
+#timer-status {
+  font-size: 0.8rem;
+  color: var(--text-color-light, #777);
+  margin-left: 8px;
+}
+
+.modal-actions span {
+  cursor: pointer;
+  font-size: 1.4rem; /* Larger, more touch-friendly icons */
+  color: var(--icon-color, #888);
+  margin-left: 15px;
+  transition: color 0.2s ease;
+}
+
+.modal-actions span:hover {
+  color: var(--primary-color, #007bff);
+}
+
+.modal-body {
+  flex-grow: 1; /* Allow body to take remaining space */
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* Important for iframe and status bar */
+  padding: 0; /* Remove padding, iframe will fill */
+}
+
+#code-sandbox {
+  flex-grow: 1; /* Iframe takes up available space in modal-body */
+  border: none;
+  width: 100%;
+  height: 100%; /* Ensure iframe fills its container */
+}
+
+#status-bar {
+  padding: 8px 15px;
+  background-color: var(--tertiary-bg-color, #f0f0f0);
+  border-top: 1px solid var(--border-color, #eee);
+  font-size: 0.85rem;
+  color: var(--text-color-subtle, #555);
+  min-height: 30px; /* Ensure status bar has some height */
+  max-height: 100px; /* Limit console log height */
+  overflow-y: auto;
+  line-height: 1.4;
+}
+
+#status-bar .log-message {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.8rem;
+  white-space: pre-wrap;
+  word-break: break-all;
+  margin-top: 4px;
+}
+
+.status-running {
+  color: var(--info-color, #17a2b8);
+}
+.status-success {
+  color: var(--success-color, #28a745);
+}
+.status-error {
+  color: var(--danger-color, #dc3545);
+}
+.status-timeout {
+  color: var(--warning-color, #ffc107);
+}
+
+/* Fullscreen specific styles */
+.code-modal.fullscreen .modal-content {
+  width: 100vw !important; /* Override JS inline styles */
+  height: 100vh !important; /* Override JS inline styles */
+  max-width: 100vw !important;
+  max-height: 100vh !important;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+/* Scrollbar Styling for the modal itself (status bar, etc.) */
+.code-modal ::-webkit-scrollbar,
+#status-bar::-webkit-scrollbar {
+  width: 6px; /* Slimmer scrollbar */
+  height: 6px;
+}
+
+.code-modal ::-webkit-scrollbar-track,
+#status-bar::-webkit-scrollbar-track {
+  background: var(--scrollbar-track-bg, #f1f1f1); 
+  border-radius: 3px;
+}
+
+.code-modal ::-webkit-scrollbar-thumb,
+#status-bar::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb-bg, #ccc);
+  border-radius: 3px;
+}
+
+.code-modal ::-webkit-scrollbar-thumb:hover,
+#status-bar::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover-bg, #aaa);
+}
+
+/* Ensure these variables are defined in variables.scss or globally */
+/* Example variables (adjust as needed in your variables.scss):
+:root {
+  --chat-bg-color: #ffffff;
+  --text-color: #333333;
+  --border-color: #eeeeee;
+  --secondary-bg-color: #f7f7f7;
+  --text-color-strong: #111111;
+  --text-color-light: #777777;
+  --icon-color: #888888;
+  --primary-color: #007bff;
+  --tertiary-bg-color: #f0f0f0;
+  --text-color-subtle: #555555;
+  --info-color: #17a2b8;
+  --success-color: #28a745;
+  --danger-color: #dc3545;
+  --warning-color: #ffc107;
+  --scrollbar-track-bg: #f1f1f1;
+  --scrollbar-thumb-bg: #cccccc;
+  --scrollbar-thumb-hover-bg: #aaaaaa;
+}
+
+[data-theme='dark'] {
+  --chat-bg-color: #2c2c2c;
+  --text-color: #e0e0e0;
+  --border-color: #444444;
+  --secondary-bg-color: #383838;
+  --text-color-strong: #ffffff;
+  --text-color-light: #aaaaaa;
+  --icon-color: #bbbbbb;
+  --primary-color: #0096ff;
+  --tertiary-bg-color: #333333;
+  --text-color-subtle: #cccccc;
+  --info-color: #17a2b8;
+  --success-color: #28a745;
+  --danger-color: #dc3545;
+  --warning-color: #ffc107;
+  --scrollbar-track-bg: #3a3a3a;
+  --scrollbar-thumb-bg: #555555;
+  --scrollbar-thumb-hover-bg: #777777;
+}
+*/

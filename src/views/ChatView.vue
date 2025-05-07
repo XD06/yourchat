@@ -1,4 +1,4 @@
-﻿<template>
+<template>
     <!-- 添加动态类以控制侧边栏状态 -->
     <div class="chat-view-container" :class="{ 'sidebar-collapsed': !isSidebarOpen && !isMobileView, 'mobile-sidebar-active': isMobileSidebarOpen }">
         <!-- 左侧垂直图标栏 (PC端显示) -->
@@ -21,25 +21,14 @@
             <div class="icon-item">
                 <el-icon><Setting /></el-icon>
             </div>
-            <!-- 添加暗黑模式切换按钮 -->
-            <div class="icon-item dark-mode-toggle" :class="{'dark-mode-active': settingsStore.isDarkMode}" @click="toggleDarkMode">
-                <div class="toggle-icon-wrapper">
-                    <svg v-if="settingsStore.isDarkMode" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="#FFD43B" stroke="#FFD43B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="moon-icon">
-                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-                    </svg>
-                    <svg v-else xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="#FFB020" stroke="#FFB020" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="sun-icon">
-                        <circle cx="12" cy="12" r="5"></circle>
-                        <line x1="12" y1="1" x2="12" y2="3"></line>
-                        <line x1="12" y1="21" x2="12" y2="23"></line>
-                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-                        <line x1="1" y1="12" x2="3" y2="12"></line>
-                        <line x1="21" y1="12" x2="23" y2="12"></line>
-                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-                    </svg>
-                </div>
+           
+         
+            <div class="icon-item" style = "background-color: grey; border-radius: 100%;height: 20px;width: 20px;">
+                <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="20" height="20" viewBox="0 0 30 30">
+    <path d="M15,3C8.373,3,3,8.373,3,15c0,5.623,3.872,10.328,9.092,11.63C12.036,26.468,12,26.28,12,26.047v-2.051 c-0.487,0-1.303,0-1.508,0c-0.821,0-1.551-0.353-1.905-1.009c-0.393-0.729-0.461-1.844-1.435-2.526 c-0.289-0.227-0.069-0.486,0.264-0.451c0.615,0.174,1.125,0.596,1.605,1.222c0.478,0.627,0.703,0.769,1.596,0.769 c0.433,0,1.081-0.025,1.691-0.121c0.328-0.833,0.895-1.6,1.588-1.962c-3.996-0.411-5.903-2.399-5.903-5.098 c0-1.162,0.495-2.286,1.336-3.233C9.053,10.647,8.706,8.73,9.435,8c1.798,0,2.885,1.166,3.146,1.481C13.477,9.174,14.461,9,15.495,9 c1.036,0,2.024,0.174,2.922,0.483C18.675,9.17,19.763,8,21.565,8c0.732,0.731,0.381,2.656,0.102,3.594 c0.836,0.945,1.328,2.066,1.328,3.226c0,2.697-1.904,4.684-5.894,5.097C18.199,20.49,19,22.1,19,23.313v2.734 c0,0.104-0.023,0.179-0.035,0.268C23.641,24.676,27,20.236,27,15C27,8.373,21.627,3,15,3z"></path>
+</svg>
             </div>
+               
             <!-- 添加收起/展开侧边栏的按钮 -->
             <div class="icon-item" @click="toggleSidebar">
                 <el-icon>
@@ -47,13 +36,16 @@
                     <Expand v-else />
                 </el-icon>
             </div>
-            <div class="icon-item" style = "background-color: grey; border-radius: 100%;height: 25px;width: 25px;">
-                <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="30" height="30" viewBox="0 0 30 30">
-    <path d="M15,3C8.373,3,3,8.373,3,15c0,5.623,3.872,10.328,9.092,11.63C12.036,26.468,12,26.28,12,26.047v-2.051 c-0.487,0-1.303,0-1.508,0c-0.821,0-1.551-0.353-1.905-1.009c-0.393-0.729-0.461-1.844-1.435-2.526 c-0.289-0.227-0.069-0.486,0.264-0.451c0.615,0.174,1.125,0.596,1.605,1.222c0.478,0.627,0.703,0.769,1.596,0.769 c0.433,0,1.081-0.025,1.691-0.121c0.328-0.833,0.895-1.6,1.588-1.962c-3.996-0.411-5.903-2.399-5.903-5.098 c0-1.162,0.495-2.286,1.336-3.233C9.053,10.647,8.706,8.73,9.435,8c1.798,0,2.885,1.166,3.146,1.481C13.477,9.174,14.461,9,15.495,9 c1.036,0,2.024,0.174,2.922,0.483C18.675,9.17,19.763,8,21.565,8c0.732,0.731,0.381,2.656,0.102,3.594 c0.836,0.945,1.328,2.066,1.328,3.226c0,2.697-1.904,4.684-5.894,5.097C18.199,20.49,19,22.1,19,23.313v2.734 c0,0.104-0.023,0.179-0.035,0.268C23.641,24.676,27,20.236,27,15C27,8.373,21.627,3,15,3z"></path>
-</svg>
-            </div>
+             <!-- 添加暗黑模式切换按钮 -->
+            
             <div class="icon-item bottom-icon">
                 <el-icon><User /></el-icon>
+            </div>
+            <div style="background-color: transparent;" class="icon-item dark-mode-toggle" @click="toggleDarkMode">
+                <div class="toggle-icon-wrapper">
+                    <img style="height: 35px;width: 55px;" v-if="settingsStore.isDarkMode" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAACXBIWXMAAAsTAAALEwEAmpwYAAACxUlEQVR4nO2ZsW7UQBCGLUBQ5IAGkVQgKACJBwEKoDp0BSgSUFnyyf5/Wy6dIlAgIhFCROAZkE48AUgkkPAUhBAQUJIiSQManSUsZy/n89msgfmk7daend+7szNjx1EURVEURVEURVEURRlCFEVHSXYAPAfwnuQ3krskf/7hsZvaXpO1yJpc1205dRGG4RSARQBbFpwtNGRtssZutztZmeOe5x0hOUPyh20HRxiy1hlZ+1jOAzhB8nUDHCq7I97Kzi3lvO/7FwGsN8QRWcdjAJeiKDpPciJJksNxHJ8ieRXAAwCbg54VX0ZyvtvtTjbBeQAbAG632+2Dw9Ysc4IguGkSIvXl5ChnfsW28yR7ZaJ6eku9MIiwXCgmsB/wbDv/KEmSA05J5FkA8wYR7u/7YBiGUw2I9r1xnM+KkN8JAHZ83z878CEAi7bPfJXJTHocPufsPBs4GZaTHAl4TsWQvJWzsWUUmWTHsvPrRaL9qCRJcsiwC27smYh+Pm1NALnnq3Y+49vDnK2lPZNIrtkUIAiCyzUKcC1n751JgO+Wj8C5ugRIM8asra8mlXZsClBnKZsmd1l72ypAHv7vR4D/cBAMw/D60CAIy9cggIW6BCA5V+Qa7NgUgOTHuhIhAF9yYrf3THRdt2U7FSZ5p2oBSE7nbEixN9HIYojkJ6lJqnLe87xj+a9v3P7ZTlADyuGXFZbDvdy7t0meaXxDBMB8BQ2RBcO7ZwtlTQCWbYsgO6HMcYjj+Ljhy8t4I43Uv60pugngbpHbIS17pw1nXt7zoXBTtKFt8Q2ST0heAXBBbiz5miRPp0nOnMnx0m3x7I8RAK9sCzDGWBn7N5nXr6Tu2a4WRxwS7WcLn/kiSDdVGooNSJb2G3KFLw296sbBdd2W9NQAPAWwKpWVjd0hNlPbq+la2gMzPEVRFEVRFEVRFEVRFOc3vwCXaQF84pJv4AAAAABJRU5ErkJggg==" alt="toggle-on" class="toggle-switch">
+                    <img style="height: 35px;width: 55px;" v-else src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAACXBIWXMAAAsTAAALEwEAmpwYAAADUElEQVR4nO1ZTU8UQRAdNMoB9WSExI9EDkriD0E8apZwNEA4kMxm5r1dOC4x6MlgUFD0NxDiP9BEUVB/hIgkftyUBOGiqTCapenZ7fkEtV7SyWbTU+9VT3d1VY3nKRQKhUKhUCgUCoVCoVC0Qb1eP0lyCMATAG9IfiG5Q/JnyWMn4l4VLaJpfHz8hFcUarVaD4B5AJsH4KzTEG2isVqtdufmuO/7nSSnSH4/aAcTDNE6JdozOQ/gNMnnh8ChtDvilezcVM4HQXAFwFqM4TUAswD66/X6ZZJdMuS3/EfyfotnN2RepjfjeV4CvjXxJZHxarXaHWPwA4CblUrlaDsbMgfAMIB12yJMTEycy7IACfnElzNJzvyyxflFWfWkwiQyA1iy2HvXaDSOp3E2DR+Al04xgbsBz3z4rud5HRl0dQCYsSzCrQw2E/MBuNPyqVqt1mOJ9osZnW8WtefNANianJy8kINtV77tIAh6Y58AMG+e+TTbvs323HNGATzKy74LH8nHsRkejCRHAl7eokiOGBzfiszgLHybVj6SQ2bkdIn2SSE2o531hysMwxt587TiIzm4byJ28+nmBZgtShSAB4aghaK4nPlIrhoL0F+UIJIDZsZWFJeNj+Rr26SvhqhLRQmKssdmQZ+K4rLxAfi8bxKA7eZJRQYmsW0swI+iuJz5UOIC+L5/qswFcOLj/34EaATBMAyvFiUoDMNrZQZBk88aBGFcg1JiFiWI5FxZ2aCNL+4aHCorEbKkp9fz5mnFB6ASlzdvGhOH8xYEYLTMVNjki4q9LqdiCMB6nuKiemPDEPQwL/uOfAstO0E0ymEpKfMohxuNxhEATw3bWwDOZ7XtyifXH8mLaRoiM1kWIRJzz7QrXGltpuSbbvuw7/ud0j6yLMJSmuMQbUPzTch4OzY2diytkyn4Xji34KoxTdEomo4kaIqOWs6gjI9hGJ7Nw2EXPgDvnZuiLm3xqDssJeYAgD7ZGdEt0hdVXnO27uxv5/Noi7vypWqLN38YAfAsxpG/YSxn/kzm77bJb5vF0iEfEu2nc227B0HQKw3Fw/xxNLrCF9pedTnU1oOSvwNYkcrqIHaHcEbcK5GWSp4dbIVCoVAoFAqFQqFQKBTeP4tff/4aZ9FqC+MAAAAASUVORK5CYII=" alt="toggle-off" class="toggle-switch">
+                </div>
             </div>
         
         </div>
@@ -153,21 +145,34 @@
         <div class="main-chat-area">
             <!-- 聊天头部 - 重新设计，更简洁 -->
             <div class="chat-header">
-                <!-- 移动端汉堡按钮 -->
-                <el-button class="mobile-menu-button" @click="toggleMobileSidebar" :icon="Menu" text circle v-if="isMobileView"></el-button>
-                
-                <!-- 左侧模型信息和状态区域 -->
-                <div class="header-left">
-                    <!-- 模型信息和设置 -->
-                    <div class="model-status">
-                        <div class="status-indicator online"></div>
-                        <span class="status-text">Online</span>
-                    </div>
+                <!-- 移动端左侧按钮组 -->
+                <div class="header-left-actions" v-if="isMobileView">
+                    <!-- 移动端汉堡按钮 -->
+                    <el-button class="mobile-menu-button" @click="toggleMobileSidebar" :icon="Menu" text circle></el-button>
                     
+                    <!-- 暗黑模式切换按钮 - 只在移动端显示 -->
+                    <el-button 
+                        class="action-btn theme-btn" 
+                        type="default" 
+                        @click="toggleDarkMode" 
+                        title="Toggle Dark Mode"
+                    >
+                        <el-icon><Moon v-if="settingsStore.isDarkMode" /><Sunny v-else /></el-icon>
+                    </el-button>
+                </div>
+                
+                <!-- 左侧模型信息和状态区域 - 桌面端显示在左侧，移动端居中 -->
+                <div class="header-left" :class="{'mobile-centered': isMobileView}">
+                    <!-- 模型信息和设置 -->
                     <el-dropdown trigger="click" @command="handleModelChange">
                         <div class="model-info" style="cursor: pointer;">
                             <span class="model-name">{{ getModelDisplayName() }}</span>
-                            <el-tag type="success" size="small" effect="dark" class="model-tag">Active</el-tag>
+                            <el-tag type="success" size="small" effect="dark" class="model-tag">
+                                <div class="tag-content">
+                                    <div class="status-indicator online"></div>
+                                    <span>Online</span>
+                                </div>
+                            </el-tag>
                             <el-icon class="model-dropdown-icon"><ArrowDown /></el-icon>
                         </div>
                         <template #dropdown>
@@ -205,22 +210,20 @@
                 </div>
                 
                 <!-- 右侧功能按钮 -->
-                <div class="header-actions">
-                    <el-button class="action-btn theme-btn" type="default" @click="toggleDarkMode" title="Toggle Dark Mode">
-                        <el-icon><Moon v-if="settingsStore.isDarkMode" /><Sunny v-else /></el-icon>
-                    </el-button>
+                <div class="header-actions" :class="{'mobile-right-actions': isMobileView}">
                     
-                    <el-button class="config-btn" type="default" @click="toggleSettings">
-                        <span class="button-text">Settings</span>
-                        <el-icon><Setting /></el-icon>
-                    </el-button>
                     
                     <el-button class="share-btn" type="default" @click="handleShare">
                         <span class="button-text">Share</span>
                         <el-icon><Share /></el-icon>
                     </el-button>
+                    <el-button class="config-btn" type="default" @click="toggleSettings"style="background-color: black;">
+                        <span style="color: white" class="button-text">Settings</span>
+                        <el-icon style="color: white" ><Setting /></el-icon>
+                    </el-button>
                     
-                    <el-dropdown trigger="click">
+                    <!-- 移除New下拉按钮，只在PC端显示 -->
+                    <el-dropdown trigger="click" v-if="!isMobileView">
                         <el-button class="action-btn" type="primary">
                             <span class="button-text">New</span>
                             <el-icon><Plus /></el-icon>
@@ -239,8 +242,20 @@
                 </div>
             </div>
             
+            <!-- 添加滚动到底部按钮 -->
+            <div 
+                class="scroll-to-bottom-btn" 
+                :class="{ 'visible': showScrollButton }"
+                @click="scrollToBottom"
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="7 13 12 18 17 13"></polyline>
+                    <polyline points="7 6 12 11 17 6"></polyline>
+                </svg>
+            </div>
+            
             <!-- 消息容器 -->
-            <div class="messages-container" ref="messagesContainer">
+            <div class="messages-container" ref="messagesContainer" @scroll="handleScroll">
                 <template v-if="messages.length">
                     <chat-message v-for="message in messages" :key="message.id" :message="message"
                                 @update="handleMessageUpdate" @delete="handleMessageDelete" @regenerate="handleRegenerate" />
@@ -546,6 +561,11 @@ onBeforeUnmount(() => {
     window.removeEventListener('resize', handleResize)
     // 确保body overflow被还原
     document.body.style.overflow = ''
+    
+    // 清除滚动定时器
+    if (scrollTimeout) {
+        clearTimeout(scrollTimeout);
+    }
 })
 
 const messages = computed(() => chatStore.messages)
@@ -674,7 +694,14 @@ const handleSend = async (content) => {
     console.log('[ChatView] Scrolling to bottom...');
     // 在下一个DOM更新周期滚动到底部
     await nextTick();
-    scrollToBottom();
+    // 检查是否应该自动滚动到底部
+    const wasAtBottom = isScrolledToBottom();
+    if (wasAtBottom) {
+      scrollToBottom();
+    } else {
+      // 如果发送消息前不在底部，则显示滚动到底部按钮
+      showScrollButton.value = true;
+    }
     
     chatStore.isLoading = true;
     console.log('[ChatView] isLoading set to true');
@@ -735,6 +762,15 @@ const handleSend = async (content) => {
               const completionTokens = messageHandler.countTokens(typeof updatedContent === 'object' ? updatedContent.content || '' : updatedContent || '');
               chatStore.updateTokenCount(promptTokens, completionTokens);
               saveMessages(); // 保存最终消息
+              
+              // 如果消息生成完成，再次检查是否应该滚动到底部或显示按钮
+              nextTick(() => {
+                if (wasAtBottom) {
+                  scrollToBottom();
+                } else {
+                  showScrollButton.value = true;
+                }
+              });
             }
           }
         }
@@ -1117,7 +1153,11 @@ const handlePauseGeneration = () => {
 // 滚动到底部的辅助函数
 const scrollToBottom = () => {
   if (messagesContainer.value) {
-    messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight;
+    messagesContainer.value.scrollTo({
+      top: messagesContainer.value.scrollHeight,
+      behavior: 'smooth'
+    });
+    console.log('滚动到底部按钮被点击');
   }
 };
 
@@ -1304,7 +1344,13 @@ watch(messages, () => {
   
   nextTick(() => {
     if (messagesContainer.value) {
-      messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight;
+      // 检查是否在底部或接近底部，只有在底部时才自动滚动
+      if (isScrolledToBottom()) {
+        scrollToBottom();
+      } else {
+        // 如果不在底部，显示滚动到底部按钮
+        showScrollButton.value = true;
+      }
     }
   });
 }, { deep: true });
@@ -1334,6 +1380,15 @@ onMounted(() => {
       console.error('加载当前聊天失败:', e);
     }
   }
+  
+  // 初始化滚动状态
+  nextTick(() => {
+    if (messagesContainer.value) {
+      scrollToBottom();
+      // 初始时检查滚动位置
+      handleScroll();
+    }
+  });
 });
 
 // 移除保存按钮相关的函数，改为自动保存
@@ -1433,6 +1488,48 @@ const formatTimestamp = () => {
   const now = new Date();
   return `${now.toLocaleDateString()} ${now.toLocaleTimeString()}`;
 }
+
+// 处理滚动到底部按钮的显示
+const showScrollButton = ref(false);
+let scrollTimeout = null;
+
+// 判断是否滚动到底部
+const isScrolledToBottom = () => {
+  if (!messagesContainer.value) return true;
+  
+  const { scrollTop, scrollHeight, clientHeight } = messagesContainer.value;
+  // 容差值为10像素
+  const tolerance = 10;
+  return scrollHeight - scrollTop - clientHeight <= tolerance;
+};
+
+// 处理滚动事件
+const handleScroll = () => {
+  if (!messagesContainer.value) return;
+  
+  // 清除之前的定时器
+  if (scrollTimeout) {
+    clearTimeout(scrollTimeout);
+  }
+  
+  // 判断是否已经滚动到底部
+  const atBottom = isScrolledToBottom();
+  
+  // 如果没有在底部，显示按钮
+  if (!atBottom) {
+    showScrollButton.value = true;
+  } else {
+    showScrollButton.value = false;
+  }
+  
+  // 设置定时器，如果在1秒内没有继续滚动则检查是否在底部
+  scrollTimeout = setTimeout(() => {
+    // 延迟后再次检查是否在底部
+    if (isScrolledToBottom()) {
+      showScrollButton.value = false;
+    }
+  }, 1000);
+};
 </script>
 
 <style lang="scss" scoped>
@@ -1445,6 +1542,15 @@ const formatTimestamp = () => {
     overflow: hidden;
     font-family: var(--font-family, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial);
     background-color: var(--bg-color, #f3f4f6);
+    
+    /* 移动端优化阅读字体 */
+    @media (max-width: 768px) {
+        font-family: "Microsoft YaHei", "PingFang SC", "Heiti SC", "Noto Sans SC", -apple-system, BlinkMacSystemFont, sans-serif;
+        font-weight: 400;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        letter-spacing: 0.015em;
+    }
     
     &.sidebar-collapsed {
         .icon-sidebar {
@@ -1500,6 +1606,79 @@ const formatTimestamp = () => {
         height: 100vh; // 明确设置高度
         margin-left: 0; // 移除左边距，确保全屏显示
     }
+    
+    /* 添加滚动到底部按钮 - 移到main-chat-area内部 */
+    .scroll-to-bottom-btn {
+        position: fixed;
+        bottom: 175px;
+        left: 60%;
+        transform: translateX(-50%);
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: transparent;
+        color: black;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        box-shadow: none;
+        border: none;
+        outline: none;
+        transition: all 0.3s ease;
+        opacity: 0;
+        visibility: hidden;
+        z-index: 100;
+        pointer-events: auto;
+        
+        /* 考虑侧边栏状态 */
+        .sidebar-collapsed & {
+            left: calc(52px + (100% - 52px) / 2); /* 图标栏宽度 + 剩余区域的一半 */
+        }
+        
+        &.visible {
+            opacity: 1;
+            visibility: visible;
+            animation: bounce 1s ease infinite;
+        }
+        
+        &:hover {
+            color: rgba(0, 0, 0, 0.8);
+            transform: translateX(-50%) translateY(-2px);
+        }
+        
+        &:active {
+            transform: translateX(-50%) translateY(0);
+        }
+        
+        svg {
+            width: 24px;
+            height: 24px;
+            filter: drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.2));
+        }
+        
+        @media (max-width: 768px) {
+            bottom: 100px;
+            right: 16px;
+            left: auto;
+            transform: none;
+            width: 36px;
+            height: 36px;
+            
+            &:hover {
+                transform: translateY(-2px);
+            }
+            
+            &:active {
+                transform: translateY(0);
+            }
+            
+            svg {
+                width: 22px;
+                height: 22px;
+            }
+        }
+    }
 }
 
 /* 聊天内容区域 */
@@ -1514,9 +1693,10 @@ const formatTimestamp = () => {
     
     // 自定义滚动条
     &::-webkit-scrollbar {
-        width: 6px;
-        height: 6px;
+        width: 1px;
+        height: 1px;
     }
+    scrollbar-width: thin;
     
     &::-webkit-scrollbar-thumb {
         background-color: rgba(0, 0, 0, 0.2);
@@ -1859,11 +2039,31 @@ const formatTimestamp = () => {
         padding: 10px 12px;
     }
 
+    // 移动端左侧按钮组
+    .header-left-actions {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex: 0 0 auto;
+        .el-button.el-button--default.action-btn.theme-btn{
+            margin-left: 0px;
+            padding: 8px 10px;
+
+            background-color: #f6f6f9;
+            [data-theme="dark"] & {
+                background-color: #2d2d33;
+            }
+        }
+    }
+    
     .mobile-menu-button {
         display: none; // 默认隐藏
+        background-color: black;
+        border-color: #dedfe0;
+        border-radius: 5px;
+        color: white;
         @media (max-width: 768px) {
             display: inline-flex; // 移动端显示
-            margin-right: 10px;
         }
     }
     
@@ -1872,6 +2072,14 @@ const formatTimestamp = () => {
         display: flex;
         align-items: center;
         gap: 12px;
+        
+        // 移动端居中样式
+        &.mobile-centered {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1;
+        }
         
         .model-status {
             display: flex;
@@ -1883,31 +2091,9 @@ const formatTimestamp = () => {
             [data-theme="dark"] & {
                 color: #aaa;
             }
-            
-            .status-indicator {
-                width: 8px;
-                height: 8px;
-                border-radius: 50%;
-                
-                &.online {
-                    background-color: #10b981;
-                    box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
-                    animation: pulse 2s infinite;
-                }
-                
-                &.offline {
-                    background-color: #ef4444;
-                }
-                
-                &.busy {
-                    background-color: #f59e0b;
-                }
-            }
-            
-            .status-text {
-                font-weight: 500;
-            }
         }
+        
+        // Removing duplicate model-tag styles as they're now properly defined inside model-info
     }
     
     // 中间标题区域
@@ -1991,6 +2177,17 @@ const formatTimestamp = () => {
             }
         }
         
+        // 移动端样式
+        @media (max-width: 768px) {
+            padding: 4px 8px;
+            min-width: 0;
+            background-color: transparent;
+            
+            &:hover {
+                background-color: transparent;
+            }
+        }
+        
         .model-name {
             font-size: 15px;
             font-weight: 500;
@@ -1999,13 +2196,49 @@ const formatTimestamp = () => {
             [data-theme="dark"] & {
                 color: #e0e0e0;
             }
+            
+            // 移动端样式 - 限制宽度防止超长
+            @media (max-width: 768px) {
+                font-size: 13px;
+                max-width: 130px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
         }
-        
+        .el-tag.el-tag--success.el-tag--small.el-tag--dark.model-tag {
+    background: transparent;
+    color: black;
+    border: none;
+}
         .model-tag {
             margin-left: 8px;
             height: auto;
             padding: 2px 8px;
             font-size: 11px;
+            
+            @media (max-width: 768px) {
+                padding: 2px 6px;
+                font-size: 10px;
+            }
+            
+            .tag-content {
+                display: flex;
+                align-items: center;
+                gap: 4px;
+                
+                .status-indicator {
+                    width: 8px;
+                    height: 8px;
+                    border-radius: 50%;
+                    
+                    &.online {
+                        background-color: #10b981;
+                        box-shadow: 0 0 0 rgba(16, 185, 129, 0.4);
+                        animation: pulse 2s infinite;
+                    }
+                }
+            }
         }
         
         .model-dropdown-icon {
@@ -2016,12 +2249,22 @@ const formatTimestamp = () => {
             [data-theme="dark"] & {
                 color: #aaa;
             }
+            
+            @media (max-width: 768px) {
+                font-size: 10px;
+                margin-left: 2px;
+            }
         }
     }
     
     .header-actions {
         display: flex;
         gap: 8px;
+        
+        &.mobile-right-actions {
+            flex: 0 0 auto;
+            z-index: 2; // 确保按钮在模型信息上方可点击
+        }
         
         .config-btn, .share-btn, .action-btn {
             border-radius: 8px;
@@ -2149,6 +2392,73 @@ const formatTimestamp = () => {
         display: flex;
         justify-content: center;
         //padding-top: 80px;
+    }
+    
+    /* 添加滚动到底部按钮样式 */
+    .scroll-to-bottom-btn {
+        position: absolute;
+        bottom: 185px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: transparent;
+        color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        box-shadow: none;
+        border: none;
+        outline: none;
+        transition: all 0.3s ease;
+        opacity: 0;
+        visibility: hidden;
+        z-index: 100;
+        
+        &.visible {
+            opacity: 1;
+            visibility: visible;
+            animation: bounce 1s ease infinite;
+        }
+        
+        &:hover {
+            color: rgba(0, 0, 0, 0.8);
+            transform: translateX(-50%) translateY(-2px);
+        }
+        
+        &:active {
+            transform: translateX(-50%) translateY(0);
+        }
+        
+        svg {
+            width: 24px;
+            height: 24px;
+            filter: drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.2));
+        }
+        
+        @media (max-width: 768px) {
+            bottom: 100px;
+            right: 16px;
+            left: auto;
+            transform: none;
+            width: 36px;
+            height: 36px;
+            
+            &:hover {
+                transform: translateY(-2px);
+            }
+            
+            &:active {
+                transform: translateY(0);
+            }
+            
+            svg {
+                width: 22px;
+                height: 22px;
+            }
+        }
     }
     
     .welcome-container {
@@ -2324,6 +2634,16 @@ const formatTimestamp = () => {
     }
 }
 
+/* 添加动画效果 */
+@keyframes bounce {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-5px);
+    }
+}
+
 /* 聊天输入框 */
 .modern-chat-input {
     // 这个类现在主要由 ChatInput.vue 内部控制样式
@@ -2379,8 +2699,9 @@ const formatTimestamp = () => {
         }
         
         &::-webkit-scrollbar {
-            width: 6px;
+            width: 1px;
         }
+        scrollbar-width: thin;
         
         &::-webkit-scrollbar-track {
             background: transparent;
@@ -2520,9 +2841,10 @@ const formatTimestamp = () => {
     .chat-header {
         background-color: #202123;
         border-color: #333;
-        
+     
         .model-info .model-name {
             color: #ddd;
+          
         }
         
         .header-actions {
@@ -2589,6 +2911,23 @@ const formatTimestamp = () => {
                 .el-icon {
                     color: #aaa;
                 }
+            }
+        }
+        
+        .scroll-to-bottom-btn {
+            background-color: transparent;
+            color: rgba(255, 255, 255, 0.6);
+            border: none;
+            outline: none;
+            box-shadow: none;
+            
+            &:hover {
+                color: rgba(255, 255, 255, 0.9);
+                background-color: transparent;
+            }
+            
+            svg {
+                filter: drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.3));
             }
         }
     }
