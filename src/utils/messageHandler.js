@@ -390,11 +390,11 @@ export const messageHandler = {
             max_tokens,
             stream: true,  // 确保stream设置为true
             // 添加必需的字段以兼容SiliconFlow API
-            top_p: 0.7,
-            top_k: 50,
-            n: 1,
-            frequency_penalty: 0,
-            presence_penalty: 0
+           // top_p: 0.7,
+          //  top_k: 50,
+           // n: 1,
+           // frequency_penalty: 0,
+           // presence_penalty: 0
         };
 
         // SiliconFlow API可能需要特定的模型格式

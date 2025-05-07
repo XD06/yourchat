@@ -20,71 +20,86 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeMount } from 'vue'
+import { ref, onMounted, onBeforeMount, nextTick } from 'vue'
 import { useSettingsStore } from './stores/settings'
 import AppLogo from './components/AppLogo.vue'
 
 const settingsStore = useSettingsStore()
 const isAppLoaded = ref(false)
-const loadingMessage = ref('正在加载应用...')
+const loadingMessage = ref('正在初始化...')
 
-// 应用初始化并处理加载状态
+// 优化后的应用初始化
 const initApp = async () => {
   try {
-    // 减少模拟加载的时间，但增加网络超时检测
-    loadingMessage.value = '加载配置...'
-    await new Promise(resolve => setTimeout(resolve, 400))
-    
-    loadingMessage.value = '初始化界面...'
-    await new Promise(resolve => setTimeout(resolve, 300))
-    
-    // 加载设置并应用主题
+    // 立即应用主题，不等待
     const isDarkMode = settingsStore.isDarkMode
     document.documentElement.setAttribute('data-theme', isDarkMode ? 'dark' : 'light')
     
-    // 检查API配置
+    // 减少不必要的等待时间
+    loadingMessage.value = '检查配置...'
+    
+    // 确保DOM已更新
+    await nextTick()
+    
+    // 检查API配置但不阻塞应用加载
     if (!settingsStore.actualApiEndpoint || !settingsStore.actualApiKey) {
-      loadingMessage.value = '请在设置中配置API...'
-      // 仍然继续加载应用
-      await new Promise(resolve => setTimeout(resolve, 300))
+      loadingMessage.value = '未检测到API配置'
+      console.warn('API配置缺失，可能需要在设置中配置')
     } else {
-      loadingMessage.value = '准备就绪！'
-      await new Promise(resolve => setTimeout(resolve, 200))
+      loadingMessage.value = '应用已就绪'
     }
     
-    // 标记应用已加载完成
-    isAppLoaded.value = true
-  } catch (error) {
-    console.error('应用初始化错误:', error)
-    loadingMessage.value = '加载失败，请刷新页面重试'
-    // 即使发生错误，5秒后也强制显示应用
+    // 不再使用人为延迟，立即准备显示应用
+    await nextTick()
+    
+    // 为了保证平滑过渡，增加一个短暂的延迟
     setTimeout(() => {
       isAppLoaded.value = true
-    }, 5000)
+    }, 300)
+  } catch (error) {
+    console.error('应用初始化错误:', error)
+    loadingMessage.value = '初始化遇到问题，将继续加载...'
+    
+    // 即使发生错误，也尝试加载应用
+    setTimeout(() => {
+      isAppLoaded.value = true
+    }, 1000)
   }
 }
 
-// 在组件挂载前开始初始化
+// 网络超时处理优化
 onBeforeMount(() => {
-  // 网络超时处理 - 更快地提示网络问题
+  // 更快的超时检测
   setTimeout(() => {
     if (!isAppLoaded.value) {
-      loadingMessage.value = '加载时间较长，请检查网络连接...'
+      loadingMessage.value = '加载时间较长，即将完成...'
       
-      // 再等待5秒后，如果仍未加载完成，则强制显示应用
+      // 再等待较短时间后继续
       setTimeout(() => {
         if (!isAppLoaded.value) {
-          loadingMessage.value = '网络状况不佳，但仍将继续加载...'
+          console.warn('应用加载超时，强制显示')
           isAppLoaded.value = true
         }
-      }, 5000)
+      }, 2000) // 减少到2秒
     }
-  }, 3000) // 缩短到3秒
+  }, 2000) // 减少到2秒
+  
+  // 预初始化应用
+  initApp()
 })
 
-// 组件挂载时初始化应用
+// 可选的补充初始化
 onMounted(() => {
-  initApp()
+  // 如果onBeforeMount的initApp已经完成了加载，这里可以不再执行
+  if (!isAppLoaded.value) {
+    console.log('应用在mounted钩子中继续初始化')
+    // 用于确保应用在任何情况下都能加载完成
+    setTimeout(() => {
+      if (!isAppLoaded.value) {
+        isAppLoaded.value = true
+      }
+    }, 1500)
+  }
 })
 </script>
 
@@ -96,21 +111,27 @@ onMounted(() => {
   height: 100vh;
   width: 100vw;
   overflow: hidden;
+  background-color: #ffffff;
+  
+  [data-theme="dark"] & {
+    background-color: #121212;
+  }
 }
 
-// Loading Screen Styles
+// Optimized Loading Screen Styles
 .loading-screen {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: #ffffff;
+  background-color: inherit; // Use inherited background
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 9999;
-  transition: opacity 0.5s ease-out;
+  opacity: 1;
+  transition: opacity 0.3s ease;
   
   .loading-content {
     text-align: center;
@@ -119,94 +140,69 @@ onMounted(() => {
   
   .loading-logo {
     margin-bottom: 20px;
-    animation: pulse 2s infinite ease-in-out;
-    -webkit-backface-visibility: hidden;
-    backface-visibility: hidden;
-    -webkit-transform-style: preserve-3d;
-    transform-style: preserve-3d;
-    /* 加强抗锯齿渲染 */
-    image-rendering: -webkit-optimize-contrast;
-    image-rendering: crisp-edges;
-    /* 消除任何可能的模糊效果 */
-    -webkit-filter: blur(0);
-    filter: blur(0);
-    /* 使用硬件加速 */
-    will-change: transform;
-    /* 设置渲染图层 */
-    transform: translateZ(0);
-    -webkit-transform: translateZ(0);
+    // Simplified animation with transformed properties
+    animation: simple-pulse 1.5s infinite ease-in-out;
+    transform: translateZ(0); // Only essential hardware acceleration
   }
   
   .loading-title {
-    font-size: 2.5rem;
+    font-size: 2.2rem;
     font-weight: 700;
     color: #333333;
     margin-bottom: 20px;
+    
+    [data-theme="dark"] & {
+      color: #f0f0f0;
+    }
   }
   
   .loading-spinner {
     margin: 20px auto;
-    width: 40px;
-    height: 40px;
+    width: 36px;
+    height: 36px;
     
     .spinner {
       width: 100%;
       height: 100%;
-      border: 4px solid rgba(0, 0, 0, 0.1);
+      border: 3px solid rgba(0, 0, 0, 0.1);
       border-radius: 50%;
       border-top-color: #333333;
-      animation: spin 1s linear infinite;
+      animation: spin 0.8s linear infinite;
+      
+      [data-theme="dark"] & {
+        border-color: rgba(255, 255, 255, 0.1);
+        border-top-color: #f0f0f0;
+      }
     }
   }
   
   .loading-message {
-    font-size: 1rem;
+    font-size: 0.95rem;
     color: #666666;
     margin-top: 10px;
+    
+    [data-theme="dark"] & {
+      color: #aaaaaa;
+    }
   }
 }
 
-// Animations
+// Streamlined animations
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  to { transform: rotate(360deg); }
 }
 
-@keyframes pulse {
-  0%, 100% { 
-    transform: scale(1) translateZ(0); 
-    filter: none;
-    box-shadow: none;
-  }
-  50% { 
-    transform: scale(1.03) translateZ(0); /* 减小缩放幅度，降低边缘问题 */
-    filter: none;
-    box-shadow: none;
-  }
+@keyframes simple-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.02); }
 }
 
-// Dark mode for loading screen
-[data-theme="dark"] .loading-screen {
-  background-color: #121212;
-  
-  .loading-title {
-    color: #f0f0f0;
-  }
-  
-  .loading-message {
-    color: #aaaaaa;
-  }
-  
-  .loading-spinner .spinner {
-    border-color: rgba(255, 255, 255, 0.1);
-    border-top-color: #f0f0f0;
-  }
-  
-  .loading-logo {
-    filter: invert(1);
-  }
+// Optimized dark mode for loading logo
+[data-theme="dark"] .loading-logo {
+  filter: brightness(0) invert(1);
 }
 
+// Improved transition for app loading
 .app-loaded .loading-screen {
   opacity: 0;
   pointer-events: none;

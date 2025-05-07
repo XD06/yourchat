@@ -39,7 +39,7 @@
             @click.stop="toggleRolePrompt"
           >
             <el-icon><Avatar /></el-icon>
-            <span>角色</span>
+            <!-- <span>角色</span> -->
           </el-button>
         </div>
       </div>

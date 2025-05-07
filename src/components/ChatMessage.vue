@@ -388,15 +388,19 @@ onMounted(() => {
 <style lang="scss" scoped>
 .message-container {
   display: flex;
-  margin-bottom: 1.5rem;
-  align-items: flex-start; // 确保头像和内容顶部对齐
-
-  // 移动端优化：减小外边距
-  @media (max-width: 768px) {
-    margin-bottom: 1rem;
+  margin-bottom: 20px;
+  position: relative;
+  width: 100%;
+  
+  // Desktop styles - make messages more centered
+  @media (min-width: 769px) {
+    width: 90%;
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
   }
-
-  // 用户消息靠右
+  
+  // User message styling
   &.role-user {
     justify-content: flex-end;
     .message-content {
@@ -490,6 +494,11 @@ onMounted(() => {
         display: flex;
   flex-direction: column;
   max-width: 80%; // 限制消息内容最大宽度，避免过长
+
+  // For desktop, make the content slightly narrower for better readability
+  @media (min-width: 769px) {
+    max-width: 70%;
+  }
 
   // 移动端消息内容占满可用空间
   @media (max-width: 768px) {
@@ -656,7 +665,7 @@ onMounted(() => {
         font-family: 'Fira Code', 'JetBrains Mono', monospace;
         margin: 0; // 移除可能存在的默认margin
         background-color: inherit; // 继承父元素的背景色
-        color: #333; // 默认代码颜色
+        color:#7e2379; // 默认代码颜色
         [data-theme="dark"] & {
             color: #e0e0e0; // 暗黑模式代码颜色
         }

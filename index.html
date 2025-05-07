@@ -4,11 +4,55 @@
     <meta charset="UTF-8">
     <link rel="icon" href="/favicon.ico">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="AI聊天应用 - 一个基于Vue.js的AI聊天工具">
     <title>AI Chat</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/firacode@6.2.0/distr/fira_code.css">
+    
+    <!-- DNS预解析和预连接 -->
+    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    
+    <!-- 预加载关键资源 -->
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/firacode@6.2.0/distr/fira_code.css" as="style">
+    
+    <!-- 关键CSS内联 -->
+    <style>
+      html, body { margin: 0; padding: 0; height: 100%; }
+      body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+      #app { height: 100%; width: 100%; position: relative; }
+      /* 轻量级加载指示器，应用加载前显示 */
+      body::before {
+        content: '';
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        width: 30px;
+        height: 30px;
+        margin: -15px 0 0 -15px;
+        border: 3px solid #f3f3f3;
+        border-top: 3px solid #555;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+        z-index: 1;
+      }
+      @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+    
+    <!-- 异步加载非关键CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/firacode@6.2.0/distr/fira_code.css" media="print" onload="this.media='all'">
   </head>
   <body>
     <div id="app"></div>
     <script type="module" src="/src/main.js"></script>
+    <!-- 添加缓存优化设置 -->
+    <script>
+      // 判断是否支持缓存存储API
+      if ('caches' in window) {
+        // 初始缓存预热
+        window.addEventListener('load', () => {
+          // 标记应用已加载，可用于后续性能改进
+          window.APP_LOADED = true;
+        });
+      }
+    </script>
   </body>
 </html>
