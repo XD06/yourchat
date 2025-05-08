@@ -23,7 +23,11 @@
         autocapitalize="off"
       />
       <!-- 添加删除按钮 -->
-      <button class="input-icon-btn delete-btn" @click="handleClear">
+      <button 
+        class="input-icon-btn delete-btn" 
+        @click="handleClear"
+        @touchstart="handleClearTouch"
+      >
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="3 6 5 6 21 6"></polyline>
           <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
@@ -31,7 +35,11 @@
           <line x1="14" y1="11" x2="14" y2="17"></line>
         </svg>
       </button>
-      <button class="input-icon-btn send-btn" @click="handleSend">
+      <button 
+        class="input-icon-btn send-btn" 
+        @click="handleSend"
+        @touchstart="handleSendTouch"
+      >
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <line x1="22" y1="2" x2="11" y2="13"></line>
           <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
@@ -425,7 +433,12 @@ const handlePause = () => {
 
 // 修改发送处理函数
 const handleSend = async () => {
-  if ((!messageText.value.trim() && selectedFiles.value.length === 0) || isGenerating.value) return
+  console.log('[ChatInput] handleSend called, message:', messageText.value ? messageText.value.substring(0, 20) + '...' : '(empty)');
+  
+  if ((!messageText.value.trim() && selectedFiles.value.length === 0) || isGenerating.value) {
+    console.log('[ChatInput] handleSend aborted: empty message or already generating');
+    return;
+  }
   
   try {
     // 处理文件上传
@@ -445,13 +458,14 @@ const handleSend = async () => {
       content = content + '\n' + fileContents.join('\n')
     }
 
+    console.log('[ChatInput] Emitting send event with content');
     emit('send', content)
     isGenerating.value = true
     messageText.value = ''
     selectedFiles.value = []
     showUpload.value = false
   } catch (error) {
-    console.error('发送失败:', error)
+    console.error('[ChatInput] Send failed:', error)
     ElMessage.error('发送失败，请重试')
   }
 }
@@ -488,6 +502,7 @@ const newline = (e) => {
 
 // 处理清空对话的函数
 const handleClear = async () => {
+  console.log('[ChatInput] handleClear called');
   try {
     // 使用Element Plus的消息框组件，提示用户是否确定清空对话记录
     await ElMessageBox.confirm(
@@ -500,8 +515,10 @@ const handleClear = async () => {
       }
     )
     // 如果用户确认清空，则触发clear事件
+    console.log('[ChatInput] User confirmed clear, emitting clear event');
     emit('clear')
-  } catch {
+  } catch (error) {
+    console.log('[ChatInput] User cancelled clear or error occurred:', error);
     // 如果用户取消操作，则不做任何事情
   }
 }
@@ -520,6 +537,19 @@ const adjustHeight = () => {
 }
 
 const rolePopup = ref(null)
+
+// Handling touch events for mobile
+const handleSendTouch = (e) => {
+  e.preventDefault(); // Prevent default touch behavior
+  console.log('[ChatInput] handleSendTouch called');
+  handleSend();
+}
+
+const handleClearTouch = (e) => {
+  e.preventDefault(); // Prevent default touch behavior
+  console.log('[ChatInput] handleClearTouch called');
+  handleClear();
+}
 </script>
 
 <style lang="scss" scoped>
@@ -575,6 +605,15 @@ const rolePopup = ref(null)
     color: var(--icon-color, #666);
     padding: 8px;
     transition: color 0.2s;
+    /* Enhanced touch target for mobile */
+    min-width: 44px;
+    min-height: 44px;
+    position: relative;
+    
+    /* Active state feedback for touch */
+    &:active {
+      transform: scale(0.95);
+    }
     
     &:hover {
       color: var(--icon-hover-color, #333);

@@ -49,8 +49,10 @@ export const useChatStore = defineStore('chat', {
         },
 
         clearMessages() {
+            console.log('[ChatStore] clearMessages called, removing all messages');
             this.messages = []
             this.resetTokenCount()
+            console.log('[ChatStore] Messages cleared, new length:', this.messages.length);
         },
         
         setMessages(messages) {
