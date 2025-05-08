@@ -167,6 +167,7 @@
 
 .code-header .code-actions {
   display: flex;
+  align-items: center; /* 垂直居中对齐按钮 */
   gap: 8px;
 }
 
@@ -176,10 +177,11 @@
   color: inherit;
   cursor: pointer;
   opacity: 0.7;
-  padding: 2px;
+  padding: 4px; /* 增加内边距使点击区域更大 */
   display: flex;
   align-items: center;
   justify-content: center;
+  line-height: 1; /* 确保图标垂直居中 */
 }
 
 .copy-btn:hover, .run-btn:hover {
@@ -200,4 +202,4 @@
 
 [data-theme="dark"] .run-btn:hover {
   color: #3d8b40;
-} 
+}

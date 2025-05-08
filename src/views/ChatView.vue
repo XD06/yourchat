@@ -246,7 +246,7 @@
             <div 
                 class="scroll-to-bottom-btn" 
                 :class="{ 'visible': showScrollButton }"
-                @click="scrollToBottom"
+                @click="() => scrollToBottom(true)"
             >
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="7 13 12 18 17 13"></polyline>
@@ -641,17 +641,16 @@ const saveChatHistory = () => {
 // 发送消息方法
 const handleSend = async (content) => {
   console.log('[ChatView] handleSend received content:', content ? content.substring(0, 50) + '...' : '(empty)');
-  
   if (!content || !content.trim()) {
     console.warn('[ChatView] handleSend received empty content. Aborting.');
     return;
   }
 
   // If already loading, prevent sending another message
-  if (chatStore.isLoading) {
-      ElMessage.warning('已有消息正在处理中，请稍后再试');
-      return;
-  }
+//   if (chatStore.isLoading) {
+//       ElMessage.warning('已有消息正在处理中，请稍后再试');
+//       return;
+//   }
 
   // If there's an active controller, abort it first
   if (activeController.value) {
@@ -687,7 +686,7 @@ const handleSend = async (content) => {
 
     // Scroll to bottom after adding messages
     await nextTick();
-    scrollToBottom();
+    scrollToBottom();//发送消息后滚动到底部
     
     // Prepare messages for API
     const apiMessages = prepareMessagesForAPI();
@@ -917,15 +916,32 @@ const handlePauseGeneration = () => {
         console.log('[ChatView] Request aborted');
     }
 }
-
+const scrollToBottom_i = (forceScroll = false) => {
+    if (messagesContainer.value) {
+      messagesContainer.value.scrollTo({
+        top: messagesContainer.value.scrollHeight,
+        behavior: 'smooth'
+      });
+    }
+  };
 // 滚动到底部的辅助函数
-const scrollToBottom = () => {
+const scrollToBottom = (forceScroll = false) => {
   if (messagesContainer.value) {
-    messagesContainer.value.scrollTo({
-      top: messagesContainer.value.scrollHeight,
-      behavior: 'smooth'
-    });
-    console.log('滚动到底部按钮被点击');
+    const { scrollHeight, scrollTop, clientHeight } = messagesContainer.value;
+    // 定义一个阈值（像素），用于判断用户是否接近底部
+    const SCROLL_THRESHOLD = 200;
+    // 检查用户是否在阈值范围内，或者是否强制滚动
+    const isUserNearBottom = scrollHeight - scrollTop - clientHeight < SCROLL_THRESHOLD;
+
+    if (forceScroll || isUserNearBottom) {
+      messagesContainer.value.scrollTo({
+        top: messagesContainer.value.scrollHeight,
+        behavior: 'smooth'
+      });
+      // console.log('已滚动到底部。强制:', forceScroll, '用户接近底部:', isUserNearBottom);
+    } else {
+      // console.log('未滚动到底部，用户不在底部附近。');
+    }
   }
 };
 
@@ -1371,7 +1387,7 @@ const handleRegenerate = async (message) => {
     
     // 确保消息列表更新后滚动到底部
     await nextTick();
-    scrollToBottom();
+    scrollToBottom_i();//发送消息直接滑动到底部
     
     // 准备API消息
     const apiMessages = prepareMessagesForAPI();

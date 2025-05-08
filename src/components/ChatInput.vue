@@ -300,6 +300,14 @@ const roleCategories = ref([
       { name: '法律顾问', description: '提供基础的法律信息（非专业建议）', prompt: '你是一位AI法律信息助手，请注意，你提供的信息不构成法律建议。', color: '#AB47BC' },
       { name: '健身教练', description: '提供健身计划和建议', prompt: '你是一位虚拟健身教练，请根据用户情况提供安全的健身建议。', color: '#FF7043' }
     ]
+  },
+  {
+    name: '娱乐',
+    roles: [
+      { name: '笑话生成器', description: '生成笑话', prompt: '你是一个幽默的笑话生成器。请为用户提供一些有趣的笑话。', color: '#00B8D4' },
+      { name: '音乐推荐', description: '推荐音乐', prompt: '你是一个音乐推荐系统，请根据用户喜好推荐一些歌曲。', color: '#E65100' },
+      { name: '电影推荐', description: '推荐电影', prompt: '你是一个电影推荐系统，请根据用户喜好推荐一些电影。', color: '#311B92' }
+    ]
   }
 ])
 

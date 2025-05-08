@@ -4,7 +4,7 @@
     <div class="loading-screen" v-if="!isAppLoaded">
       <div class="loading-content">
         <div class="loading-logo">
-          <AppLogo :size="100" color="#333333" />
+          <AppLogo :size="120" color="#000000" />
         </div>
         <h1 class="loading-title">MyChat</h1>
         <div class="loading-spinner">

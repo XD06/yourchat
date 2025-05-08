@@ -618,6 +618,7 @@ const handleRunClick = (e) => {
   font-size: 0.85rem;
   color: #555;
   border: 1px solid rgba(0,0,0,0.05);
+  width: fit-content;
 
   [data-theme="dark"] & {
     background-color: rgba(255, 255, 255, 0.05);
@@ -756,7 +757,7 @@ const handleRunClick = (e) => {
         margin: 0; // 移除可能存在的默认margin
         background-color: inherit; // 继承父元素的背景色
         color:#7e2379; // 默认代码颜色
-        scrollbar-width: thin; // 滚动条宽度;
+        scrollbar-width: none; // 滚动条宽度;
         [data-theme="dark"] & {
             color: #e0e0e0; // 暗黑模式代码颜色
         }
@@ -883,7 +884,7 @@ const handleRunClick = (e) => {
   overflow-y: auto;
   border: 1px solid #dddddd;
   display: block;
-  scrollbar-width: thin;
+  scrollbar-width: none;
 }
 
 :deep(thead tr) {

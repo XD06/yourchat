@@ -1,6 +1,11 @@
 {
 	"folders": [
 		{
+			"name": "outlook",
+			"path": "../../../../outlook"
+		},
+		{
+			"name": "AIchat",
 			"path": "../../.."
 		}
 	],
