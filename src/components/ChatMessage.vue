@@ -155,7 +155,7 @@
 <script setup>
 import { ref, computed, getCurrentInstance, onMounted, nextTick, watch } from 'vue'
 import { useChatStore } from '../stores/chat'
-import { ElMessage } from 'element-plus'
+import { ElMessage, ElMessageBox } from 'element-plus'
 import { 
   ChatDotRound, 
   MoreFilled, 
@@ -288,7 +288,7 @@ const handleUserCommand = (command) => {
       startEdit()
       break
     case 'delete':
-    emit('delete', props.message)
+      handleDelete()
       break
     case 'copy':
       handleCopy()
@@ -306,9 +306,23 @@ const handleAssistantCommand = (command) => {
       handleCopy()
       break
     case 'delete':
-      emit('delete', props.message)
+      handleDelete()
       break
   }
+}
+
+// 统一处理删除消息
+const handleDelete = () => {
+  // 使用confirm避免误删
+  ElMessageBox.confirm('确定要删除这条消息吗?', '提示', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning'
+  }).then(() => {
+    emit('delete', props.message)
+  }).catch(() => {
+    // 用户取消，不执行任何操作
+  })
 }
 
 // 复制消息内容

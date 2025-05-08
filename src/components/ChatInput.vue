@@ -263,8 +263,9 @@ onUnmounted(() => {
 })
 
 // 输入框的占位符
-const placeholder = isMobileView.value ? '输入聊天内容...' : `输入消息，按Enter发送
-Shift + Enter 换行`
+const placeholder = computed(() => {
+  return isMobileView.value ? '输入聊天内容...' : `输入消息，按Enter发送\nShift + Enter 换行`;
+});
 
 // 计算属性，用于获取聊天存储中的Token计数
 const tokenCount = computed(() => chatStore.tokenCount)
@@ -279,111 +280,34 @@ const selectedFiles = ref([])
 
 // 角色选择功能
 const showRolePrompt = ref(false)
+const rolePopup = ref(null)
 const activeCategoryIndex = ref(0)
 
-// 角色分类和角色列表
-const roleCategories = [
+// 示例角色分类数据
+const roleCategories = ref([
   {
-    name: "常用",
+    name: '通用',
     roles: [
-      {
-        name: "通用助手",
-        description: "有帮助、无害和诚实的AI助手",
-        color: "#1890ff",
-        prompt: "你是一个有帮助、无害和诚实的AI助手。"
-      },
-      {
-        name: "编程专家",
-        description: "精通编程和软件开发的专家",
-        color: "#722ed1",
-        prompt: "你是一位精通编程和软件开发的专家，拥有多种编程语言和框架的丰富知识。请提供详细、准确的代码示例和解释。"
-      },
-      {
-        name: "创意写手",
-        description: "富有创意的故事讲述者和内容创作者",
-        color: "#eb2f96",
-        prompt: "你是一位擅长讲故事、创意写作和内容创作的写手。请帮助撰写吸引人的叙事、故事和创意内容。"
-      }
+      { name: '通用助手', description: '一个通用的AI助手', prompt: '你是一个乐于助人的AI助手。', color: '#4285F4' },
+      { name: '创意写手', description: '帮助你写故事、诗歌或剧本', prompt: '你是一位富有创造力的作家，擅长写引人入胜的故事。', color: '#DB4437' },
+      { name: '代码助手', description: '帮助你编写和调试代码', prompt: '你是一位专业的程序员，精通多种编程语言，乐于助人。', color: '#F4B400' }
     ]
   },
   {
-    name: "专业领域",
+    name: '专业',
     roles: [
-      {
-        name: "商业分析师",
-        description: "精通商业分析和战略的专家",
-        color: "#52c41a",
-        prompt: "你是一位技能娴熟的商业分析师，专长于市场分析、商业战略和组织规划。请提供有见地的分析和实用建议。"
-      },
-      {
-        name: "学术研究员",
-        description: "具有研究方法专业知识的学者",
-        color: "#faad14",
-        prompt: "你是一位学术研究员，在研究方法、文献综述和学术写作方面拥有丰富经验。请帮助解答研究问题、设计方法论和进行学术写作。"
-      },
-      {
-        name: "法律顾问",
-        description: "精通法律事务和法规的专家",
-        color: "#13c2c2",
-        prompt: "你是一位了解各种法律领域的专家。请提供一般性的法律信息和考虑因素，同时明确表示你不是在提供官方法律建议。"
-      }
-    ]
-  },
-  {
-    name: "专业技能",
-    roles: [
-      {
-        name: "数学导师",
-        description: "精于解释数学概念的专家",
-        color: "#fa8c16",
-        prompt: "你是一位数学导师，善于用简单的语言解释复杂的数学概念。请逐步帮助解决数学问题，并解释基本原理。"
-      },
-      {
-        name: "语言教练",
-        description: "帮助语言学习和语言学的专家",
-        color: "#a0d911",
-        prompt: "你是一位语言教练，专门教授语言和解释语言学概念。请帮助学习语言、语法、词汇和发音。"
-      },
-      {
-        name: "职业顾问",
-        description: "职业发展和求职方面的专家",
-        color: "#1890ff",
-        prompt: "你是一位职业顾问，在专业发展、简历制作、面试准备和求职策略方面拥有专业知识。请为职业发展提供实用指导。"
-      }
+      { name: '数学导师', description: '解释复杂的数学概念', prompt: '你是一位数学导师，善于用简单的语言解释复杂的数学概念。请逐步帮助解决数学问题，并解释基本原理。', color: '#0F9D58' },
+      { name: '法律顾问', description: '提供基础的法律信息（非专业建议）', prompt: '你是一位AI法律信息助手，请注意，你提供的信息不构成法律建议。', color: '#AB47BC' },
+      { name: '健身教练', description: '提供健身计划和建议', prompt: '你是一位虚拟健身教练，请根据用户情况提供安全的健身建议。', color: '#FF7043' }
     ]
   }
-]
+])
 
-// 计算属性，获取当前激活的角色分类
-const activeCategory = computed(() => {
-  return roleCategories[activeCategoryIndex.value]
-})
+const activeCategory = computed(() => roleCategories.value[activeCategoryIndex.value])
 
-// 切换角色选择区域显示
+// 切换角色提示面板
 const toggleRolePrompt = () => {
-  console.log('Role button clicked, toggling prompt area', new Date().toISOString())
   showRolePrompt.value = !showRolePrompt.value
-  console.log('showRolePrompt is now:', showRolePrompt.value)
-  
-  if (showRolePrompt.value) {
-    showUpload.value = false // 关闭上传区域
-    
-    // 等待DOM更新后设置焦点到弹窗
-    setTimeout(() => {
-      if (rolePopup.value) {
-        rolePopup.value.focus && rolePopup.value.focus()
-        
-        // 添加ESC键监听关闭弹窗
-        const handleKeyDown = (e) => {
-          if (e.key === 'Escape') {
-            showRolePrompt.value = false
-            document.removeEventListener('keydown', handleKeyDown)
-          }
-        }
-        document.addEventListener('keydown', handleKeyDown)
-      }
-    }, 100)
-  }
 }
 
 // 选择角色
@@ -431,7 +355,7 @@ const handlePause = () => {
   }
 }
 
-// 修改发送处理函数
+// 处理发送消息 (通用)
 const handleSend = async () => {
   console.log('[ChatInput] handleSend called, message:', messageText.value ? messageText.value.substring(0, 20) + '...' : '(empty)');
   
@@ -504,63 +428,48 @@ const readFileContent = (file) => {
 
 // 处理换行的函数
 const newline = (e) => {
-  // 在消息文本中添加换行符
   messageText.value += '\n'
+  // 可以在这里添加代码以保持光标可见
 }
 
 // 处理清空对话的函数
-const handleClear = async () => {
-  console.log('[ChatInput] handleClear called');
-  try {
-    // 使用Element Plus的消息框组件，提示用户是否确定清空对话记录
-    await ElMessageBox.confirm(
-      '确定要清空所有对话记录吗？',
-      '警告',
-      {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning',
-      }
-    )
-    // 如果用户确认清空，则触发clear事件
-    console.log('[ChatInput] User confirmed clear, emitting clear event');
-    emit('clear')
-  } catch (error) {
-    console.log('[ChatInput] User cancelled clear or error occurred:', error);
-    // 如果用户取消操作，则不做任何事情
-  }
+const handleClear = () => {
+  console.log('Clear button clicked');
+  ElMessageBox.confirm('确定要清空当前对话记录吗?', '提示', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning'
+  }).then(() => {
+    console.log('Emitting clear event');
+    emit('clear');
+  }).catch(() => {
+    // 用户取消，不执行任何操作
+    console.log('Clear cancelled');
+  });
+};
+
+// 处理移动端发送按钮的 touchstart 事件
+const handleSendTouch = (event) => {
+    // 阻止事件冒泡和默认行为，防止触发 click
+    event.stopPropagation();
+    event.preventDefault();
+    handleSend(); // 调用通用的发送逻辑
 }
 
-const inputRef = ref(null)
+// 处理移动端清空按钮的 touchstart 事件
+const handleClearTouch = (event) => {
+    // 阻止事件冒泡和默认行为，防止触发 click
+    event.stopPropagation();
+    event.preventDefault();
+    handleClear(); // 调用通用的清空逻辑
+}
 
-// 调整输入框高度的方法
+// 输入框自适应高度
+const inputRef = ref(null)
 const adjustHeight = () => {
   if (inputRef.value) {
-    const textarea = inputRef.value.$el.querySelector('textarea')
-    if (textarea) {
-      textarea.style.height = 'auto'
-      textarea.style.height = `${textarea.scrollHeight}px`
-    }
+    // 这里可以根据需要调整高度逻辑，暂时留空
   }
-}
-
-const rolePopup = ref(null)
-
-// Handling touch events for mobile
-const handleSendTouch = (e) => {
-  e.preventDefault(); // Prevent default touch behavior
-  e.stopPropagation(); // Stop event propagation
-  console.log('[ChatInput] handleSendTouch called');
-  
-  // Call the main handleSend function
-  handleSend();
-}
-
-const handleClearTouch = (e) => {
-  e.preventDefault(); // Prevent default touch behavior
-  e.stopPropagation(); // Stop event propagation
-  console.log('[ChatInput] handleClearTouch called');
-  handleClear();
 }
 </script>
 

@@ -20,13 +20,17 @@ export const messageHandler = {
      * @returns {number} token数量
      */
     countTokens(text) {
+        // 处理null或undefined
         if (!text) return 0;
         
-        // 基本正则表达式规则
+        // 确保text是字符串
+        text = String(text);
+        
+        // 简单的估算模式
         const patterns = {
-            cjk: /[\u4e00-\u9fff\u3000-\u303f\u3040-\u309f\u30a0-\u30ff\uff00-\uff9f\u4e00-\u9faf]/g,
-            emoji: /[\p{Emoji_Presentation}|\p{Extended_Pictographic}]/gu,
-            punctuation: /[!"#$%&'()*+,-./:;<=>?@[\\\]^_`{|}~，。、！？：；""''（）【】《》]/g,
+            cjk: /[\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff\uff66-\uff9f]/g,
+            emoji: /[\p{Extended_Pictographic}]/gu,
+            punctuation: /[^\w\s\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff\uff66-\uff9f]/g,
             whitespace: /\s+/g,
             number: /\d+(\.\d+)?/g,
             latinWord: /[a-zA-Z]+([-'][a-zA-Z]+)*/g
@@ -41,7 +45,6 @@ export const messageHandler = {
         
         // 处理代码块
         const codeBlockRegex = /```[\s\S]*?```/g;
-        const inlineCodeRegex = /`[^`]+`/g;
         let match;
         
         while ((match = codeBlockRegex.exec(normalizedText)) !== null) {

@@ -26,8 +26,8 @@
             <div class="icon-item" style = "background-color: grey; border-radius: 100%;height: 20px;width: 20px;">
                 <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="20" height="20" viewBox="0 0 30 30">
     <path d="M15,3C8.373,3,3,8.373,3,15c0,5.623,3.872,10.328,9.092,11.63C12.036,26.468,12,26.28,12,26.047v-2.051 c-0.487,0-1.303,0-1.508,0c-0.821,0-1.551-0.353-1.905-1.009c-0.393-0.729-0.461-1.844-1.435-2.526 c-0.289-0.227-0.069-0.486,0.264-0.451c0.615,0.174,1.125,0.596,1.605,1.222c0.478,0.627,0.703,0.769,1.596,0.769 c0.433,0,1.081-0.025,1.691-0.121c0.328-0.833,0.895-1.6,1.588-1.962c-3.996-0.411-5.903-2.399-5.903-5.098 c0-1.162,0.495-2.286,1.336-3.233C9.053,10.647,8.706,8.73,9.435,8c1.798,0,2.885,1.166,3.146,1.481C13.477,9.174,14.461,9,15.495,9 c1.036,0,2.024,0.174,2.922,0.483C18.675,9.17,19.763,8,21.565,8c0.732,0.731,0.381,2.656,0.102,3.594 c0.836,0.945,1.328,2.066,1.328,3.226c0,2.697-1.904,4.684-5.894,5.097C18.199,20.49,19,22.1,19,23.313v2.734 c0,0.104-0.023,0.179-0.035,0.268C23.641,24.676,27,20.236,27,15C27,8.373,21.627,3,15,3z"></path>
-</svg>
-            </div>
+                    </svg>
+                </div>
                
             <!-- 添加收起/展开侧边栏的按钮 -->
             <div class="icon-item" @click="toggleSidebar">
@@ -647,217 +647,159 @@ const handleSend = async (content) => {
     return;
   }
 
-  // Rest of existing handleSend code...
-};
+  // If already loading, prevent sending another message
+  if (chatStore.isLoading) {
+      ElMessage.warning('已有消息正在处理中，请稍后再试');
+      return;
+  }
 
-/**
- * 清除消息处理函数
- */
-const handleClear = () => {
-    console.log('[ChatView] handleClear called, clearing messages...');
-    chatStore.clearMessages();
-    console.log('[ChatView] Messages cleared');
-}
+  // If there's an active controller, abort it first
+  if (activeController.value) {
+    console.log('[ChatView] Aborting existing request before sending new message');
+    activeController.value.abort();
+    activeController.value = null;
+  }
+  
+  let result = null; // Initialize result
+  chatStore.isLoading = true; // Set loading state immediately
 
-// 处理消息更新 (重新生成时不再调用此方法，需要评估是否仍需要)
-const handleMessageUpdate = async (updatedMessage) => {
-    console.warn('[handleMessageUpdate] invoked. Consider if this logic is still needed after regeneration changes.');
-    const index = chatStore.messages.findIndex(m => m.id === updatedMessage.id)
-    if (index !== -1 && index > 0 && chatStore.messages[index - 1]?.role === 'user') {
-        console.log(`[handleMessageUpdate] User message at index ${index - 1} updated. Triggering regeneration.`);
-        if (index + 1 < chatStore.messages.length && chatStore.messages[index + 1]?.role === 'assistant') {
-             await handleRegenerate(chatStore.messages[index + 1]);
-        } else {
-             console.log(`[handleMessageUpdate] No assistant message found after index ${index}. Sending as new.`);
-             chatStore.messages.splice(index + 1);
-             await handleSend(updatedMessage.content);
+  try {
+    // Add user message
+    const userMessage = {
+      id: Date.now(),
+      role: 'user',
+      content: content,
+      timestamp: new Date().toISOString()
+    };
+    chatStore.addMessage(userMessage);
+    console.log('[ChatView] User message added to store');
+    
+    // Add empty assistant message placeholder
+    const assistantMessage = {
+      id: Date.now() + 1,
+      role: 'assistant',
+      content: '',
+      timestamp: new Date().toISOString(),
+      completed: false
+    };
+    chatStore.addMessage(assistantMessage);
+    console.log('[ChatView] Empty assistant message added to store');
+
+    // Scroll to bottom after adding messages
+    await nextTick();
+    scrollToBottom();
+    
+    // Prepare messages for API
+    const apiMessages = prepareMessagesForAPI();
+    
+    // Validate API messages
+    if (apiMessages.length === 0) {
+      console.error('[ChatView] Error: Prepared API messages are empty');
+      ElMessage.error('消息准备失败: 消息为空');
+      // No need to return, finally block handles isLoading
+      throw new Error('Prepared API messages are empty'); 
+    }
+
+    // Check API Key
+    if (!settingsStore.actualApiKey) {
+      ElMessage.error('请在设置中配置有效的API Key');
+      showSettings.value = true;
+      // No need to return, finally block handles isLoading
+      throw new Error('API Key not configured');
+    }
+
+    // Call API
+    result = await messageHandler.sendMessage(
+        apiMessages,
+        settingsStore.actualApiKey,
+        settingsStore.actualApiEndpoint || 'https://api.openai.com/v1/chat/completions',
+        {
+          model: settingsStore.model,
+          temperature: settingsStore.temperature,
+          max_tokens: settingsStore.maxTokens,
+          stream: settingsStore.streamResponse
+        },
+        (updatedContent, done) => {
+          // Update message content
+          const lastMessage = chatStore.messages[chatStore.messages.length - 1];
+          if (lastMessage && lastMessage.role === 'assistant') {
+            let contentChanged = false;
+            if (typeof updatedContent === 'object') {
+              if (updatedContent.content !== undefined && lastMessage.content !== updatedContent.content) {
+                lastMessage.content = updatedContent.content;
+                contentChanged = true;
+              }
+              if (updatedContent.thinkingContent !== undefined && lastMessage.thinkingContent !== updatedContent.thinkingContent) {
+                lastMessage.thinkingContent = updatedContent.thinkingContent;
+                 contentChanged = true; // Consider thinking content change as update
+              }
+            } else if (updatedContent && updatedContent.length > 0 && lastMessage.content !== updatedContent) {
+              lastMessage.content = updatedContent;
+              contentChanged = true;
+            }
+            
+            // Auto-scroll if content changed and user is near bottom
+            if(contentChanged && isScrolledToBottom()) {
+                nextTick(scrollToBottom);
+            }
+
+          } else {
+            console.error('[ChatView Send] Cannot find assistant message to update');
+          }
+          
+          if (done) {
+            // Mark as complete and update tokens
+            const lastMessage = chatStore.messages[chatStore.messages.length - 1];
+            if (lastMessage && lastMessage.role === 'assistant') {
+              lastMessage.completed = true;
+              const promptTokens = messageHandler.countTokens(apiMessages.filter(m => m.role !== 'assistant').map(m => m.content).join(''));
+              const finalContent = typeof updatedContent === 'object' ? updatedContent.content || '' : updatedContent || '';
+              const completionTokens = messageHandler.countTokens(finalContent);
+              chatStore.updateTokenCount(promptTokens, completionTokens);
+              saveMessages();
+            }
+          }
         }
-    } else if (index === 0 && updatedMessage.role === 'user'){
-         console.log(`[handleMessageUpdate] First user message updated. Sending as new.`);
-         chatStore.messages.splice(1); // 删除之后所有
-         await handleSend(updatedMessage.content);
-    }
-}
-
-// 处理消息删除
-const handleMessageDelete = (messageToDelete) => {
-    const index = chatStore.messages.findIndex(m => m.id === messageToDelete.id);
-    if (index !== -1) {
-        console.log(`[handleMessageDelete] Deleting message at index ${index}`);
-        if (messageToDelete.role === 'user' && index + 1 < chatStore.messages.length && chatStore.messages[index + 1].role === 'assistant') {
-            console.log(`   Also deleting assistant message at index ${index + 1}`);
-            chatStore.messages.splice(index, 2);
-        } else {
-            chatStore.messages.splice(index, 1);
-        }
-    }
-}
-
-// 处理重新生成
-const handleRegenerate = async (messageToRegenerate) => {
-    console.log('[Regenerate] Starting regeneration for message:', JSON.parse(JSON.stringify(messageToRegenerate)));
-
-    if (messageToRegenerate.role !== 'assistant') {
-        console.error('[Regenerate] Error: Only assistant messages can be regenerated.');
-        return;
-    }
-
-    const assistantMessageIndex = chatStore.messages.findIndex(m => m.id === messageToRegenerate.id);
-    if (assistantMessageIndex === -1) {
-        console.error(`[Regenerate] Error: Could not find message with ID ${messageToRegenerate.id} in the store.`);
-        return;
-    }
-    console.log(`[Regenerate] Found assistant message at index: ${assistantMessageIndex}`);
-    const messageIdToDelete = messageToRegenerate.id; 
-
-    // if (chatStore.isLoading) {
-    //     console.warn('[Regenerate] Aborted: Already loading.');
-    //     ElMessage.warning('请等待当前消息处理完成');
-    //     return;
-    // }
-
-    // 如果有活动的请求，先中止
-    if (activeController.value) {
-        console.log('[Regenerate] Aborting existing request');
-        activeController.value.abort();
-        activeController.value = null;
-    }
-
-    // 找到前一个用户消息
-    let userMessageIndex = -1;
-    for (let i = assistantMessageIndex - 1; i >= 0; i--) {
-        if (chatStore.messages[i]?.role === 'user') {
-            userMessageIndex = i;
-            break;
-        }
-    }
-    console.log(`[Regenerate] Found preceding user message at index: ${userMessageIndex}`);
-
-    if (userMessageIndex === -1) {
-        console.error(`[Regenerate] Error: No preceding user message found for AI message at index ${assistantMessageIndex}.`);
-        ElMessage.warning('无法重新生成，因为在此之前没有找到用户提问。');
-        return;
-    }
-
-    try {
-        chatStore.isLoading = true;
-
-        // 删除要重新生成的消息
-        chatStore.messages = chatStore.messages.filter(m => m.id !== messageIdToDelete); 
-
-        // 准备上下文消息
-        const apiMessages = prepareMessagesForAPI();
-        
-        console.log('[Regenerate] API Messages:', apiMessages);
-        
-        // 临时调试：检查消息格式
-        if (apiMessages.length === 0) {
-            console.error('[Regenerate] 错误: 准备的API消息为空');
-            ElMessage.error('消息准备失败: 消息为空');
-            chatStore.isLoading = false;
-            return;
-        }
-
-        // 添加新的空助手消息
-        const newAssistantMessage = {
-            id: Date.now(),
-            role: 'assistant',
-            content: '',
-            timestamp: new Date().toISOString(),
-            completed: false
-        };
-        chatStore.messages.push(newAssistantMessage);
-        
-        // 初始化变量，避免引用错误
-        let result = { success: false, controller: null, aborted: false };
-        
-        // 调用API发送消息并获取响应 - 使用 actualApiKey 和 actualApiEndpoint
-        try {
-            result = await messageHandler.sendMessage(
-                apiMessages,
-                settingsStore.actualApiKey,
-                settingsStore.actualApiEndpoint || 'https://api.openai.com/v1/chat/completions',
-                {
-                    model: settingsStore.model,
-                    temperature: settingsStore.temperature,
-                    max_tokens: settingsStore.maxTokens
-                },
-                (updatedContent, done) => {
-                    // 更新最新的AI消息内容
-                   // console.log(`[Regenerate] onUpdate callback: done=${done}`);
-                    
-                    // 确保找到最后一条助手消息并更新它
-                    const lastMessage = chatStore.messages[chatStore.messages.length - 1];
-                    if (lastMessage && lastMessage.role === 'assistant') {
-                        // 如果updatedContent是对象，表示包含内容和思考内容
-                        if (typeof updatedContent === 'object') {
-                            if (updatedContent.content !== undefined) {
-                                lastMessage.content = updatedContent.content;
-                             //   console.log('[Regenerate] 更新助手消息内容:', updatedContent.content.substring(0, 50) + '...');
-                            }
-                            if (updatedContent.thinkingContent !== undefined) {
-                                lastMessage.thinkingContent = updatedContent.thinkingContent;
-                              //      console.log('[Regenerate] 更新思考内容:', updatedContent.thinkingContent.substring(0, 50) + '...');
-                            }
-                        } else if (updatedContent && updatedContent.length > 0) {
-                            // 兼容旧版本，直接更新内容
-                            lastMessage.content = updatedContent;
-                         //   console.log('[Regenerate] 更新助手消息内容:', updatedContent.substring(0, 50) + '...');
-                        }
-                    } else {
-                        console.error('[Regenerate] 找不到要更新的助手消息');
-                    }
-                    
-                    if (done) {
-                     //   console.log('[Regenerate] onUpdate: Message generation complete.');
-                        // 确保找到最后一条助手消息并标记为已完成
-                        const lastMessage = chatStore.messages[chatStore.messages.length - 1];
-                        if (lastMessage && lastMessage.role === 'assistant') {
-                            lastMessage.completed = true;
-                            
-                            // 更新token计数
-                            const promptTokens = messageHandler.countTokens(apiMessages.filter(m => m.role !== 'assistant').map(m => m.content).join(''));
-                            const completionTokens = messageHandler.countTokens(typeof updatedContent === 'object' ? updatedContent.content || '' : updatedContent || '');
-                            chatStore.updateTokenCount(promptTokens, completionTokens);
-                            saveMessages(); // 保存最终消息
-                        }
-                    }
-                }
-            );
-        } catch (apiError) {
-            console.error('[Regenerate] API错误:', apiError);
-            ElMessage.error(`API错误: ${apiError.message || '未知错误'}`);
-            // 移除最后添加的助手消息
-            chatStore.messages.pop();
-            chatStore.isLoading = false;
-            return;
-        }
-        
-        // 保存controller以便可能的中断
+        // Note: isRegeneration defaults to false, no need to pass it explicitly here
+      );
+      
+      // Save controller for potential abortion
+      if (result?.controller) {
         activeController.value = result.controller;
-        
-        if (!result.success && !result.aborted) {
-            ElMessage.error('重新生成失败，请稍后重试');
-            // 移除空消息
-            chatStore.messages = chatStore.messages.filter(m => m.id !== newAssistantMessage.id);
-        }
-        
-        chatStore.isLoading = false;
-        if (!result.aborted) {
-            activeController.value = null;
-        }
-    } catch (error) {
-        console.error('[Regenerate] Error:', error);
-        ElMessage.error('重新生成过程中发生错误：' + error.message);
-        chatStore.isLoading = false;
-        activeController.value = null;
-        
-        // 移除可能存在的空助手消息
+      }
+      
+      // Handle non-aborted failures
+      if (result && !result.success && !result.aborted) {
+        ElMessage.error('消息发送失败，请稍后重试');
+        // Remove the placeholder assistant message
         const lastMessage = chatStore.messages[chatStore.messages.length - 1];
-        if (lastMessage && lastMessage.role === 'assistant' && !lastMessage.completed) {
-            chatStore.messages.pop();
+        if (lastMessage && lastMessage.role === 'assistant' && lastMessage.content === '') {
+          chatStore.messages.pop();
         }
+      }
+  } catch (error) {
+    console.error('[ChatView Send] Error:', error);
+    // Avoid showing generic error if it's specific known issues handled above
+    if (error.message !== 'Prepared API messages are empty' && error.message !== 'API Key not configured') {
+        ElMessage.error(`消息发送过程中发生错误：${error.message || '未知错误'}`);
     }
+    
+    // Clean up placeholder message on error
+    const lastMessage = chatStore.messages[chatStore.messages.length - 1];
+    if (lastMessage && lastMessage.role === 'assistant' && lastMessage.content === '') {
+      chatStore.messages.pop();
+    }
+  } finally {
+    // ALWAYS reset loading state and controller (if not aborted)
+    chatStore.isLoading = false;
+    if (!result?.aborted && activeController.value) {
+      activeController.value = null;
+    }
+    // If aborted, ensure controller is nullified if it wasn't already by the pause handler
+    if (result?.aborted) {
+         activeController.value = null; 
+     }
+  }
 };
 
 // 处理会话项点击
@@ -966,11 +908,11 @@ const handleShare = () => {
 // 处理暂停消息生成
 const handlePauseGeneration = () => {
     console.log('[ChatView] handlePauseGeneration called');
-    if (activeController.value) {
+  if (activeController.value) {
         console.log('[ChatView] Aborting active request...');
-        activeController.value.abort();
-        activeController.value = null;
-        chatStore.isLoading = false;
+    activeController.value.abort();
+    activeController.value = null;
+    chatStore.isLoading = false;
         isStreamPaused.value = true;
         console.log('[ChatView] Request aborted');
     }
@@ -1019,9 +961,10 @@ const prepareMessagesForAPI = () => {
     });
   }
   
-  // 添加所有的用户和助手消息
+  // 添加所有的用户和助手消息，但过滤掉空消息
   messages.value.forEach(msg => {
-    if (msg.role === 'user' || msg.role === 'assistant') {
+    if ((msg.role === 'user' && msg.content.trim()) || 
+        (msg.role === 'assistant' && msg.content.trim())) {
       apiMessages.push({
         role: msg.role,
         content: msg.content
@@ -1317,7 +1260,7 @@ const formatTimestamp = () => {
 
 // 处理滚动到底部按钮的显示
 const showScrollButton = ref(false);
-let scrollTimeout = null;
+const scrollTimeout = ref(null);
 
 // 判断是否滚动到底部
 const isScrolledToBottom = () => {
@@ -1334,8 +1277,8 @@ const handleScroll = () => {
   if (!messagesContainer.value) return;
   
   // 清除之前的定时器
-  if (scrollTimeout) {
-    clearTimeout(scrollTimeout);
+  if (scrollTimeout.value) {
+    clearTimeout(scrollTimeout.value);
   }
   
   // 判断是否已经滚动到底部
@@ -1349,12 +1292,187 @@ const handleScroll = () => {
   }
   
   // 设置定时器，如果在1秒内没有继续滚动则检查是否在底部
-  scrollTimeout = setTimeout(() => {
+  scrollTimeout.value = setTimeout(() => {
     // 延迟后再次检查是否在底部
     if (isScrolledToBottom()) {
       showScrollButton.value = false;
     }
   }, 1000);
+};
+
+// 处理消息更新
+const handleMessageUpdate = (message, updatedContent) => {
+  const index = chatStore.messages.findIndex(m => m.id === message.id);
+  if (index !== -1) {
+    chatStore.messages[index].content = updatedContent;
+    saveMessages();
+  }
+};
+
+// 处理消息删除
+const handleMessageDelete = (message) => {
+  const index = chatStore.messages.findIndex(m => m.id === message.id);
+  if (index !== -1) {
+    // 移除消息
+    chatStore.messages.splice(index, 1);
+    saveMessages();
+  }
+};
+
+// 处理重新生成AI响应
+const handleRegenerate = async (message) => {
+  console.log('[ChatView] Regenerating response for message:', message.id);
+  
+  if (chatStore.isLoading) {
+    ElMessage.warning('已有消息正在处理中，请稍后再试');
+    return;
+  }
+  
+  // 检查是否有上一条用户消息
+  const messages = chatStore.messages;
+  const lastAssistantIndex = messages.findIndex(m => m.id === message.id);
+  
+  if (lastAssistantIndex === -1) {
+    ElMessage.warning('找不到要重新生成的消息');
+    return;
+  }
+  
+  // 查找上一条用户消息
+  let userMessageIndex = -1;
+  for (let i = lastAssistantIndex - 1; i >= 0; i--) {
+    if (messages[i].role === 'user') {
+      userMessageIndex = i;
+      break;
+    }
+  }
+  
+  if (userMessageIndex === -1) {
+    ElMessage.warning('找不到相关的用户消息，无法重新生成');
+    return;
+  }
+  
+  // 设置加载状态
+  chatStore.isLoading = true;
+  let result = null; // Initialize result
+
+  try {
+    // 移除当前的AI响应
+    chatStore.messages.splice(lastAssistantIndex, 1);
+    
+    // 添加新的空AI响应
+    const assistantMessage = {
+      id: Date.now(),
+      role: 'assistant',
+      content: '',
+      timestamp: new Date().toISOString(),
+      completed: false
+    };
+    chatStore.addMessage(assistantMessage);
+    
+    // 确保消息列表更新后滚动到底部
+    await nextTick();
+    scrollToBottom();
+    
+    // 准备API消息
+    const apiMessages = prepareMessagesForAPI();
+    
+    // 检查API Key是否已设置
+    if (!settingsStore.actualApiKey) {
+      ElMessage.error('请在设置中配置有效的API Key');
+      showSettings.value = true;
+      // No need to return here, finally block will handle isLoading
+      throw new Error('API Key not configured'); // Throw error to be caught
+    }
+    
+    result = await messageHandler.sendMessage(
+      apiMessages,
+      settingsStore.actualApiKey,
+      settingsStore.actualApiEndpoint || 'https://api.openai.com/v1/chat/completions',
+      {
+        model: settingsStore.model,
+        temperature: settingsStore.temperature,
+        max_tokens: settingsStore.maxTokens,
+        stream: settingsStore.streamResponse
+      },
+      (updatedContent, done) => {
+        // Update message content (same logic as before)
+        const lastMessage = chatStore.messages[chatStore.messages.length - 1];
+        if (lastMessage && lastMessage.role === 'assistant') {
+          if (typeof updatedContent === 'object') {
+            if (updatedContent.content !== undefined) {
+              lastMessage.content = updatedContent.content;
+            }
+            if (updatedContent.thinkingContent !== undefined) {
+              lastMessage.thinkingContent = updatedContent.thinkingContent;
+            }
+          } else if (updatedContent && updatedContent.length > 0) {
+            lastMessage.content = updatedContent;
+          }
+        } else {
+          console.error('[ChatView Regenerate] Cannot find assistant message to update');
+        }
+        
+        if (done) {
+          const lastMessage = chatStore.messages[chatStore.messages.length - 1];
+          if (lastMessage && lastMessage.role === 'assistant') {
+            lastMessage.completed = true;
+            const promptTokens = messageHandler.countTokens(apiMessages.filter(m => m.role !== 'assistant').map(m => m.content).join(''));
+            const completionTokens = messageHandler.countTokens(typeof updatedContent === 'object' ? updatedContent.content || '' : updatedContent || '');
+            chatStore.updateTokenCount(promptTokens, completionTokens);
+            saveMessages();
+          }
+        }
+      },
+      true // Pass isRegeneration = true to messageHandler
+    );
+    
+    // 保存controller以便可能的中断
+    if (result?.controller) {
+        activeController.value = result.controller;
+    }
+    
+    // 处理请求结果 (only if not aborted)
+    if (result && !result.success && !result.aborted) {
+      ElMessage.error('重新生成失败，请稍后重试');
+      // 移除最后一条空的助手消息
+      const lastMessage = chatStore.messages[chatStore.messages.length - 1];
+      if (lastMessage && lastMessage.role === 'assistant' && lastMessage.content === '') {
+        chatStore.messages.pop();
+      }
+    }
+    
+  } catch (apiError) {
+    console.error('[ChatView Regenerate] API Error:', apiError);
+    // Avoid showing duplicate error if it's just missing API key
+    if (apiError.message !== 'API Key not configured') {
+        ElMessage.error(`重新生成时API错误: ${apiError.message || '未知错误'}`);
+    }
+    
+    // Clean up potentially empty assistant message on error
+    const lastMessage = chatStore.messages[chatStore.messages.length - 1];
+    if (lastMessage && lastMessage.role === 'assistant' && lastMessage.content === '') {
+      chatStore.messages.pop();
+    }
+  } finally {
+    // 确保加载状态和控制器总是被重置
+    chatStore.isLoading = false;
+    // Only clear controller if the request wasn't aborted (aborted state is handled elsewhere)
+    if (!result?.aborted && activeController.value) {
+         activeController.value = null;
+    }
+     // If aborted, ensure controller is nullified if it wasn't already by the pause handler
+     if (result?.aborted) {
+         activeController.value = null; 
+     }
+  }
+};
+
+// 清空聊天记录
+const handleClear = () => {
+  // Confirmation is now handled in ChatInput.vue
+  chatStore.clearMessages();
+  currentChatTitle.value = '新对话';
+  ElMessage.success('聊天记录已清空');
 };
 </script>
 

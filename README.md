@@ -121,6 +121,12 @@ npm run build
 
 ## 最近更新
 
+- **错误修复与优化 (本次会话)**:
+  - 修复了移动端点击"清空对话"按钮时弹出两次确认框的问题。
+  - 修复了 `countTokens` 函数在处理 null 或非字符串输入时可能导致的 `text.replace is not a function` 错误。
+  - 优化了 `prepareMessagesForAPI` 函数，现在会过滤掉内容为空的助手消息，避免发送无效数据给 API。
+  - 修复了 `handleSend` 和 `handleRegenerate` 函数中加载状态 (`isLoading`) 和请求控制器 (`activeController`) 未被正确重置的问题，解决了发送/重新生成后卡在"处理中"状态的 bug。
+  - 在 `handleSend` 和 `handleRegenerate` 的流式回调中添加了自动滚动逻辑：当接收到新内容且用户视窗接近聊天底部时，会自动滚动以保持最新消息可见。
 - 添加了滚动到底部按钮，便于导航长对话
 - 改进了移动端字体设置，优化阅读体验
 - 优化了聊天界面头部设计，增加了会话统计和状态指示
