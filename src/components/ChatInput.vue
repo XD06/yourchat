@@ -26,7 +26,7 @@
       <button 
         class="input-icon-btn delete-btn" 
         @click="handleClear"
-        @touchstart="handleClearTouch"
+        @touchend.prevent="handleClearTouch"
       >
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="3 6 5 6 21 6"></polyline>
@@ -38,7 +38,7 @@
       <button 
         class="input-icon-btn send-btn" 
         @click="handleSend"
-        @touchstart="handleSendTouch"
+        @touchend.prevent="handleSendTouch"
       >
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <line x1="22" y1="2" x2="11" y2="13"></line>
@@ -435,8 +435,16 @@ const handlePause = () => {
 const handleSend = async () => {
   console.log('[ChatInput] handleSend called, message:', messageText.value ? messageText.value.substring(0, 20) + '...' : '(empty)');
   
-  if ((!messageText.value.trim() && selectedFiles.value.length === 0) || isGenerating.value) {
-    console.log('[ChatInput] handleSend aborted: empty message or already generating');
+  // 检查消息是否为空
+  if (messageText.value.trim() === '' && selectedFiles.value.length === 0) {
+    console.log('[ChatInput] handleSend aborted: empty message and no files');
+    return;
+  }
+  
+  // 如果已经在生成中，显示通知
+  if (isGenerating.value) {
+    console.log('[ChatInput] handleSend: already generating, show notification');
+    ElMessage.info('正在生成回复，请稍候...');
     return;
   }
   
@@ -541,12 +549,16 @@ const rolePopup = ref(null)
 // Handling touch events for mobile
 const handleSendTouch = (e) => {
   e.preventDefault(); // Prevent default touch behavior
+  e.stopPropagation(); // Stop event propagation
   console.log('[ChatInput] handleSendTouch called');
+  
+  // Call the main handleSend function
   handleSend();
 }
 
 const handleClearTouch = (e) => {
   e.preventDefault(); // Prevent default touch behavior
+  e.stopPropagation(); // Stop event propagation
   console.log('[ChatInput] handleClearTouch called');
   handleClear();
 }
