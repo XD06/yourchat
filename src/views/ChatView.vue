@@ -198,12 +198,7 @@
                         <div class="conversation-stats">
                             <span class="stats-item">
                                 <el-icon><ChatDotRound /></el-icon>
-                                {{ messages.length }} messages
-                            </span>
-                            <span class="stats-divider">•</span>
-                            <span class="stats-item">
-                                <el-icon><Clock /></el-icon>
-                                {{ formatTimestamp() }}
+                                {{ totalMessages }} messages
                             </span>
                         </div>
                     </div>
@@ -255,10 +250,17 @@
             </div>
             
             <!-- 消息容器 -->
-            <div class="messages-container" ref="messagesContainer" @scroll="handleScroll">
+            <div class="messages-container" ref="messagesContainer" @scroll="handleMessagesScroll">
                 <template v-if="messages.length">
-                    <chat-message v-for="message in messages" :key="message.id" :message="message"
-                                @update="handleMessageUpdate" @delete="handleMessageDelete" @regenerate="handleRegenerate" />
+                    <chat-message 
+                        v-for="message in messages" 
+                        :key="message.id" 
+                        :message="message"
+                        :is-latest-message="isLatestAIMessage(message)"
+                        @update="handleMessageUpdate" 
+                        @delete="handleMessageDelete" 
+                        @regenerate="handleRegenerate" 
+                    />
                 </template>
                 <div v-else class="empty-state">
                     <div class="welcome-container">
@@ -675,18 +677,19 @@ const handleSend = async (content) => {
     
     // Add empty assistant message placeholder
     const assistantMessage = {
-      id: Date.now() + 1,
+      id: Date.now(),
       role: 'assistant',
       content: '',
       timestamp: new Date().toISOString(),
-      completed: false
+      completed: false,
+      loading: true // 添加loading状态
     };
     chatStore.addMessage(assistantMessage);
     console.log('[ChatView] Empty assistant message added to store');
 
     // Scroll to bottom after adding messages
     await nextTick();
-    scrollToBottom();//发送消息后滚动到底部
+    scrollToBottom(true);//发送消息后滚动到底部
     
     // Prepare messages for API
     const apiMessages = prepareMessagesForAPI();
@@ -722,24 +725,25 @@ const handleSend = async (content) => {
           // Update message content
           const lastMessage = chatStore.messages[chatStore.messages.length - 1];
           if (lastMessage && lastMessage.role === 'assistant') {
-            let contentChanged = false;
+            // 第一次收到内容时移除loading状态
+            if (lastMessage.loading) {
+              lastMessage.loading = false;
+            }
+            
             if (typeof updatedContent === 'object') {
-              if (updatedContent.content !== undefined && lastMessage.content !== updatedContent.content) {
+              if (updatedContent.content !== undefined) {
                 lastMessage.content = updatedContent.content;
-                contentChanged = true;
               }
-              if (updatedContent.thinkingContent !== undefined && lastMessage.thinkingContent !== updatedContent.thinkingContent) {
+              if (updatedContent.thinkingContent !== undefined) {
                 lastMessage.thinkingContent = updatedContent.thinkingContent;
-                 contentChanged = true; // Consider thinking content change as update
               }
-            } else if (updatedContent && updatedContent.length > 0 && lastMessage.content !== updatedContent) {
+            } else if (updatedContent && updatedContent.length > 0) {
               lastMessage.content = updatedContent;
-              contentChanged = true;
             }
             
             // Auto-scroll if content changed and user is near bottom
-            if(contentChanged && isScrolledToBottom()) {
-                nextTick(scrollToBottom);
+            if(isScrolledToBottom()) {
+                nextTick(() => scrollToBottom(true));
             }
 
           } else {
@@ -916,20 +920,13 @@ const handlePauseGeneration = () => {
         console.log('[ChatView] Request aborted');
     }
 }
-const scrollToBottom_i = (forceScroll = false) => {
-    if (messagesContainer.value) {
-      messagesContainer.value.scrollTo({
-        top: messagesContainer.value.scrollHeight,
-        behavior: 'smooth'
-      });
-    }
-  };
+
 // 滚动到底部的辅助函数
 const scrollToBottom = (forceScroll = false) => {
   if (messagesContainer.value) {
     const { scrollHeight, scrollTop, clientHeight } = messagesContainer.value;
     // 定义一个阈值（像素），用于判断用户是否接近底部
-    const SCROLL_THRESHOLD = 200;
+    const SCROLL_THRESHOLD = 250; // 增加到250px，使得滚动跟随范围更大
     // 检查用户是否在阈值范围内，或者是否强制滚动
     const isUserNearBottom = scrollHeight - scrollTop - clientHeight < SCROLL_THRESHOLD;
 
@@ -1188,7 +1185,7 @@ const getModelDisplayName = () => {
     const _ = modelOptionsLastUpdated.value;
     const model = settingsStore.model;
     const option = settingsStore.modelOptions.find(opt => opt.value === model);
-    return option ? option.label : 'AI Chat';
+    return option ? option.label : 'models';
 }
 
 // 为聊天项生成随机颜色
@@ -1283,8 +1280,8 @@ const isScrolledToBottom = () => {
   if (!messagesContainer.value) return true;
   
   const { scrollTop, scrollHeight, clientHeight } = messagesContainer.value;
-  // 容差值为10像素
-  const tolerance = 10;
+  // 更新距离底部的容差值为250px，与上面滚动跟随阈值保持一致
+  const tolerance = 250;
   return scrollHeight - scrollTop - clientHeight <= tolerance;
 };
 
@@ -1381,13 +1378,14 @@ const handleRegenerate = async (message) => {
       role: 'assistant',
       content: '',
       timestamp: new Date().toISOString(),
-      completed: false
+      completed: false,
+      loading: true // 添加loading状态
     };
     chatStore.addMessage(assistantMessage);
     
     // 确保消息列表更新后滚动到底部
     await nextTick();
-    scrollToBottom_i();//发送消息直接滑动到底部
+    scrollToBottom(true);//发送消息直接滑动到底部
     
     // 准备API消息
     const apiMessages = prepareMessagesForAPI();
@@ -1414,6 +1412,11 @@ const handleRegenerate = async (message) => {
         // Update message content (same logic as before)
         const lastMessage = chatStore.messages[chatStore.messages.length - 1];
         if (lastMessage && lastMessage.role === 'assistant') {
+          // 第一次收到内容时移除loading状态
+          if (lastMessage.loading) {
+            lastMessage.loading = false;
+          }
+          
           if (typeof updatedContent === 'object') {
             if (updatedContent.content !== undefined) {
               lastMessage.content = updatedContent.content;
@@ -1490,6 +1493,42 @@ const handleClear = () => {
   currentChatTitle.value = '新对话';
   ElMessage.success('聊天记录已清空');
 };
+
+// 控制是否显示返回顶部按钮
+const showScrollToTopButton = ref(false)
+
+// 处理消息容器滚动事件
+const handleMessagesScroll = () => {
+  if (!messagesContainer.value) return
+  
+  // 当滚动距离超过500px时显示返回顶部按钮
+  showScrollToTopButton.value = messagesContainer.value.scrollTop > 500
+}
+
+// 返回顶部
+const scrollToTop = () => {
+  if (!messagesContainer.value) return
+  
+  messagesContainer.value.scrollTo({
+    top: 0,
+    behavior: 'smooth'
+  })
+}
+
+// 判断是否是最后一条AI消息
+const isLatestAIMessage = (message) => {
+  // 过滤出所有AI消息
+  const assistantMessages = chatStore.messages.filter(msg => msg.role === 'assistant');
+  
+  // 如果没有AI消息或者当前消息不是AI消息，返回false
+  if (assistantMessages.length === 0 || message.role !== 'assistant') {
+    return false;
+  }
+  
+  // 判断当前消息是否是最后一条AI消息
+  const lastAssistantMessage = assistantMessages[assistantMessages.length - 1];
+  return message.id === lastAssistantMessage.id;
+}
 </script>
 
 <style lang="scss" scoped>
@@ -1599,7 +1638,7 @@ const handleClear = () => {
         &.visible {
             opacity: 1;
             visibility: visible;
-            animation: bounce 1s ease infinite;
+            //animation: bounce 1s ease infinite;
         }
         
         &:hover {
@@ -2982,6 +3021,41 @@ const handleClear = () => {
 .parse-models-btn {
     margin-top: 8px;
     width: 100%;
+}
+
+/* 返回顶部按钮 */
+.scroll-to-top {
+  position: fixed;
+  bottom: 100px;
+  right: 20px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+  z-index: 100;
+
+  &.visible {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.7);
+  }
+
+  svg {
+    width: 24px;
+    height: 24px;
+  }
 }
 </style>
 <!-- <script>

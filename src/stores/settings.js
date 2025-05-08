@@ -250,24 +250,18 @@ export async function fetchModelList(endpoint, apiKey, timeout = 5000) {
         'Authorization': `Bearer ${apiKey}`
     };
 
-    const tryRequest = async (method) => {
+    const tryRequest = async () => {
         const controller = new AbortController();
         const signal = controller.signal;
         let timer;
-
-        if (method === 'POST') {
-            headers['Content-Type'] = 'application/json';
-        }
 
         try {
             timer = setTimeout(() => controller.abort(), timeout);
 
             const response = await fetch(url, {
-                method: method,
+                method: 'GET',
                 headers: headers,
-                signal: signal,
-                // POST请求通常不需要body来获取模型列表，但如果API需要则应添加
-                // body: method === 'POST' ? JSON.stringify({}) : undefined
+                signal: signal
             });
 
             clearTimeout(timer);
@@ -301,17 +295,11 @@ export async function fetchModelList(endpoint, apiKey, timeout = 5000) {
     };
 
     try {
-        // 优先尝试GET
-        return await tryRequest('GET');
-    } catch (getError) {
-        console.warn(`GET request to ${url} failed: ${getError.message}. Retrying with POST.`);
-        try {
-            // GET失败后尝试POST
-            return await tryRequest('POST');
-        } catch (postError) {
-            console.error(`POST request to ${url} also failed: ${postError.message}`);
-            throw new Error(`Failed to fetch model list from ${url} after trying GET and POST: ${postError.message}`);
-        }
+        // 只使用GET请求获取模型列表
+        return await tryRequest();
+    } catch (error) {
+        console.error(`GET request to ${url} failed: ${error.message}`);
+        throw new Error(`Failed to fetch model list from ${url}: ${error.message}`);
     }
 }
 

@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import ChatView from '../views/ChatView.vue'
+import MathTest from '../components/MathTest.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -8,6 +9,11 @@ const router = createRouter({
       path: '/',
       name: 'chat',
       component: ChatView
+    },
+    {
+      path: '/math-test',
+      name: 'math-test',
+      component: MathTest
     }
   ]
 })

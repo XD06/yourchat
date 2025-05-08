@@ -9,11 +9,29 @@ import ElementPlus from 'element-plus'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import 'element-plus/dist/index.css'
 
+// 导入并初始化Mermaid
+import mermaid from 'mermaid'
+mermaid.initialize({
+  startOnLoad: true,
+  theme: 'default',
+  securityLevel: 'loose',
+  fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, sans-serif',
+  flowchart: {
+    htmlLabels: true,
+    curve: 'basis'
+  },
+  themeVariables: {
+    darkMode: false, // 初始非暗色模式
+  }
+})
+
 // 使用深色代码主题, 异步按需加载
 import './assets/styles/main.scss'
 import './assets/styles/element-overrides.scss'
 // 导入代码执行模态框样式
 import './assets/main.css'
+// 导入Markdown扩展样式
+import './assets/styles/markdown-extensions.scss'
 
 // 优先创建应用实例，提前渲染初始UI
 const app = createApp(App)

@@ -6,7 +6,10 @@
       `role-${message.role}`,
       { 'regenerating': message.loading },
       { 'latest-message': isLatestMessage && message.role === 'assistant' },
+      { 'completed': messageCompleted },
+      { 'history-message': !isLatestMessage || messageCompleted }
     ]"
+    :data-message-status="isLatestMessage && !messageCompleted ? 'generating' : 'completed'"
   >
     <!-- AI头像（只在AI消息时显示在左侧） -->
     <div v-if="message.role === 'assistant'" class="avatar assistant-avatar">
@@ -59,9 +62,12 @@
       <!-- 消息气泡 -->
       <div class="message-bubble">
         <div v-if="message.loading" class="message-loading">
-          <span class="loading-dot"></span>
-          <span class="loading-dot"></span>
-          <span class="loading-dot"></span>
+          <div class="loading-spinner">
+            <svg viewBox="0 0 50 50" class="spinner">
+              <circle class="path" cx="25" cy="25" r="20" fill="none" stroke-width="4"></circle>
+            </svg>
+          </div>
+          <span class="loading-text">AI思考中...</span>
         </div>
         <div v-else class="message-text" ref="messageText">
           <div
@@ -153,7 +159,7 @@
   </div>
 </template>
 <script setup>
-import { ref, computed, getCurrentInstance, onMounted, nextTick, watch } from 'vue'
+import { ref, computed, getCurrentInstance, onMounted, nextTick, watch, onUnmounted } from 'vue'
 import { useChatStore } from '../stores/chat'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { 
@@ -169,11 +175,17 @@ import hljs from 'highlight.js'
 import markdownIt from 'markdown-it'
 // 导入代码执行工具
 import { openCodeModal } from '../utils/codeExecutor'
+// 导入markdown渲染函数
+import { renderMarkdown } from '../utils/markdown'
 
 const props = defineProps({
   message: {
     type: Object,
     required: true
+  },
+  isLatestMessage: {
+    type: Boolean,
+    default: false
   }
 })
 
@@ -181,6 +193,13 @@ const emit = defineEmits(['update', 'delete', 'regenerate'])
 
 const messageText = ref(null)
 const isThinkingExpanded = ref(false)
+const typingIndex = ref(0)
+const isTyping = ref(false)
+const displayContent = ref('')
+const typingSpeed = ref(20) // ms per character
+const typingTimer = ref(null)
+const originalContent = ref('')
+const messageCompleted = ref(false)
 
 // Markdown renderer setup
 const md = markdownIt({
@@ -336,19 +355,199 @@ const handleCopy = async () => {
   }
 }
 
-// 格式化消息内容
-const formatContent = computed(() => {
-  if (!props.message.content) return ''
+// 处理AI消息的打字效果
+const startTypingEffect = (content) => {
+  // 立即判断是否应该执行打字效果
+  if (!props.isLatestMessage || 
+      messageCompleted.value || 
+      props.message.completed || 
+      props.message.role !== 'assistant' || 
+      props.message.loading) {
+    // 历史消息或非AI消息，不执行打字效果
+    console.log('跳过打字效果：历史/完成/非AI/正在加载的消息');
+    messageCompleted.value = true;
+    displayContent.value = content;
+    return content;
+  }
   
-  // 转换Markdown格式
-  const content = md.render(props.message.content)
-  return content
-})
+  // 如果已经完成打字，直接返回完整内容
+  if (displayContent.value === content) {
+    console.log('打字内容已匹配完整内容，直接返回');
+    messageCompleted.value = true;
+    return content;
+  }
+  
+  // 如果已经开始打字，不重新开始，继续显示当前内容
+  if (isTyping.value) {
+    console.log('打字效果已在进行中，返回当前内容');
+    return displayContent.value || '';
+  }
+  
+  // 如果内容为空，直接返回
+  if (!content || content.trim() === '') {
+    return '';
+  }
+  
+  console.log('开始新的打字效果，内容长度:', content.length);
+  
+  // 重置打字状态
+  originalContent.value = content;
+  displayContent.value = '';
+  typingIndex.value = 0;
+  isTyping.value = true;
+  
+  // 清除之前的定时器
+  if (typingTimer.value) {
+    clearInterval(typingTimer.value);
+  }
+  
+  // 启动打字动画
+  typingTimer.value = setInterval(() => {
+    if (typingIndex.value < content.length) {
+      // 逐字添加内容
+      displayContent.value += content[typingIndex.value];
+      typingIndex.value++;
+    } else {
+      // 完成打字效果
+      console.log('打字效果完成');
+      clearInterval(typingTimer.value);
+      isTyping.value = false;
+      displayContent.value = content; // 确保最终内容完整
+      messageCompleted.value = true; // 标记消息已完成
+    }
+  }, typingSpeed.value);
+  
+  return displayContent.value;
+};
+
+// 监听消息内容变化以启动打字效果
+watch(() => props.message.content, (newContent, oldContent) => {
+  if (props.message.role === 'assistant' && props.isLatestMessage && !props.message.loading && newContent) {
+    // 如果消息已完成，只更新显示内容，不执行过渡效果
+    if (messageCompleted.value) {
+      displayContent.value = newContent;
+      return;
+    }
+    
+    // 防止流式输出导致的内容变化重复触发打字效果
+    if (!isTyping.value && newContent !== oldContent && newContent !== displayContent.value) {
+      console.log('消息内容变化，重新开始打字效果');
+      startTypingEffect(newContent);
+    } else if (isTyping.value && newContent !== oldContent) {
+      // 流式输出中，内容有变化但不重新开始打字
+      // 只更新原始内容，让打字效果继续
+      console.log('流式输出中，更新原始内容但不重新开始打字');
+      originalContent.value = newContent;
+    }
+  }
+}, { immediate: true });
+
+// 在组件加载时确定消息状态，避免历史消息显示动画
+onMounted(() => {
+  // 立即检查是否为历史消息或非最新AI消息
+  if (!props.isLatestMessage || props.message.completed || props.message.role !== 'assistant') {
+    console.log('历史消息或非最新AI消息，立即标记为完成');
+    messageCompleted.value = true;
+    displayContent.value = props.message.content || '';
+    
+    // 强制DOM更新以确保样式应用
+    nextTick(() => {
+      const element = document.querySelector(`[data-message-status="completed"]`);
+      if (element) {
+        // 触发一次重新布局以确保CSS应用
+        element.style.opacity = '1';
+      }
+    });
+  }
+});
+
+// 监听isLatestMessage变化
+watch(() => props.isLatestMessage, (isLatest) => {
+  // 当消息变为最新消息时，如果是AI消息且有内容，启动打字效果
+  if (isLatest && props.message.role === 'assistant' && props.message.content && !isTyping.value) {
+    startTypingEffect(props.message.content);
+  }
+}, { immediate: true });
+
+// 修改formatContent以更严格地处理历史消息
+const formatContent = computed(() => {
+  // 如果是历史消息或已完成消息，直接返回完整渲染内容
+  if (!props.isLatestMessage || messageCompleted.value || props.message.role !== 'assistant') {
+    return props.message.content ? renderMarkdown(props.message.content) : '';
+  }
+  
+  // 以下是打字效果的处理逻辑
+  // 准备预处理后的内容（用于提前处理块级元素）
+  let preprocessedContent = '';
+  
+  // 如果正在打字中且是AI最新消息，则使用逐渐显示的内容
+  if (isTyping.value && props.message.role === 'assistant' && props.isLatestMessage) {
+    // 如果打字内容为空但有原始内容，可能是流式输出刚开始
+    if (!displayContent.value && originalContent.value) {
+      return ''; // 返回空字符串，等待打字效果开始
+    }
+    preprocessedContent = displayContent.value || '';
+  } else {
+    preprocessedContent = props.message.content || '';
+  }
+  
+  // 如果内容为空，直接返回空字符串
+  if (!preprocessedContent) {
+    return '';
+  }
+  
+  // 对预处理内容进行标记，确保块级元素（代码块、公式等）立即完整显示
+  const codeBlockRegex = /```[\s\S]*?```/g;
+  const mathBlockRegex = /\$\$([\s\S]*?)\$\$/g;
+  
+  // 替换代码块和数学公式为完整内容
+  if (isTyping.value && originalContent.value) {
+    const fullContent = originalContent.value;
+    
+    // 查找原始内容中的所有代码块和数学公式
+    const codeBlocks = [...fullContent.matchAll(codeBlockRegex)].map(match => ({
+      start: match.index,
+      end: match.index + match[0].length,
+      content: match[0]
+    }));
+    
+    const mathBlocks = [...fullContent.matchAll(mathBlockRegex)].map(match => ({
+      start: match.index,
+      end: match.index + match[0].length,
+      content: match[0]
+    }));
+    
+    // 合并所有块级元素
+    const blocks = [...codeBlocks, ...mathBlocks].sort((a, b) => a.start - b.start);
+    
+    // 如果当前打字位置已经开始显示块级元素，则显示完整块
+    for (const block of blocks) {
+      if (block.start < typingIndex.value && block.start < preprocessedContent.length) {
+        const partEndIndex = Math.min(
+          block.end, 
+          typingIndex.value,
+          preprocessedContent.length
+        );
+        
+        // 如果已经开始显示这个块但还没完全显示完
+        if (block.start <= preprocessedContent.length && partEndIndex > block.start) {
+          // 替换为完整块
+          preprocessedContent = preprocessedContent.substring(0, block.start) + 
+                               block.content + 
+                               preprocessedContent.substring(partEndIndex);
+        }
+      }
+    }
+  }
+  
+  // 进行markdown渲染
+  return preprocessedContent ? renderMarkdown(preprocessedContent) : '';
+});
 
 // 格式化思考内容
 const formatThinkingContent = computed(() => {
   if (!props.message.thinkingContent) return '';
-  return md.render(props.message.thinkingContent);
+  return renderMarkdown(props.message.thinkingContent);
 })
 
 // 格式化时间
@@ -359,35 +558,7 @@ const formatTime = (timestamp) => {
   return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
 }
 
-// 计算是否是最新的AI消息
-const chatStore = useChatStore()
-const isLatestMessage = computed(() => {
-  const messages = chatStore.messages
-  const assistantMessages = messages.filter(m => m.role === 'assistant')
-  if (assistantMessages.length === 0) return false
-  
-  return assistantMessages[assistantMessages.length - 1].id === props.message.id
-})
-
 // 高亮代码块并添加复制功能
-onMounted(() => {
-  nextTick(() => {
-    if (messageText.value) {
-      setupCodeBlockInteractions();
-    }
-  });
-});
-
-// 监视消息内容的变化，确保在内容更新后重新绑定事件
-watch(() => props.message.content, () => {
-  nextTick(() => {
-    if (messageText.value) {
-      setupCodeBlockInteractions();
-    }
-  });
-});
-
-// 设置代码块的交互功能
 const setupCodeBlockInteractions = () => {
   console.log('Setting up code block interactions');
   
@@ -470,6 +641,46 @@ const handleRunClick = (e) => {
     }
     }
 };
+
+// 高亮代码块并添加复制功能
+onMounted(() => {
+  nextTick(() => {
+    if (messageText.value) {
+      setupCodeBlockInteractions();
+    }
+  });
+});
+
+// 监视消息内容的变化，确保在内容更新后重新绑定事件
+watch(() => props.message.content, () => {
+  nextTick(() => {
+    if (messageText.value) {
+      setupCodeBlockInteractions();
+    }
+  });
+});
+
+// 监听消息的completed属性变化
+watch(() => props.message.completed, (isCompleted) => {
+  if (isCompleted) {
+    // 消息完成后，标记为已完成状态，停止所有动画
+    messageCompleted.value = true;
+    
+    // 如果还在打字中，立即完成
+    if (isTyping.value) {
+      clearInterval(typingTimer.value);
+      isTyping.value = false;
+      displayContent.value = props.message.content || '';
+    }
+  }
+});
+
+// 组件卸载时清理定时器
+onUnmounted(() => {
+  if (typingTimer.value) {
+    clearInterval(typingTimer.value);
+  }
+});
 </script>
 
 <style lang="scss" scoped>
@@ -496,7 +707,14 @@ const handleRunClick = (e) => {
     .message-bubble {
       background-color: #4284f5;
       color: white;
-      border-radius: 16px 16px 4px 16px; // 调整圆角，更有聊天气泡感
+      border-radius: 16px 16px 4px 16px; 
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+      
+      [data-theme="dark"] & {
+        background-color: #3374dc; // 暗色模式下颜色稍深
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+      }
+      
       @media (max-width: 768px) {
         border-radius: 12px 12px 3px 12px;
       }
@@ -514,8 +732,9 @@ const handleRunClick = (e) => {
     justify-content: flex-start;
     .message-bubble {
       background-color: rgb(255, 255, 255);
-        color: #333;
+      color: #333;
       border-radius: 16px 16px 16px 4px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08); // 添加轻微阴影，增强层次感
       @media (max-width: 768px) {
         border-radius: 12px 12px 12px 3px;
       }
@@ -524,7 +743,8 @@ const handleRunClick = (e) => {
         background-color: #2d2d33;
         color: #e0e0e0;
         border: 1px solid #383838;
-    }
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18); // 暗色模式阴影更明显一点
+      }
     }
     .avatar {
       margin-right: 10px;
@@ -537,9 +757,9 @@ const handleRunClick = (e) => {
   // 正在重新生成时的样式
   &.regenerating {
     opacity: 0.7;
-    }
   }
-  
+}
+
 .avatar {
   width: 36px;
   height: 36px;
@@ -614,72 +834,124 @@ const handleRunClick = (e) => {
   padding: 8px 12px;
   border-radius: 10px;
   background-color: rgba(0, 0, 0, 0.03);
-    margin-bottom: 8px;
+  margin-bottom: 8px;
   font-size: 0.85rem;
   color: #555;
   border: 1px solid rgba(0,0,0,0.05);
   width: fit-content;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  transition: transform 0.2s, box-shadow 0.2s;
+  
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+  }
 
   [data-theme="dark"] & {
     background-color: rgba(255, 255, 255, 0.05);
     border-color: rgba(255,255,255,0.1);
     color: #ccc;
+    
+    &:hover {
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+    }
   }
   
   .thinking-header {
-  display: flex;
+    display: flex;
     align-items: center;
     justify-content: space-between;
     cursor: default;
     .thinking-icon {
       margin-right: 6px;
       .el-icon {
-        animation: spin 1.5s linear infinite;
+        animation: spin 1.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
       }
     }
     .thinking-title {
       flex-grow: 1;
-  display: flex;
+      display: flex;
       align-items: center;
     }
     .toggle-thinking-btn {
       padding: 0;
       font-size: 0.9rem;
       color: #888;
+      transition: transform 0.15s;
+      
+      &:hover {
+        transform: translateY(-1px);
+      }
+      
       [data-theme="dark"] & {
         color: #aaa;
       }
     }
   }
-  .thinking-dots span {
-    opacity: 0;
-    animation: blink 1s infinite;
-    &:nth-child(2) { animation-delay: 0.2s; }
-    &:nth-child(3) { animation-delay: 0.4s; }
+  
+  .thinking-dots {
+    position: relative;
+    display: inline-flex;
+    width: 12px;
+    justify-content: space-between;
+    
+    &::before,
+    &::after,
+    & > span {
+      content: '.';
+      animation: thinkingDots 1.4s infinite;
+      opacity: 0;
+    }
+    
+    &::before {
+      animation-delay: 0s;
+    }
+    
+    & > span {
+      animation-delay: 0.2s;
+    }
+    
+    &::after {
+      animation-delay: 0.4s;
+    }
   }
 
   .thinking-content {
     margin-top: 6px;
     padding-top: 6px;
-    font-style:oblique ;
+    font-style: italic;
     border-top: 1px dashed rgba(0,0,0,0.08);
-    white-space: pre-wrap; // 保持思考内容的格式
+    white-space: pre-wrap;
     word-break: break-all;
-    max-height: 150px; // 限制思考内容最大高度
+    max-height: 150px;
     overflow-y: auto;
     font-size: 0.8rem;
     line-height: 1.5;
     scrollbar-width: none;
-    [data-theme="dark"] & {
-      border-top-color: rgba(255,255,255,0.1);
-        }
-      }
+    
+    &::-webkit-scrollbar {
+      width: 4px;
     }
     
-      .message-bubble {
+    &::-webkit-scrollbar-thumb {
+      background-color: rgba(0,0,0,0.1);
+      border-radius: 2px;
+    }
+    
+    [data-theme="dark"] & {
+      border-top-color: rgba(255,255,255,0.1);
+      
+      &::-webkit-scrollbar-thumb {
+        background-color: rgba(255,255,255,0.1);
+      }
+    }
+  }
+}
+
+.message-bubble {
   padding: 0.7rem 1rem;
   word-wrap: break-word;
-  overflow-wrap: break-word; // 确保长单词或链接能换行
+  overflow-wrap: break-word;
   position: relative;
 
   @media (max-width: 768px) {
@@ -687,28 +959,35 @@ const handleRunClick = (e) => {
   }
 
   .message-text {
-   // white-space: pre-wrap; // 保持消息中的换行和空格
     font-size: 0.95rem;
     line-height: 1.6;
 
     @media (max-width: 768px) {
       font-size: 0.9rem;
-      }
-      
-    // 代码块优化
+    }
+    
     :deep(pre.code-block) {
       margin: 0.8rem 0;
-      border-radius: 8px;
+      border-radius: 10px;
       font-size: 0.85em;
-      overflow: hidden; // 让内部的 code-header 和 code 来控制滚动和边距
+      overflow: hidden;
       max-width: 100%;
-      background-color: #f8f9fa; // 统一的背景色
-      border: 1px solid #e3e3e3; // 添加边框
-     
+      background-color: #f8f9fa;
+      border: 1px solid #e3e3e3;
+      transition: box-shadow 0.3s, transform 0.2s;
+      
+      &:hover {
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        transform: translateY(-1px);
+      }
 
       [data-theme="dark"] & {
-        background-color: #1e1e1e; // 暗黑模式下的背景色
+        background-color: #1e1e1e;
         border: 1px solid #333;
+        
+        &:hover {
+          box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+        }
       }
 
       @media (max-width: 768px) {
@@ -721,11 +1000,11 @@ const handleRunClick = (e) => {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 6px 12px; // 调整内边距使其更紧凑
-        background-color: #80808036; // 继承父元素的背景色
-        font-size: 0.9em; // 相对于 pre 的字体大小
+        padding: 8px 12px;
+        background-color: rgba(128, 128, 128, 0.1);
+        font-size: 0.9em;
         color: #555;
-        border-bottom: 1px solid #e3e3e3; // 与外边框颜色一致
+        border-bottom: 1px solid #e3e3e3;
         font-family: 'Fira Code', 'JetBrains Mono', monospace;
 
         [data-theme="dark"] & {
@@ -735,37 +1014,54 @@ const handleRunClick = (e) => {
         .code-lang {
             font-weight: 500;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
       }
-      .copy-btn {
+      .code-actions {
+        display: flex;
+        gap: 8px;
+      }
+      .copy-btn, .run-btn {
         background: none;
         border: none;
         color: inherit;
         cursor: pointer;
         opacity: 0.7;
-        padding: 2px; // 确保按钮有足够的点击区域
-        display: flex; // 使图标居中
+        padding: 4px;
+        border-radius: 4px;
+        display: flex;
         align-items: center;
         justify-content: center;
-        &:hover { opacity: 1; }
+        transition: all 0.15s ease;
+        
+        &:hover { 
+          opacity: 1;
+          background-color: rgba(0, 0, 0, 0.05);
+          
+          [data-theme="dark"] & {
+            background-color: rgba(255, 255, 255, 0.1);
           }
-        code {
-        padding: 12px !important; // 调整代码区域的内边距
+        }
+      }
+      code {
+        padding: 12px !important;
         display: block;
         overflow-x: auto;
         font-family: 'Fira Code', 'JetBrains Mono', monospace;
-        margin: 0; // 移除可能存在的默认margin
-        background-color: inherit; // 继承父元素的背景色
-        color:#7e2379; // 默认代码颜色
-        scrollbar-width: none; // 滚动条宽度;
+        margin: 0;
+        background-color: inherit;
+        color: #7e2379;
+        line-height: 1.6;
+        scrollbar-width: none;
+        
         [data-theme="dark"] & {
-            color: #e0e0e0; // 暗黑模式代码颜色
+          color: #e0e0e0;
         }
       }
-      }
+    }
       
     :deep(p) {
-      margin-bottom: 0.5em; // 段落间距
+      margin-bottom: 0.5em;
       &:last-child {
         margin-bottom: 0;
         }
@@ -785,7 +1081,7 @@ const handleRunClick = (e) => {
   align-items: center;
   margin-top: 0.3rem;
   opacity: 0;
-  transition: opacity 0.2s;
+  transition: opacity 0.15s;
   
   .message-container:hover & {
     opacity: 1;
@@ -812,30 +1108,18 @@ const handleRunClick = (e) => {
     display: flex;
     align-items: center;
   justify-content: center;
-  padding: 0.5rem 0;
-  .loading-dot {
-    width: 6px;
-    height: 6px;
-    margin: 0 2px;
-    background-color: currentColor; // 使用父元素的颜色
-    border-radius: 50%;
-        display: inline-block;
-    animation: loading-blink 1.4s infinite both;
-    &:nth-child(2) {
-      animation-delay: 0.2s;
-    }
-    &:nth-child(3) {
-      animation-delay: 0.4s;
-    }
+  padding: 0.8rem 0;
+  .loading-spinner {
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
   }
-}
-
-@keyframes loading-blink {
-  0%, 80%, 100% {
-    opacity: 0.3;
-  }
-  40% {
-    opacity: 1;
+  .loading-text {
+    font-size: 0.9rem;
+    color: #555;
+    [data-theme="dark"] & {
+      color: #bbb;
+    }
   }
 }
 
@@ -858,33 +1142,45 @@ const handleRunClick = (e) => {
     bottom: 4px;
     right: 8px;
     font-size: 0.65rem;
-    color: rgba(255,255,255,0.6);
-    background-color: rgba(0,0,0,0.2);
-    padding: 1px 4px;
-    border-radius: 3px;
-    [data-theme="dark"] &.role-assistant & {
-        color: rgba(0,0,0,0.5);
-        background-color: rgba(255,255,255,0.15);
+    color: rgba(255,255,255,0.8);
+    background-color: rgba(0,0,0,0.25);
+    padding: 2px 6px;
+    border-radius: 4px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    transition: opacity 0.2s;
+    
+    &:hover {
+      opacity: 1;
     }
-    // 用户消息的气泡颜色不同，所以token提示也需要调整
+    
+    [data-theme="dark"] &.role-assistant & {
+        color: rgba(0,0,0,0.6);
+        background-color: rgba(255,255,255,0.2);
+    }
     .message-container.role-user & {
-        color: rgba(255,255,255,0.7);
-  }
+        color: rgba(255,255,255,0.9);
+        background-color: rgba(0,0,0,0.3);
+    }
 }
 
-// 添加表格样式
 :deep(table) {
-  border-collapse: collapse;
-  width: 100%;
   margin: 1em 0;
   font-size: 0.9em;
   font-family: sans-serif;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
   border-radius: 6px;
-  overflow-y: auto;
   border: 1px solid #dddddd;
+  overflow: hidden;
+  width: auto;
+  max-width: 100%;
+}
+
+:deep(.table-container) {
+  overflow-x: auto;
+  max-width: 100%;
+  margin: 1.5rem 0;
+  border-radius: 6px;
   display: block;
-  scrollbar-width: none;
 }
 
 :deep(thead tr) {
@@ -900,15 +1196,15 @@ const handleRunClick = (e) => {
 }
 
 :deep(th:nth-child(3n+1)) {
-  background-color: rgba(231, 76, 60, 0.2); /* Red tint */
+  background-color: rgba(231, 76, 60, 0.2);
 }
 
 :deep(th:nth-child(3n+2)) {
-  background-color: rgba(243, 156, 18, 0.2); /* Orange tint */
+  background-color: rgba(243, 156, 18, 0.2);
 }
 
 :deep(th:nth-child(3n+3)) {
-  background-color: rgba(44, 122, 101, 0.2); /* Green tint */
+  background-color: rgba(44, 122, 101, 0.2);
 }
 
 :deep(th:last-child) {
@@ -936,23 +1232,10 @@ const handleRunClick = (e) => {
   background-color: #f1f1f1;
 }
 
-// :deep(tbody tr:nth-of-type(3n+1) td:first-child) {
-//  // border-left: 3px solid #e74c3c; /* Red accent */
-// }
-
-// :deep(tbody tr:nth-of-type(3n+2) td:first-child) {
-//  // border-left: 3px solid #f39c12; /* Orange accent */
-// }
-
-// :deep(tbody tr:nth-of-type(3n+3) td:first-child) {
-//  // border-left: 3px solid #2c7a65; /* Green accent */
-// }
-
 :deep(tbody tr:last-of-type) {
-  border-bottom: 2px solid #2c7a65; /* Green theme color to match header */
+  border-bottom: 2px solid #2c7a65;
 }
 
-// 暗色主题下的表格样式
 [data-theme="dark"] {
   :deep(table) {
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
@@ -969,15 +1252,15 @@ const handleRunClick = (e) => {
   }
   
   :deep(th:nth-child(3n+1)) {
-    background-color: rgba(192, 57, 43, 0.2); /* Darker red tint for dark mode */
+    background-color: rgba(192, 57, 43, 0.2);
   }
   
   :deep(th:nth-child(3n+2)) {
-    background-color: rgba(211, 84, 0, 0.2); /* Darker orange tint for dark mode */
+    background-color: rgba(211, 84, 0, 0.2);
   }
   
   :deep(th:nth-child(3n+3)) {
-    background-color: rgba(30, 132, 73, 0.2); /* Darker green tint for dark mode */
+    background-color: rgba(30, 132, 73, 0.2);
   }
   
   :deep(th:last-child) {
@@ -1004,28 +1287,11 @@ const handleRunClick = (e) => {
     background-color: #333333;
   }
   
-  // :deep(tbody tr:nth-of-type(3n+1) td:first-child) {
-  //  // border-left: 3px solid #e74c3c; /* Red accent preserved in dark mode */
-  // }
-  
-  // :deep(tbody tr:nth-of-type(3n+2) td:first-child) {
-  // //  border-left: 3px solid #f39c12; /* Orange accent preserved in dark mode */
-  // }
-  
-  // :deep(tbody tr:nth-of-type(3n+3) td:first-child) {
-  // //  border-left: 3px solid #27ae60; /* Green accent preserved in dark mode */
-  // }
-  
-  :deep(tbody tr:last-of-type) {
-    border-bottom: 2px solid #2c7a65; /* Green theme color to match header */
-  }
-  
   :deep(td), :deep(th) {
     color: #e0e0e0;
   }
 }
 
-// 代码块按钮样式改进
 :deep(.code-block) {
   .code-header {
     margin-top: -20px;
@@ -1061,13 +1327,20 @@ const handleRunClick = (e) => {
     color: inherit;
     cursor: pointer;
     opacity: 0.7;
-    padding: 2px;
+    padding: 4px;
+    border-radius: 4px;
     display: flex;
     align-items: center;
     justify-content: center;
+    transition: all 0.15s ease;
     
-    &:hover {
+    &:hover { 
       opacity: 1;
+      background-color: rgba(0, 0, 0, 0.05);
+      
+      [data-theme="dark"] & {
+        background-color: rgba(255, 255, 255, 0.1);
+      }
     }
   }
   
@@ -1088,7 +1361,6 @@ const handleRunClick = (e) => {
   }
 }
 
-// 代码执行模态框样式
 .code-modal {
   display: none;
   position: fixed;
@@ -1229,4 +1501,105 @@ const handleRunClick = (e) => {
     border-radius: 0;
   }
 }
+
+:deep(.code-block-animate) {
+  animation: fadeInUp 0.6s ease-out 0.2s both;
+}
+
+:deep(.table-animate) {
+  animation: fadeInUp 0.6s ease-out 0.3s both;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.typing-effect {
+  position: relative;
+  display: inline-block;
+}
+
+.typing-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 1.2em;
+  background-color: currentColor;
+  margin-left: 2px;
+  vertical-align: middle;
+  animation: blink 0.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  transform-origin: center;
+  will-change: opacity, transform;
+}
+
+@keyframes blink {
+  0%, 100% { 
+    opacity: 1;
+    transform: scaleY(1);
+  }
+  40% { 
+    opacity: 0.7;
+    transform: scaleY(0.95);
+  }
+  50% { 
+    opacity: 0.5;
+    transform: scaleY(0.9);
+  }
+  60% { 
+    opacity: 0.7;
+    transform: scaleY(0.95);
+  }
+}
+
+@keyframes thinkingDots {
+  0% { opacity: 0; }
+  50% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* 加载动画样式 */
+.loading-spinner {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  .spinner {
+    animation: rotate 2s linear infinite;
+    width: 20px;
+    height: 20px;
+    
+    .path {
+      stroke: black;
+      stroke-linecap: round;
+      animation: dash 1.5s ease-in-out infinite;
+    }
+  }
+}
+
+@keyframes rotate {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes dash {
+  0% {
+    stroke-dasharray: 1, 150;
+    stroke-dashoffset: 0;
+  }
+  50% {
+    stroke-dasharray: 90, 150;
+    stroke-dashoffset: -35;
+  }
+  100% {
+    stroke-dasharray: 90, 150;
+    stroke-dashoffset: -124;
+  }
+}
 </style>
+

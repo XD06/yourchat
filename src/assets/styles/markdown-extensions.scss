@@ -1,0 +1,805 @@
+/* 数学公式样式 */
+.math-block, .katex-display, .texmath {
+  margin: 1.5rem 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  text-align: center;
+  padding: 15px 10px;
+  background-color: #f8f9fa;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+  border: 1px solid #eaecef;
+  animation: fadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  opacity: 0.2;
+}
+
+.math-inline, .katex, .texmath.inline {
+  font-size: 1.2em !important;
+  line-height: 1.5 !important;
+  text-indent: 0;
+  font-family: 'KaTeX_Math', 'Times New Roman', serif !important;
+  display: inline-flex;
+  align-items: center;
+  vertical-align: middle;
+  padding: 0 2px;
+  margin: 0 2px;
+  background-color: rgba(248, 249, 250, 0.5);
+  border-radius: 3px;
+}
+
+/* texmath 特定样式 */
+.texmath.display {
+  display: block;
+  width: 100%;
+  margin: 1.5rem 0;
+}
+
+.texmath.inline {
+  display: inline-block;
+}
+
+/* 确保所有公式元素可见 */
+.katex-html {
+  display: block !important;
+}
+
+.katex-mathml {
+  /* 对于不支持MathML的浏览器，继续隐藏 */
+  position: absolute;
+  clip: rect(1px, 1px, 1px, 1px);
+  padding: 0;
+  border: 0;
+  height: 1px;
+  width: 1px;
+  overflow: hidden;
+}
+
+/* 暗黑模式下的公式样式 */
+[data-theme="dark"] .math-block, 
+[data-theme="dark"] .katex-display,
+[data-theme="dark"] .texmath.display {
+  background-color: #2d2d33;
+  border-color: #444;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .math-inline, 
+[data-theme="dark"] .katex-inline,
+[data-theme="dark"] .texmath.inline {
+  background-color: rgba(45, 45, 51, 0.5);
+}
+
+/* 公式渲染动画 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Mermaid 图表样式 */
+.mermaid-wrapper {
+  margin: 1.5rem 0;
+  overflow-x: auto;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+  border: 1px solid #eaecef;
+  background-color: #f8f9fa;
+
+  [data-theme="dark"] & {
+    background-color: #1e1e1e;
+    border-color: #333;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+  }
+
+  .mermaid-container {
+    padding: 12px;
+    width: 100%;
+  }
+
+  .mermaid-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 8px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #e2e8f0;
+    
+    [data-theme="dark"] & {
+      border-bottom-color: #333;
+    }
+    
+    .mermaid-label {
+      font-size: 0.85rem;
+      color: #718096;
+      font-family: monospace;
+      
+      [data-theme="dark"] & {
+        color: #a0aec0;
+      }
+    }
+    
+    .copy-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      opacity: 0.7;
+      padding: 4px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s ease;
+      
+      &:hover {
+        opacity: 1;
+        background-color: rgba(0, 0, 0, 0.05);
+        
+        [data-theme="dark"] & {
+          background-color: rgba(255, 255, 255, 0.1);
+        }
+      }
+    }
+  }
+
+  .mermaid-diagram {
+    display: flex;
+    justify-content: center;
+    padding: 10px 0;
+    
+    &.fade-in {
+      animation: fadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+      opacity: 0.2;
+    }
+  }
+  
+  .mermaid-error {
+    color: #e53e3e;
+    padding: 12px;
+    font-size: 0.9rem;
+    text-align: center;
+    
+    [data-theme="dark"] & {
+      color: #fc8181;
+    }
+  }
+}
+
+/* 确保SVG图表适应容器 */
+.mermaid-diagram svg {
+  max-width: 100%;
+  height: auto !important;
+}
+
+/* Mermaid主题覆盖 - 确保暗色模式下的更好可见性 */
+[data-theme="dark"] .mermaid-diagram {
+  .label {
+    color: #e2e8f0 !important;
+    fill: #e2e8f0 !important;
+  }
+  
+  .node rect,
+  .node circle,
+  .node ellipse,
+  .node polygon,
+  .node path {
+    fill: #2d3748 !important;
+    stroke: #4a5568 !important;
+  }
+  
+  .edgePath .path {
+    stroke: #a0aec0 !important;
+  }
+  
+  .arrowheadPath {
+    fill: #a0aec0 !important;
+  }
+  
+  .edgeLabel {
+    background-color: #2d3748 !important;
+    color: #e2e8f0 !important;
+  }
+}
+
+/* 表格样式优化 - 完全重写以提供更好的视觉效果 */
+table {
+  width: auto;
+  max-width: 100%;
+  margin: 1.5rem 0;
+  border-collapse: separate;
+  border-spacing: 0;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  font-size: 0.95rem;
+  line-height: 1.5;
+  background-color: #fff;
+  opacity: 0.2;
+  animation: fadeInTable 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  display: table;
+  overflow-x: auto;
+  white-space: normal;
+}
+
+@keyframes fadeInTable {
+  from {
+    opacity: 0.2;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 表头行和表体行同时显示，无需逐行动画 */
+table thead tr,
+table tbody tr {
+  opacity: 0.2;
+  animation: fadeInTableContent 0.4s ease-out 0.15s forwards;
+}
+
+@keyframes fadeInTableContent {
+  from {
+    opacity: 0.2;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* 表格容器 */
+.table-container {
+  overflow-x: auto;
+  max-width: 100%;
+  margin: 1.5rem 0;
+}
+
+/* 表头样式 */
+th {
+  background-color: #f0f4f8;
+  color: #334155;
+  font-weight: 600;
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 2px solid #e2e8f0;
+  position: relative;
+  white-space: nowrap;
+}
+
+/* 表头分隔线 */
+th:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 25%;
+  height: 50%;
+  width: 1px;
+  background-color: #cbd5e1;
+}
+
+/* 单元格样式 */
+td {
+  padding: 12px 16px;
+  border-bottom: 1px solid #e2e8f0;
+  color: #475569;
+  transition: background-color 0.2s;
+  word-break: break-word;
+}
+
+/* 表格连续行分组样式 */
+tr:nth-child(even) {
+  background-color: #f8fafc;
+}
+
+/* 鼠标悬停效果 */
+tr:hover td {
+  background-color: #f1f5f9;
+}
+
+/* 最后一行不显示底部边框 */
+tr:last-child td {
+  border-bottom: none;
+}
+
+/* 第一列样式，通常是标题或关键信息 */
+td:first-child {
+  font-weight: 500;
+  color: #334155;
+}
+
+/* 暗黑模式下的表格样式 */
+[data-theme="dark"] table {
+  background-color: #1e1e2e;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] th {
+  background-color: #2c2c3d;
+  color: #e2e8f0;
+  border-bottom-color: #475569;
+}
+
+[data-theme="dark"] th::after {
+  background-color: #475569;
+}
+
+[data-theme="dark"] td {
+  border-bottom-color: #334155;
+  color: #cbd5e1;
+}
+
+[data-theme="dark"] tr:nth-child(even) {
+  background-color: #252538;
+}
+
+[data-theme="dark"] tr:hover td {
+  background-color: #2a2a40;
+}
+
+[data-theme="dark"] td:first-child {
+  color: #f1f5f9;
+}
+
+/* 自定义引用块样式 */
+blockquote {
+  margin: 1.5rem 0;
+  padding: 1.2rem 1.5rem;
+  border-left: 4px solid #3eaf7c;
+  background-color: rgba(62, 175, 124, 0.1);
+  border-radius: 0 8px 8px 0;
+  color: #333;
+  position: relative;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+  &::before {
+    content: '""';
+    font-family: Georgia, serif;
+    font-size: 4rem;
+    position: absolute;
+    top: -12px;
+    left: 10px;
+    opacity: 0.2;
+    color: #3eaf7c;
+  }
+
+  p:first-child {
+    margin-top: 0;
+  }
+
+  p:last-child {
+    margin-bottom: 0;
+  }
+
+  /* 引用块悬停效果 */
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Info 信息提示样式 */
+  &.info {
+    border-left-color: #3498db;
+    background-color: rgba(52, 152, 219, 0.1);
+    padding-left: 50px;
+
+    &::before {
+      content: 'i';
+      font-family: Arial, sans-serif;
+      font-style: italic;
+      font-weight: bold;
+      font-size: 2rem;
+      width: 36px;
+      height: 36px;
+      line-height: 36px;
+      text-align: center;
+      border-radius: 50%;
+      background-color: #3498db;
+      color: white;
+      opacity: 0.9;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+  }
+
+  /* Warning 警告提示样式 */
+  &.warning {
+    border-left-color: #f39c12;
+    background-color: rgba(243, 156, 18, 0.1);
+    padding-left: 50px;
+
+    &::before {
+      content: '!';
+      font-family: Arial, sans-serif;
+      font-weight: bold;
+      font-size: 2rem;
+      width: 36px;
+      height: 36px;
+      line-height: 36px;
+      text-align: center;
+      border-radius: 50%;
+      background-color: #f39c12;
+      color: white;
+      opacity: 0.9;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+  }
+
+  /* Error 错误提示样式 */
+  &.error {
+    border-left-color: #e74c3c;
+    background-color: rgba(231, 76, 60, 0.1);
+    padding-left: 50px;
+
+    &::before {
+      content: '×';
+      font-family: Arial, sans-serif;
+      font-weight: bold;
+      font-size: 2rem;
+      width: 36px;
+      height: 36px;
+      line-height: 34px;
+      text-align: center;
+      border-radius: 50%;
+      background-color: #e74c3c;
+      color: white;
+      opacity: 0.9;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+  }
+}
+
+/* 暗黑模式下的引用块样式 */
+[data-theme="dark"] blockquote {
+  background-color: rgba(62, 175, 124, 0.05);
+  color: #ddd;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+[data-theme="dark"] blockquote.info {
+  background-color: rgba(52, 152, 219, 0.05);
+}
+
+[data-theme="dark"] blockquote.warning {
+  background-color: rgba(243, 156, 18, 0.05);
+}
+
+[data-theme="dark"] blockquote.error {
+  background-color: rgba(231, 76, 60, 0.05);
+}
+
+/* 列表样式优化 */
+ul, ol {
+  padding-left: 1.5rem;
+  margin: 1rem 0;
+}
+
+ul li, ol li {
+  margin-bottom: 0.5rem;
+}
+
+/* 任务列表样式 */
+ul.task-list {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+.task-list-item {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 0.5rem;
+}
+
+.task-list-item-checkbox {
+  margin-right: 0.5rem;
+  margin-top: 0.25rem;
+  appearance: none;
+  width: 1rem;
+  height: 1rem;
+  border: 1px solid #aaa;
+  border-radius: 2px;
+  background-color: transparent;
+  position: relative;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.task-list-item-checkbox:checked {
+  background-color: #3eaf7c;
+  border-color: #3eaf7c;
+}
+
+.task-list-item-checkbox:checked::after {
+  content: '✓';
+  color: white;
+  position: absolute;
+  top: -3px;
+  left: 1px;
+  font-size: 0.8rem;
+}
+
+/* 返回顶部按钮 */
+.scroll-to-top {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #3eaf7c;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.3s, transform 0.3s;
+  z-index: 1000;
+}
+
+.scroll-to-top.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.scroll-to-top svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* 移除打字机样式 */
+.typewriter-text {
+  display: inline-block;
+  /* 移除所有打字机动画样式 */
+  white-space: normal;
+  overflow: visible;
+  border-right: none;
+  animation: none;
+}
+
+/* KaTeX 数学公式样式 */
+.katex-display {
+  margin: 1.5rem 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  text-align: center;
+  padding: 15px 10px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  border: 1px solid #eaecef;
+  animation: fadeIn 0.4s ease-in-out 0.1s forwards;
+  opacity: 0.2;
+}
+
+.katex {
+  font-size: 1.2em !important;
+  line-height: 1.5 !important;
+  text-indent: 0;
+  font-family: 'KaTeX_Math', 'Times New Roman', serif !important;
+}
+
+/* 行内公式样式 */
+.katex-inline {
+  display: inline-flex;
+  align-items: center;
+  vertical-align: middle;
+  padding: 0 2px;
+  margin: 0 2px;
+  background-color: rgba(248, 249, 250, 0.5);
+  border-radius: 3px;
+}
+
+/* 暗黑模式下的公式样式 */
+[data-theme="dark"] .katex-display {
+  background-color: #2d2d33;
+  border-color: #444;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .katex-inline {
+  background-color: rgba(45, 45, 51, 0.5);
+}
+
+/* 公式渲染动画 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 代码块淡入动画 - 只在生成时显示 */
+.message-container.latest-message:not(.completed) pre.code-block,
+.message-container.latest-message.regenerating pre.code-block {
+  opacity: 0.2;
+  animation: fadeInCode 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  transform-origin: center top;
+}
+
+/* 非生成过程中的代码块直接显示，无动画 */
+pre.code-block {
+  opacity: 1;
+  transform: none;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+@keyframes fadeInCode {
+  from {
+    opacity: 0.2;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 代码块内容同样只在生成时才有动画 */
+.message-container.latest-message:not(.completed) pre.code-block code,
+.message-container.latest-message.regenerating pre.code-block code {
+  opacity: 0.8;
+  animation: fadeInCodeContent 0.25s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* 非生成过程中的代码块内容直接显示 */
+pre.code-block code {
+  opacity: 1;
+}
+
+@keyframes fadeInCodeContent {
+  from {
+    opacity: 0.8;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* 数学公式也只在生成时有动画 */
+.message-container.latest-message:not(.completed) .math-block,
+.message-container.latest-message:not(.completed) .katex-display,
+.message-container.latest-message:not(.completed) .texmath,
+.message-container.latest-message.regenerating .math-block,
+.message-container.latest-message.regenerating .katex-display,
+.message-container.latest-message.regenerating .texmath {
+  opacity: 0.2;
+  animation: fadeIn 0.4s ease-in-out 0.1s forwards;
+}
+
+/* 非生成过程中的数学公式直接显示 */
+.math-block, .katex-display, .texmath {
+  opacity: 1;
+  margin: 1.5rem 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  text-align: center;
+  padding: 15px 10px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  border: 1px solid #eaecef;
+}
+
+/* 表格相关动画也是相同处理 */
+.message-container.latest-message:not(.completed) table,
+.message-container.latest-message.regenerating table {
+  opacity: 0.2;
+  animation: fadeInTable 0.4s ease-out 0.1s forwards;
+}
+
+/* 非生成过程中的表格直接显示 */
+table {
+  opacity: 1;
+  width: auto;
+  max-width: 100%;
+  margin: 1.5rem 0;
+  border-collapse: separate;
+  border-spacing: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  font-size: 0.95rem;
+  line-height: 1.5;
+  background-color: #fff;
+  display: table;
+  overflow-x: auto;
+  white-space: normal;
+}
+
+/* 表格行动画也只在生成时显示 */
+.message-container.latest-message:not(.completed) table thead tr,
+.message-container.latest-message:not(.completed) table tbody tr,
+.message-container.latest-message.regenerating table thead tr,
+.message-container.latest-message.regenerating table tbody tr {
+  opacity: 0.2;
+  animation: fadeInTableContent 0.4s ease-out 0.15s forwards;
+}
+
+/* 非生成过程中的表格行直接显示 */
+table thead tr,
+table tbody tr {
+  opacity: 1;
+}
+
+/* 历史消息中的所有元素立即显示，无动画效果 */
+.message-container.history-message pre.code-block,
+.message-container.history-message .math-block,
+.message-container.history-message .katex-display,
+.message-container.history-message .texmath,
+.message-container.history-message table,
+.message-container.history-message pre.code-block code,
+.message-container.history-message table thead tr,
+.message-container.history-message table tbody tr,
+[data-message-status="completed"] pre.code-block,
+[data-message-status="completed"] .math-block,
+[data-message-status="completed"] .katex-display,
+[data-message-status="completed"] .texmath,
+[data-message-status="completed"] table,
+[data-message-status="completed"] pre.code-block code,
+[data-message-status="completed"] table thead tr,
+[data-message-status="completed"] table tbody tr {
+  opacity: 1 !important;
+  transform: none !important;
+  animation: none !important;
+  transition: none !important;
+}
+
+/* 禁用历史消息中所有元素的所有动画和过渡 */
+.message-container.history-message * {
+  animation: none !important;
+  transition: none !important;
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+/* 自定义滚动条样式 */
+.table-container::-webkit-scrollbar,
+pre.code-block::-webkit-scrollbar {
+  height: 6px;
+  width: 6px;
+}
+
+.table-container::-webkit-scrollbar-track,
+pre.code-block::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.table-container::-webkit-scrollbar-thumb,
+pre.code-block::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+}
+
+.table-container:hover::-webkit-scrollbar-thumb,
+pre.code-block:hover::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .table-container::-webkit-scrollbar-thumb,
+[data-theme="dark"] pre.code-block::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+[data-theme="dark"] .table-container:hover::-webkit-scrollbar-thumb,
+[data-theme="dark"] pre.code-block:hover::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.3);
+} 

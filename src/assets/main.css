@@ -11,6 +11,7 @@
   background-color: rgba(0, 0, 0, 0.6);
   align-items: center;
   justify-content: center;
+  scrollbar-width: none;
 }
 
 .code-modal .modal-content {
@@ -44,7 +45,8 @@
 
 .code-modal .modal-header h3 {
   margin: 0;
-  font-size: 1.2em;
+  font-size: 15px;
+  color:white;
 }
 
 .code-modal .modal-actions {
