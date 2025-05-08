@@ -22,6 +22,15 @@
         spellcheck="false"
         autocapitalize="off"
       />
+      <!-- 添加删除按钮 -->
+      <button class="input-icon-btn delete-btn" @click="handleClear">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="3 6 5 6 21 6"></polyline>
+          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+          <line x1="10" y1="11" x2="10" y2="17"></line>
+          <line x1="14" y1="11" x2="14" y2="17"></line>
+        </svg>
+      </button>
       <button class="input-icon-btn send-btn" @click="handleSend">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <line x1="22" y1="2" x2="11" y2="13"></line>
@@ -37,7 +46,7 @@
         <div class="toolbar-left">
           <div class="toolbar-btn role-btn" @click.stop="toggleRolePrompt" title="快速选择AI角色">
             <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAACXBIWXMAAAsTAAALEwEAmpwYAAAE1klEQVR4nO2be4hVRRjAf1u6JqvpRpa4PU0r1JCwcv/wAT2IMNGCTNBKiiQyKSrKCsR/tgeUZLHGYhBBD4oUxEdK4CMVNXpuTzHD3PCPSsvaWNPyxgffhcMwc87cc+ece8zzg4Hde2a++ea7c+b7Zua7UFJSUpINg4GrgDuAp4GVwDbgc2AfcAj4W8sh/ewzrSN1O4C5KkNkFZ5BwPXAs8DHwL9AJWARA3UBtwGtFISBqtAa4FjgAceVf4DtwPxGzY5xwKvAXzkO2lV6gRXA2DwGfg2wATjhoViffkui3BPALKAdGAWcp9O4n5ZW/WyU1pmlbVaojD6P/kSn9cDVWQy8DXg3YeAyLbcADwMTgeaA/TerYR4BtmpfcYZ4BxgRqvN5wJGYDmVVvx8YRn6cAywAvojR63fgrhCdVRzlfWASjWcysDFGz7qpGGUPcC3F4zrVLXMDDKC4DMjDAC7O1EVqp7qmP4Bu4BngAmrnQg2qulXWceCw/v98jMyGGOBm4GCCS3wMaPLoT+os8nB9YpSZKfWtiUqCwAcjYe9+YJ3OAltk2JVghCb1/Wa7T4BbgbOBs4D7gJ91HzG5kQa4U/3uB8BU49n5wHuW9vJKuHjOUv9loL+lrgRPa4FvjZgjNwNcBvR4+NoXLTIk0jO53VLvlQTZpwPLgLs99E1NxSHwHmC4R/vTgE2GDDGcSY9RZ2cN0eQMD31TUwkgcITu+asyDiQY4LeUniOUvpkIvEkHeUD/rvV5oQ1wMbAU+EpjgF79+wV9lpY0cnM3wEJ1Ry5/Lc8eSNFvWrm5G2BBgqJHdbdYK2nlNuQVuEinZXdkqlZDVnmWljRyC7sI5kVpAMoZQPkKUK4BlIsgpRegdIMEoNdwK3IJGkXuBltozL2kHMVFGWTo+meIjvYZQkcbz0fqtfYV5MflwG7t29QlqqvoXjc7DKHTLHWW6EyRWyQfllgCFvnMh3nal63+JEPmLgKw3BD6kmM6VmfKawmvhG3wPkZoUdnVb1b6NHnckPcmAZhpCP1Bj7lMpkfqfA2MqXHwcUYYozKrdaQvGxsMWZI/UDdDLEfcckRtY02kjvlK+AzeZoTqlK8+kz5sDNctctx6lZo3DMEfOc73R3re5actfZaFz2XgbwjIBIsy93oqErK41oihelESrZvmECYW8/067EhCiC6IPgPyNZhr4UMXZjM3wIxX6ma0ZXpvd9zaTK/x2/Qxgmvha7dkjDxFRiy2KNZJ4ximx+hRffZmeYXfT/OATCOIYfLmDGCzoYfcU96YdcfnAj9ZjPAo+SGv3WqLDpJPkAsTHIlTHZ45APV+8ystfW/SGZobUxyJkq+rkkmY7Xxo1TQ5s2235g3kzg265TQV2q2JjyENMB743tJur+ctdabZo79YFJM4YXYAAzRpTG+bbV9qEmfDuRT4zuG/33Zkd/sYoE3zEW1yt2oEWBiGGJuhaOmxuKc4A8hi9lBMhmpn4FTcYDSp4q4N0SrgkhgDSPtb9Arc1v6I/gCj8IwFPnUM4qgjGWqaZoO5QuG1mnh10tCsGWFxmd0+RRbYOZzEjAc+TDHw45pXmGcWeqbIbu5Hj4Gf0N8miGf539GiB5e2uEGO3d4CruQUYDDwJPCrnuR0FCWgyZuBRfXnJSWcGvwH9Aa6pQMH/okAAAAASUVORK5CYII=" alt="anonymous-mask">
-        </div>
+          </div>
 
           <!-- 这里可以添加更多的工具按钮 -->
            <div class = "toolbar-btn"><!--预留生图模式-->
@@ -583,6 +592,18 @@ const rolePopup = ref(null)
       }
     }
     
+    &.delete-btn {
+      color: var(--danger-color, #ff4d4f);
+      
+      &:hover {
+        color: var(--danger-hover-color, #ff7875);
+      }
+      
+      &:active {
+        color: var(--danger-active-color, #d9363e);
+      }
+    }
+    
     svg {
       width: 20px;
       height: 20px;
@@ -1026,6 +1047,14 @@ const rolePopup = ref(null)
         
         &:hover {
           color: var(--primary-hover-color, #40a9ff);
+        }
+      }
+      
+      &.delete-btn {
+        color: var(--dark-danger-color, #ff4d4f);
+        
+        &:hover {
+          color: var(--dark-danger-hover-color, #ff7875);
         }
       }
     }
