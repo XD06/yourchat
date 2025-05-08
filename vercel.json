@@ -75,12 +75,10 @@
       ]
     }
   ],
-  "buildEnvironment": {
-    "NODE_ENV": "production"
-  },
+
   "runtime": {
     "engines": {
       "node": "20.x"
     }
   }
-} 
+}
