@@ -20,84 +20,103 @@ let messageListener = null;
  * @returns {HTMLElement} The modal container element
  */
 function initializeModal() {
-  let modalContainer = document.getElementById('code-execution-modal');
-  console.log('Modal container before init:', modalContainer);
-  if (!modalContainer) {
-    console.log('Creating new modal container');
-    modalContainer = document.createElement('div');
-    modalContainer.id = 'code-execution-modal';
-    modalContainer.className = 'code-modal';
-    document.body.appendChild(modalContainer);
-    
-    // Create modal content - 更新状态指示器样式
-    const modalContent = `
-      <div class="modal-content">
-        <div class="modal-header">
-          <h3>代码预览 <span id="status-indicator" class="status-indicator"></span></h3>
-          <div class="modal-actions">
-            <span class="fullscreen-btn" id="modal-fullscreen-btn">⛶</span>
-            <span class="close-btn" id="modal-close-btn">×</span>
+  try {
+    let modalContainer = document.getElementById('code-execution-modal');
+    console.log('Modal container before init:', modalContainer);
+    if (!modalContainer) {
+      console.log('Creating new modal container');
+      modalContainer = document.createElement('div');
+      modalContainer.id = 'code-execution-modal';
+      modalContainer.className = 'code-modal';
+      document.body.appendChild(modalContainer);
+      
+      // Create modal content - 更新状态指示器样式
+      const modalContent = `
+        <div class="modal-content">
+          <div class="modal-header">
+            <h3>代码预览 <span id="status-indicator" class="status-indicator"></span></h3>
+            <div class="modal-actions">
+              <span class="fullscreen-btn" id="modal-fullscreen-btn">⛶</span>
+              <span class="close-btn" id="modal-close-btn">×</span>
+            </div>
+          </div>
+          <div class="modal-body">
+            <iframe id="code-sandbox"></iframe>
           </div>
         </div>
-        <div class="modal-body">
-          <iframe id="code-sandbox"></iframe>
-        </div>
-      </div>
-    `;
-    modalContainer.innerHTML = modalContent;
-    
-    // 添加状态指示器样式
-    const styleElement = document.createElement('style');
-    styleElement.textContent = `
-      .status-indicator {
-        display: inline-block;
-        margin-left: 10px;
-        font-size: 12px;
-        font-weight: normal;
-        padding: 2px 8px;
-        border-radius: 10px;
-        color: white;
-        transition: all 0.3s ease;
-        opacity: 0;
+      `;
+      modalContainer.innerHTML = modalContent;
+      
+      // 添加状态指示器样式
+      try {
+        const styleElement = document.createElement('style');
+        styleElement.textContent = `
+          .status-indicator {
+            display: inline-block;
+            margin-left: 10px;
+            font-size: 12px;
+            font-weight: normal;
+            padding: 2px 8px;
+            border-radius: 10px;
+            color: white;
+            transition: all 0.3s ease;
+            opacity: 0;
+          }
+          .status-indicator.success {
+            background-color: #52c41a;
+            opacity: 1;
+          }
+          .status-indicator.error {
+            background-color: #f5222d;
+            opacity: 1;
+          }
+          .status-indicator.running {
+            background-color: #1890ff;
+            opacity: 1;
+          }
+          .status-indicator.timeout {
+            background-color: #fa8c16;
+            opacity: 1;
+          }
+        `;
+        document.head.appendChild(styleElement);
+      } catch (styleError) {
+        console.error('Failed to add status indicator styles:', styleError);
       }
-      .status-indicator.success {
-        background-color: #52c41a;
-        opacity: 1;
+      
+      // Add event listeners safely
+      try {
+        const closeBtn = document.getElementById('modal-close-btn');
+        if (closeBtn) {
+          closeBtn.addEventListener('click', closeModal);
+        }
+        
+        const fullscreenBtn = document.getElementById('modal-fullscreen-btn');
+        if (fullscreenBtn) {
+          fullscreenBtn.addEventListener('click', toggleFullscreen);
+        }
+        
+        // Add ESC key handler
+        window.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape' && modalContainer && modalContainer.classList.contains('show')) {
+            closeModal();
+          }
+        });
+      } catch (eventError) {
+        console.error('Failed to add event listeners:', eventError);
       }
-      .status-indicator.error {
-        background-color: #f5222d;
-        opacity: 1;
-      }
-      .status-indicator.running {
-        background-color: #1890ff;
-        opacity: 1;
-      }
-      .status-indicator.timeout {
-        background-color: #fa8c16;
-        opacity: 1;
-      }
-    `;
-    document.head.appendChild(styleElement);
-    
-    // Add event listeners
-    document.getElementById('modal-close-btn').addEventListener('click', closeModal);
-    document.getElementById('modal-fullscreen-btn').addEventListener('click', toggleFullscreen);
-    
-    // Add ESC key handler
-    window.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && modalContainer.classList.contains('show')) {
-        closeModal();
-      }
-    });
 
-    // We won't add inline styles here - the CSS is already in main.scss
-    // But we'll make sure the default style is correct
-    modalContainer.style.opacity = '0';
-    modalContainer.style.visibility = 'hidden';
+      // Ensure default style is set
+      modalContainer.style.opacity = '0';
+      modalContainer.style.visibility = 'hidden';
+    }
+    
+    console.log('Modal container after init:', modalContainer);
+    return modalContainer;
+  } catch (error) {
+    console.error('Failed to initialize modal:', error);
+    return null;
   }
-  
-  console.log('Modal container after init:', modalContainer);
-  return modalContainer;
 }
 
 /**
@@ -105,28 +124,39 @@ function initializeModal() {
  * @param {string} code - The HTML code to execute
  */
 export function openCodeModal(code) {
-  console.log('Opening code modal with code:', code.substring(0, 50) + '...');
-  // Initialize and show modal
-  const modalContainer = initializeModal();
-  
-  // Reset the display style to match SCSS style expectations
-  // Set display to flex
-  modalContainer.style.display = 'flex';
-  
-  // Use setTimeout to ensure display:flex is applied before adding show class
-  // This prevents animation issues
-  setTimeout(() => {
-    // Add show class for visibility and opacity animation
-    modalContainer.classList.add('show');
-    // Remove inline opacity/visibility styles to let CSS take over
-    modalContainer.style.opacity = '';
-    modalContainer.style.visibility = '';
+  try {
+    console.log('Opening code modal with code:', code.substring(0, 50) + '...');
+    // Initialize and show modal
+    const modalContainer = initializeModal();
     
-    console.log('Modal container now visible. Classes:', modalContainer.className);
-  }, 10);
-  
-  // Execute the code
-  executeCode(code);
+    if (!modalContainer) {
+      console.error('Failed to initialize modal container');
+      return;
+    }
+    
+    // Reset the display style to match SCSS style expectations
+    // Set display to flex
+    modalContainer.style.display = 'flex';
+    
+    // Use setTimeout to ensure display:flex is applied before adding show class
+    // This prevents animation issues
+    setTimeout(() => {
+      if (document.getElementById('code-execution-modal')) {
+        // Add show class for visibility and opacity animation
+        modalContainer.classList.add('show');
+        // Remove inline opacity/visibility styles to let CSS take over
+        modalContainer.style.opacity = '';
+        modalContainer.style.visibility = '';
+        
+        console.log('Modal container now visible. Classes:', modalContainer.className);
+      }
+    }, 10);
+    
+    // Execute the code
+    executeCode(code);
+  } catch (error) {
+    console.error('Error opening code modal:', error);
+  }
 }
 
 /**
@@ -150,29 +180,44 @@ export function closeModal() {
     modal.classList.remove('show');
     // Then hide after transition completes
     setTimeout(() => {
-    modal.style.display = 'none';
+      if (document.getElementById('code-execution-modal')) { // Extra null check
+        modal.style.display = 'none';
+      }
     }, 300); // Match the transition time in SCSS (0.3s)
     
     // Clear iframe content
     const sandbox = document.getElementById('code-sandbox');
     if (sandbox) {
-      sandbox.src = 'about:blank';
-      sandbox.removeAttribute('srcdoc');
+      try {
+        sandbox.src = 'about:blank';
+        sandbox.removeAttribute('srcdoc');
+      } catch (e) {
+        console.warn('Error clearing iframe:', e);
+      }
     }
     
     // Clear timeout
     if (executionTimeoutId) {
       clearTimeout(executionTimeoutId);
+      executionTimeoutId = null;
     }
     
-    // Remove message listener
+    // Remove message listener safely
     if (messageListener) {
-      window.removeEventListener('message', messageListener);
+      try {
+        window.removeEventListener('message', messageListener);
+      } catch (e) {
+        console.warn('Error removing message listener:', e);
+      }
       messageListener = null;
     }
     
-    // Remove resize listener
-    window.removeEventListener('resize', resizeModal);
+    // Remove resize listener safely
+    try {
+      window.removeEventListener('resize', resizeModal);
+    } catch (e) {
+      console.warn('Error removing resize listener:', e);
+    }
   }
 }
 
@@ -267,71 +312,111 @@ function resizeModal() {
  * @param {string} code - The HTML code to execute
  */
 function executeCode(code) {
-  const sandbox = document.getElementById('code-sandbox');
-  const statusIndicator = document.getElementById('status-indicator');
-  
-  // Initialize
-  currentConsoleLogs = []; // 保留这个以防将来需要
-  
-  // 设置初始状态
-  updateStatusIndicator('运行中...', 'running');
-  
-  // Reset iframe
-  sandbox.src = 'about:blank';
-  
-  // Clear previous timeout
-  if (executionTimeoutId) {
-    clearTimeout(executionTimeoutId);
-  }
-  
-  // 仍然设置超时但使用更好的状态显示
-  executionTimeoutId = setTimeout(() => {
-    updateStatusIndicator('执行超时', 'timeout');
-  }, EXECUTION_TIMEOUT_MS);
-  
-  // Remove previous message listener
-  if (messageListener) {
-    window.removeEventListener('message', messageListener);
-  }
-  
-  // 简化消息监听器，只处理错误和必要的事件
-  messageListener = function(event) {
-    if (event.source !== sandbox.contentWindow) {
+  try {
+    const sandbox = document.getElementById('code-sandbox');
+    const statusIndicator = document.getElementById('status-indicator');
+    
+    if (!sandbox) {
+      console.error('Sandbox iframe not found');
       return;
     }
-
-    const { type, detail } = event.data;
-
-    switch (type) {
-      case 'error':
-        clearTimeout(executionTimeoutId);
-        updateStatusIndicator('执行出错', 'error');
-        console.error("沙盒错误:", detail);
-        break;
-
-      case 'potential_completion':
-          clearTimeout(executionTimeoutId);
-        updateStatusIndicator('执行成功', 'success');
-        break;
-
-      case 'content_changed':
-        resizeModalBasedOnContent();
-        break;
-    }
-  };
-  
-  window.addEventListener('message', messageListener);
-  
-  // Load sandbox content
-  setTimeout(() => {
-    sandbox.srcdoc = createSandboxHtml(code);
     
-    // Adjust size when iframe loads
-    sandbox.onload = () => {
-      resizeModalBasedOnContent();
-      window.addEventListener('resize', resizeModal);
+    // Initialize
+    currentConsoleLogs = []; // 保留这个以防将来需要
+    
+    // 设置初始状态
+    if (statusIndicator) {
+      updateStatusIndicator('运行中...', 'running');
+    }
+    
+    // Reset iframe
+    sandbox.src = 'about:blank';
+    
+    // Clear previous timeout
+    if (executionTimeoutId) {
+      clearTimeout(executionTimeoutId);
+      executionTimeoutId = null;
+    }
+    
+    // 仍然设置超时但使用更好的状态显示
+    executionTimeoutId = setTimeout(() => {
+      if (document.getElementById('status-indicator')) {
+        updateStatusIndicator('执行超时', 'timeout');
+      }
+    }, EXECUTION_TIMEOUT_MS);
+    
+    // Remove previous message listener safely
+    if (messageListener) {
+      try {
+        window.removeEventListener('message', messageListener);
+      } catch (e) {
+        console.warn('Error removing previous message listener:', e);
+      }
+    }
+    
+    // 简化消息监听器，只处理错误和必要的事件
+    messageListener = function(event) {
+      if (!event.source || event.source !== sandbox.contentWindow) {
+        return;
+      }
+
+      try {
+        const { type, detail } = event.data || {};
+        
+        if (!type) return;
+
+        switch (type) {
+          case 'error':
+            if (executionTimeoutId) {
+              clearTimeout(executionTimeoutId);
+              executionTimeoutId = null;
+            }
+            if (document.getElementById('status-indicator')) {
+              updateStatusIndicator('执行出错', 'error');
+            }
+            console.error("沙盒错误:", detail);
+            break;
+
+          case 'potential_completion':
+            if (executionTimeoutId) {
+              clearTimeout(executionTimeoutId);
+              executionTimeoutId = null;
+            }
+            if (document.getElementById('status-indicator')) {
+              updateStatusIndicator('执行成功', 'success');
+            }
+            break;
+
+          case 'content_changed':
+            if (document.getElementById('code-execution-modal')) {
+              resizeModalBasedOnContent();
+            }
+            break;
+        }
+      } catch (err) {
+        console.error('Error in message handler:', err);
+      }
     };
-  }, 50);
+    
+    window.addEventListener('message', messageListener);
+    
+    // Load sandbox content
+    setTimeout(() => {
+      if (document.getElementById('code-sandbox')) {
+        sandbox.srcdoc = createSandboxHtml(code);
+        
+        // Adjust size when iframe loads
+        sandbox.onload = () => {
+          if (document.getElementById('code-execution-modal')) {
+            resizeModalBasedOnContent();
+            window.addEventListener('resize', resizeModal);
+          }
+        };
+      }
+    }, 50);
+  } catch (error) {
+    console.error('Error executing code:', error);
+  }
 }
 
 /**
@@ -343,7 +428,12 @@ function resizeModalBasedOnContent() {
     if (!sandbox) return;
     
     const modalContent = document.querySelector('.modal-content');
-    const modalHeaderHeight = document.querySelector('.modal-header').offsetHeight;
+    if (!modalContent) return;
+    
+    const modalHeader = document.querySelector('.modal-header');
+    if (!modalHeader) return;
+    
+    const modalHeaderHeight = modalHeader.offsetHeight;
 
     // 设置一个固定尺寸，避免抖动
     const maxWidth = 800;
@@ -362,14 +452,24 @@ function resizeModalBasedOnContent() {
 
     try {
       // 尝试读取iframe内容尺寸，但仅在内容完全加载后才应用
+      if (!sandbox.contentWindow) return;
+      
       const iframeDoc = sandbox.contentDocument || sandbox.contentWindow.document;
-      if (iframeDoc && iframeDoc.body && iframeDoc.readyState === 'complete') {
+      if (!iframeDoc || !iframeDoc.body) return;
+      
+      if (iframeDoc.readyState === 'complete') {
         const contentHeight = iframeDoc.body.scrollHeight;
         const contentWidth = iframeDoc.body.scrollWidth;
 
+        if (!contentHeight || !contentWidth) return;
+
+        // 获取当前尺寸
+        const currentWidth = parseInt(modalContent.style.width) || 0;
+        const currentHeight = parseInt(modalContent.style.height) || 0;
+
         // 防止频繁调整导致的抖动
-        if (Math.abs(contentWidth - parseInt(modalContent.style.width)) > 50 ||
-            Math.abs(contentHeight - parseInt(modalContent.style.height)) > 50) {
+        if (Math.abs(contentWidth - currentWidth) > 50 ||
+            Math.abs(contentHeight - currentHeight) > 50) {
           
           const newWidth = Math.min(Math.max(contentWidth + 40, minWidth), maxWidth);
           const newHeight = Math.min(Math.max(contentHeight + modalHeaderHeight + 20, minHeight), maxHeight);
@@ -381,7 +481,9 @@ function resizeModalBasedOnContent() {
           
           // 300ms后移除过渡效果，避免后续调整的动画
           setTimeout(() => {
-            modalContent.style.transition = "";
+            if (modalContent && document.contains(modalContent)) {
+              modalContent.style.transition = "";
+            }
           }, 300);
         }
       }
