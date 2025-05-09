@@ -61,7 +61,7 @@
             <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAACXBIWXMAAAsTAAALEwEAmpwYAAACwElEQVR4nO2ZTYiNURjHf75G8r2QJjQmMwuzmRQSCiVKkg2WmpLP2KEUhowFG5nE2JndbDS7WUmaZLJSKIQwpSiaMYxxm5mjU8+p0+m99573686Zen/1dO993/Px/M/7Puc851woKCgoCJ1GoAsYBMYBlbONS1/3pO9U7AZGauC0KmO/gF1pRn4qnVeWiIYkAroCcF6J3U0iYDAAx5XY5yQCahGwytO0L7FRgVls8nDiD3ARWAPUyeclYHQ6CNDObyrT12YPEVMuQI98JdpDF6BfF8N14DfQYV1rCl2AfucNI9YiZZg7nZ5Ah4i4Zl1rDl2Anm0qcSV0AaMy20SxBfhbSwE6AM8DrcByYAfw0FNEuwSsjokmGflqzmcq4Aewvkydyzk8OZWlgG8y6pU4G6qAr0CLdX8mcAf4Duxx6p4BJkMS8EWmOcMsoNu6/w/Y79Q/BkxEPMHjwFpgBbAX6M9bwEdnbzoH6InooAQccto4bKXlH4DVEf3MBh7kJeAtsMq6VldlttHOtjntHAReASsr9DUD6MxawGug3vo9D+jzGCn92hyNGGW7nV7ZZa1zRNzOUsAy6/t84FGMgNMBfDqizQXAY6vcT2CjU+ZGVgIMi2IEmm0DTgK3GHgaUW4Y2OqRViRiCfAsgfP9ItxuZ6DKZmen0/e5tAKWAs8TOP8EWOi8ii886o0B+xwfTlrrSWxeJnC+T4LUUC+TgW/9sQgRJ0REbOI63yubEoOeft8laKcEHHB8actbQI8scAZ9FPg+gfPKWk/0IpgK34OtbkktDM2SeqiUNgEcSSPA52jxviR1hhZJ+lRGNgmcSiqg2uFup6yehlbJTLNyXlki3JjwolFODaIavemU3SAbHZWDDTspTeo/OK46ZfQ+dygn54eAbaSkQc7nPwEXnHvbc/gTpAS8AW45mXBBQUEB4fEfLQH7e+z+yuEAAAAASUVORK5CYII=" alt="image">
       </div>
       <div class = "toolbar-btn">
-        <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAACXBIWXMAAAsTAAALEwEAmpwYAAAFM0lEQVR4nO2a2W9VVRTGf61BRaW0Di++iLTw5IDDg1ERp2g0mjhQVBK1ElBwqmjC4JM4NTxo9B+oGJ8cMCZiEHGWiAoiDikyqC8OlRrEgoJYe8xKvk1WNueec+695xZq+JKT9J717XXOOntYa3+7cBiFMV7XqEE7MAdYBnwK7ACS6Nohm3Fmq80hgTZgPvBFyksXvTYAD8jXiOMEYCkw6F7I/h5yv18ELnS/pwIvud9DUfs/gJ6RCqgJmAUMuBd4E7gZWKzffwG3uTaBF3A7sEf3rM0twCrH2w506VkNwfHAa+6BHwIXyHYx8A8wDEyP2sWBGDrFtTbTdM967yPHf7URvTMZ+N4NIfuqAWOATbI9ktI2LRDDo7q/ST4CrDd2ybYN6CgriLOAX+V4fYrjB2X7FjiyikCMu1k28+ExCfhcNnv2lDJ6IgTxLnBcZB+rMW32qyr4qBSI4Wo3L8yXxzjgfRdMzT3T5oZTH3BMCudO2b/M8JMVCGqbKK/EONYN261AK1WiKZrYYejcEzn7RLZ5dQQyT/a17t543Q9DL1zLq13NZrmJvRD4zjnbp+VyseO01BFIi5vcC4A3gL2unfXEQy7n+IUmN9kNRF/6CC2rqxSI/0q7df9ZYC5wJXAuMFG9F3ituneOOHcBTwMrXSCJS5artUzbs9FoCPOl0LK8VA0+AJor5JMuN8nLvAZUr52Y8txml2esAshEm+vCkOzSYON0p3jnAddoWPTqS67XQvG7e8mdumfL6tsqHBcB1wHnO05TxnOnunIms1dCTliTE/Ak8X4kH3lzJOBn8fIq4o/F684ihSr2hhxnneK9XmIgK8SbXvDZ1uupaBfhT+DoHGc94i4pMZDHxHsihzdWhalxJ6QR5shoXyYPy8WdUWIgVkEb7+UC3JXiWpo4AM/LeF8BR6F0uKTEQC51pVAeusV9Ls34mYxWkufhG3FPKzGQM8T7qgD38pRqYD/CHvvUKlaYk0sMxHwl8p2HMJ9/S0s2w8qofm9QCX/LUVrZXmsg5mtYvvPqqTF613/jpN3SgCw9Ute4/2UgzTUOraNKHFrmK1HlS61Da7RN9omVJjtSAIsuv1+Le3qJgZxZYLcZcJm4VncdgGWjMCH2phlny2g7tDy8Iu5Nh2KJ0u6KxljRiPGkuKZNHcyi8ZRKpA0i3FiwlF5RYiA2Eqop49dlkeaLZHVXFjrE+6nEQH4Rz1akLKwV7/4sUpu2kYm02CJbXdumXi9V5QVNVtug/eA4lba6tj2+VtvlwMkqTy5yvFyNq8eJ1Gniw0nau3hFvqxru4QNEzhiNGsLXmQe7e+VoJCYBIMkGdtEvROdgSSScmwVeUoBWol9thJrJTnoCslBz0hK2h353Ae8FclB98rWX43i2KVGgxLHtrqH7NUkX+ACqVegG1SJtEjnLaEESiQOLnTqzq1UgSadT8SS6dzopRslmbYCd+uZ/h2K5JjUIbbNidgmKFcSsTfWEcjGHBG7T/Yt9ZwOd7hjhffikrnBxwotrhTqL+MEeIocJUqYJs6liXqb6zjosfzlMdlpbP0qKEtBhxtmu7QYpB29LakikFCS9EV7oDucqL2lEWfxrU7PSrSmh6Q5zR2GdhYIZIY7DLUkF3TdNdHEbth/TDTpfCLMm0Tr/UzgYf3eE/VYHEhXdDw9U8J34PVXu8TWgzZVAKGcSfT3UPRF438YCOV/pX8YeLyW47WyAuqWoFxrWbJOPg5KAGmYoI1OrxJlWi02oMTXK27F/cShiJacEuYwcPgPknvUyL7T8dYAAAAASUVORK5CYII=" alt="globe--v1">
+        <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAACXBIWXMAAAsTAAALEwEAmpwYAAADi0lEQVR4nO2aO2gVQRSGv4j4SMT4yLUQfBQ2wYCFFr4KUVARI/iCBEFFiWB8FRaKICIJiCgoWIgSjKnEVGpQEIkJFgaNLxBtVIIoiVpo1PiKxpWBE7kMs7sze2dvUtwfptmdc2a/e3Zmzpy9UFBBBeVTZcA64CjQDLQCD6S1y7V6YL30HVYqAWqBO8AfILBsf4EOsS0dSoBxQB3w0eHhw1qvRKo03xAbgbceAPTWA1TnA2AMcC4FAL01ySubiiYCdz0/8GOZK6Z794GMbwi1wjxJ4ZdfBMwBWkLuP/cJM0pWJN8QA8CUrHG2Ap8N/e4BxT5Azqc0Dy4ZxioH3hj6NuYKsTwlCBXhCSFjzgBeGWyqkkIUhzi0bT9khctux4FKYETM2BXAV81fd9J95kiOv/oHclO1wafaNJ00Gng3xCBKNw0ZgFNUNnuYBz5Ayg35204XBz6WWxVRH2rR/KpN2ToZ7PcAcsMTSKVh/7E6AqxI+OBfss4el4FpFmONtNyQv2ljqfNMrOoN+VCXBUgb7joLTLXo166NpY4PsbqoGZ0EZlrAJAFRNi9lE4zSCW0sFfFYXdeMdsv1OJikIMr2NTArot9+bSwVoVh1akabsu5Nj9jtcwEZPFRVhPTboo310Mb5I81IZaXZsnnNwlomAkS195LW61qdBETfQw4a+kRFJheQAPgEzDeMecA1+s2a41Mh/ZJExgYkkHPJ4ggYq8lepzm9FdHXFcYWJAD6gKWGMfdI3SxWGzSHP2W39wHjAhIA34FVhjGjnue/JksakO1wTYyN7ZxxBQmAX7Y7uUkdmrOrFjYrUwIJgN9J6127DM7mxdgsSREkkHR+mytIqRxish2pdDpKC1MGCaQGpmrFTtKTR9W2x8ytPymDBAKjUhanqPRoTlQ6PTvCpiEFkE5gh6FNyrUA0BWR4KnKyxXPIH2uDx2mJoPz7ogET2kBcDgBSCPwwmB3yAdIiRSUdedqMagBikLsMo4gZ8TXXoNdj1R2clZGCsqm0LeGRMcF5FjWtfEhNWDnpTdMZVJQDltJFNBa+YbiAmJ6bU4bbJ9FRN9ZxfIeR03OfgFusAAxZbjIYqKnSUFI3pWTqmTCu+4BLt86rhnsb5OCSiXl700JZFmIj7lpwAwC1UoFcMAjSBHw1ODjAnn8w0CdnOLatD8MuH4WqNE24n22Z5HhprFyQq2yrEoWVBCe9Q+0MIxCOXC1GgAAAABJRU5ErkJggg==" alt="internet">
       </div>
            <div class= "toolbar-btn">
             <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="23" height="23" viewBox="0 0 64 64"
@@ -140,6 +140,21 @@ style="fill:#FAB005;">
             />
           </el-tooltip>
           
+          <!-- 添加优化提示词按钮 -->
+          <el-tooltip content="优化提示词" placement="top">
+            <el-button
+              circle
+              type="info"
+              :class="{ 
+                'is-loading': isOptimizing, 
+                'optimize-btn-pulse': shouldPulseOptimizeBtn && !isOptimizing 
+              }"
+              @click="handleOptimizePrompt"
+            >
+              <el-icon><MagicStick /></el-icon>
+            </el-button>
+          </el-tooltip>
+          
           <el-button
             class="send-button"
             :class="{ 'pause-button': isGenerating }"
@@ -203,21 +218,80 @@ style="fill:#FAB005;">
                 <div class="role-name">{{ role.name }}</div>
                 <div class="role-desc">{{ role.description }}</div>
               </div>
+              <!-- 编辑按钮 - 只显示在用户创建的角色上 -->
+              <el-button 
+                v-if="role.isUserCreated" 
+                type="text" 
+                class="edit-role-btn"
+                @click.stop="editRole($event, role)"
+              >
+                <el-icon><Edit /></el-icon>
+              </el-button>
+              <!-- 删除按钮 - 只显示在用户创建的角色上 -->
+              <el-button 
+                v-if="role.isUserCreated" 
+                type="text" 
+                class="delete-role-btn"
+                @click.stop="deleteRole($event, role)"
+              >
+                <el-icon><Delete /></el-icon>
+              </el-button>
             </div>
           </div>
         </div>
       </div>
     </transition>
+    
+    <!-- 自定义角色编辑器 -->
+    <el-dialog
+      v-model="showCustomRoleEditor"
+      title="自定义系统提示词"
+      width="90%"
+      max-width="550px"
+      class="custom-role-dialog"
+    >
+      <el-form :model="customRoleForm" label-position="top">
+        <el-form-item label="角色名称">
+          <el-input v-model="customRoleForm.name" placeholder="例如: 旅游规划师" />
+        </el-form-item>
+        <el-form-item label="角色描述">
+          <el-input v-model="customRoleForm.description" placeholder="简短描述这个角色的功能" />
+        </el-form-item>
+        <el-form-item label="系统提示词">
+          <el-input
+            v-model="customRoleForm.prompt"
+            type="textarea"
+            :autosize="{ minRows: 5, maxRows: 10 }"
+            placeholder="在这里输入详细的系统提示词，指导AI如何回答你的问题..."
+          />
+          <div class="prompt-tips">
+            系统提示词将指导AI如何回应你的问题。<br>
+            例如: "你是一位旅游规划专家，帮助用户制定详细的旅行计划，包括景点、交通和预算。"
+          </div>
+        </el-form-item>
+        <el-form-item label="颜色标签">
+          <el-color-picker v-model="customRoleForm.color" />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="showCustomRoleEditor = false">取消</el-button>
+          <el-button type="primary" @click="saveCustomRole">保存</el-button>
+        </span>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
-import { Delete, Position, Upload, Plus, Document, InfoFilled, VideoPause, Close } from '@element-plus/icons-vue'
+import { Delete, Position, Upload, Plus, Document, InfoFilled, VideoPause, Close, Edit, MagicStick } from '@element-plus/icons-vue'
 import { Avatar } from '@element-plus/icons-vue'
 import { useChatStore } from '../stores/chat'
+import { useSettingsStore } from '../stores/settings'
 import { ElMessageBox, ElMessage } from 'element-plus'
 import { messageHandler } from '../utils/messageHandler'
+import { promptTemplates } from '../config/promptTemplates'
 
 // 定义组件的属性
 const props = defineProps({
@@ -236,10 +310,16 @@ const emit = defineEmits(['send', 'clear', 'role-selected', 'pause'])
 
 // 使用聊天存储
 const chatStore = useChatStore()
+// 使用设置存储
+const settingsStore = useSettingsStore()
 // 消息文本的响应式引用
 const messageText = ref('')
 // 是否正在生成消息的状态
 const isGenerating = ref(false)
+// 是否正在优化提示词的状态
+const isOptimizing = ref(false)
+// 存储原始消息，以便在需要时恢复
+const originalMessage = ref('')
 
 // 监听loading属性变化
 watch(() => props.loading, (newValue) => {
@@ -258,6 +338,7 @@ const handleResize = () => {
 onMounted(() => {
   window.addEventListener('resize', handleResize)
   handleResize() // 初始化检查
+  loadCustomRoles() // 加载自定义角色
 })
 
 // 组件销毁前移除监听器
@@ -286,49 +367,219 @@ const showRolePrompt = ref(false)
 const rolePopup = ref(null)
 const activeCategoryIndex = ref(0)
 
-// 示例角色分类数据
+// 使用promptTemplates中的模板替换硬编码提示词
 const roleCategories = ref([
   {
     name: '通用',
     roles: [
       { name: '通用助手', description: '一个通用的AI助手', prompt: '你是一个乐于助人的AI助手。', color: '#4285F4' },
-      { name: '创意写手', description: '帮助你写故事、诗歌或剧本', prompt: '你是一位富有创造力的作家，擅长写引人入胜的故事。', color: '#DB4437' },
-      { name: '代码助手', description: '帮助你编写和调试代码', prompt: '你是一位专业的程序员，精通多种编程语言，乐于助人。', color: '#F4B400' }
+      { name: '写作助手', description: '协助各类文体写作和润色', prompt: promptTemplates.writer, color: '#DB4437' },
+      { name: '编程助手', description: '提供高质量代码和技术解决方案', prompt: promptTemplates.programmer, color: '#F4B400' },
+      { name: '自定义', description: '创建自定义系统提示词', prompt: '', color: '#34A853', isCustom: true }
     ]
   },
   {
-    name: '专业',
+    name: '专业领域',
     roles: [
-      { name: '数学导师', description: '解释复杂的数学概念', prompt: '你是一位数学导师，善于用简单的语言解释复杂的数学概念。请逐步帮助解决数学问题，并解释基本原理。', color: '#0F9D58' },
-      { name: '法律顾问', description: '提供基础的法律信息（非专业建议）', prompt: '你是一位AI法律信息助手，请注意，你提供的信息不构成法律建议。', color: '#AB47BC' },
-      { name: '健身教练', description: '提供健身计划和建议', prompt: '你是一位虚拟健身教练，请根据用户情况提供安全的健身建议。', color: '#FF7043' }
+      { name: '数据分析师', description: '数据洞察和可视化分析', prompt: promptTemplates.dataAnalyst, color: '#0F9D58' },
+      { name: '产品经理', description: '产品规划和用户体验设计', prompt: promptTemplates.productManager, color: '#AB47BC' },
+      { name: '商业策略顾问', description: '商业分析和战略规划', prompt: promptTemplates.businessStrategist, color: '#FF7043' },
+      { name: '市场营销专家', description: '营销策略和品牌建设', prompt: promptTemplates.marketingExpert, color: '#00ACC1' }
     ]
   },
   {
-    name: '娱乐',
+    name: '教育与发展',
     roles: [
-      { name: '笑话生成器', description: '生成笑话', prompt: '你是一个幽默的笑话生成器。请为用户提供一些有趣的笑话。', color: '#00B8D4' },
-      { name: '音乐推荐', description: '推荐音乐', prompt: '你是一个音乐推荐系统，请根据用户喜好推荐一些歌曲。', color: '#E65100' },
-      { name: '电影推荐', description: '推荐电影', prompt: '你是一个电影推荐系统，请根据用户喜好推荐一些电影。', color: '#311B92' }
+      { name: '教育导师', description: '学习方法和知识传授', prompt: promptTemplates.educationMentor, color: '#00B8D4' },
+      { name: '面试教练', description: '面试准备和职业发展', prompt: promptTemplates.interviewCoach, color: '#E65100' },
+      { name: '领导力教练', description: '领导力提升和团队管理', prompt: promptTemplates.leadershipCoach, color: '#311B92' },
+      { name: '语言学习顾问', description: '语言学习策略和方法', prompt: promptTemplates.languageLearningAdvisor, color: '#9C27B0' }
+    ]
+  },
+  {
+    name: '技术与创新',
+    roles: [
+      { name: '科技趋势分析师', description: '前沿技术评估和预测', prompt: promptTemplates.techTrendAnalyst, color: '#FF5722' },
+      { name: 'AI伦理专家', description: 'AI技术伦理与治理', prompt: promptTemplates.aiEthicsExpert, color: '#3F51B5' },
+      { name: '创意思维顾问', description: '创新思考和问题解决', prompt: promptTemplates.creativityConsultant, color: '#FFC107' },
+      { name: '情感专家', description: '情感咨询和建议', prompt: promptTemplates.emotionalExpert, color: '#FF5722' },
+    ]
+  },
+  {
+    name: '健康与生活',
+    roles: [
+      { name: '健康顾问', description: '健康生活方式指导', prompt: promptTemplates.healthAdvisor, color: '#4CAF50' },
+      { name: '心理健康顾问', description: '心理健康教育和支持', prompt: promptTemplates.psychologyConsultant, color: '#EC407A' },
+      { name: '旅行规划师', description: '旅行计划和目的地建议', prompt: promptTemplates.travelPlanner, color: '#039BE5' },
+      { name: '财务顾问', description: '个人财务规划和管理', prompt: promptTemplates.financialAdvisor, color: '#8D6E63' }
     ]
   }
 ])
 
 const activeCategory = computed(() => roleCategories.value[activeCategoryIndex.value])
 
+// 新增：自定义角色相关状态
+const showCustomRoleEditor = ref(false)
+const customRoleForm = ref({
+  name: '自定义角色',
+  description: '我的自定义提示词',
+  prompt: '',
+  color: '#34A853'
+})
+const editingRole = ref(null)
+
 // 切换角色提示面板
 const toggleRolePrompt = () => {
   showRolePrompt.value = !showRolePrompt.value
 }
 
-// 选择角色
+// 修改：选择角色函数，处理自定义角色
 const selectRole = (role) => {
+  if (role && role.isCustom) {
+    // 如果是自定义角色，打开编辑器
+    customRoleForm.value = {
+      name: '自定义角色',
+      description: '我的自定义提示词',
+      prompt: '',
+      color: '#34A853'
+    }
+    editingRole.value = null
+    showCustomRoleEditor.value = true
+    return
+  }
+  
   if (role && role.prompt) {
     showRolePrompt.value = false // 选择后关闭角色面板
     ElMessage.success(`已选择角色: ${role.name}`)
     // 触发角色选择事件，传递角色对象
     emit('role-selected', role)
   }
+}
+
+// 新增：编辑现有角色
+const editRole = (event, role) => {
+  // 阻止冒泡，避免触发selectRole
+  event.stopPropagation()
+  
+  customRoleForm.value = {
+    name: role.name,
+    description: role.description,
+    prompt: role.prompt,
+    color: role.color
+  }
+  editingRole.value = role
+  showCustomRoleEditor.value = true
+}
+
+// 新增：删除角色
+const deleteRole = (event, role) => {
+  // 阻止冒泡，避免触发selectRole
+  event.stopPropagation()
+  
+  ElMessageBox.confirm(
+    `确定要删除角色 "${role.name}" 吗？此操作不可恢复。`,
+    '删除确认',
+    {
+      confirmButtonText: '确定删除',
+      cancelButtonText: '取消',
+      type: 'warning'
+    }
+  ).then(() => {
+    // 用户确认删除
+    if (role.id && settingsStore.deleteCustomRole(role.id)) {
+      // 更新UI中的自定义角色列表
+      const customCategoryIndex = roleCategories.value.findIndex(cat => cat.name === '自定义')
+      if (customCategoryIndex !== -1) {
+        roleCategories.value[customCategoryIndex].roles = [...settingsStore.customRoles]
+        
+        // 如果删除后没有自定义角色了，切换到第一个分类
+        if (settingsStore.customRoles.length === 0) {
+          activeCategoryIndex.value = 0
+        }
+      }
+      
+      ElMessage.success('角色已删除')
+    } else {
+      ElMessage.error('删除失败，角色未找到')
+    }
+  }).catch(() => {
+    // 用户取消删除，不执行任何操作
+  })
+}
+
+// 加载自定义角色列表
+const loadCustomRoles = () => {
+  // 检查是否已有自定义角色分类
+  let customCategoryIndex = roleCategories.value.findIndex(cat => cat.name === '自定义')
+  
+  // 如果没有自定义分类但有自定义角色，创建分类
+  if (customCategoryIndex === -1 && settingsStore.customRoles && settingsStore.customRoles.length > 0) {
+    roleCategories.value.push({
+      name: '自定义',
+      roles: []
+    })
+    customCategoryIndex = roleCategories.value.length - 1
+  }
+  
+  // 如果有自定义分类，加载存储中的自定义角色
+  if (customCategoryIndex !== -1) {
+    roleCategories.value[customCategoryIndex].roles = settingsStore.customRoles
+  }
+}
+
+// 保存自定义角色
+const saveCustomRole = () => {
+  if (!customRoleForm.value.prompt.trim()) {
+    ElMessage.warning('系统提示词不能为空')
+    return
+  }
+  
+  const roleData = {
+    name: customRoleForm.value.name || '自定义角色',
+    description: customRoleForm.value.description || '自定义提示词',
+    prompt: customRoleForm.value.prompt,
+    color: customRoleForm.value.color || '#34A853',
+    isUserCreated: true
+  }
+  
+  let newRole
+  
+  // 如果是编辑现有角色
+  if (editingRole.value && editingRole.value.id) {
+    // 更新存储中的角色
+    settingsStore.updateCustomRole(editingRole.value.id, roleData)
+    newRole = settingsStore.customRoles.find(r => r.id === editingRole.value.id)
+  } else {
+    // 添加新角色到存储
+    newRole = settingsStore.addCustomRole(roleData)
+  }
+  
+  // 确保自定义角色分类存在
+  let customCategoryIndex = roleCategories.value.findIndex(cat => cat.name === '自定义')
+  if (customCategoryIndex === -1) {
+    roleCategories.value.push({
+      name: '自定义',
+      roles: []
+    })
+    customCategoryIndex = roleCategories.value.length - 1
+  }
+  
+  // 更新UI中的角色列表
+  roleCategories.value[customCategoryIndex].roles = [...settingsStore.customRoles]
+  
+  // 关闭编辑器并提示成功
+  showCustomRoleEditor.value = false
+  ElMessage.success(editingRole.value ? '角色已更新' : '自定义角色已创建')
+  
+  // 切换到自定义分类
+  activeCategoryIndex.value = customCategoryIndex
+  
+  // 如果是新创建的角色，立即选中它
+  if (!editingRole.value) {
+    selectRole(newRole)
+  }
+  
+  editingRole.value = null
 }
 
 // 修改 handleFileChange 函数以在选择文件后显示预览
@@ -482,6 +733,130 @@ const adjustHeight = () => {
     // 这里可以根据需要调整高度逻辑，暂时留空
   }
 }
+
+// 新增状态变量用于控制优化按钮的跳动闪烁
+const shouldPulseOptimizeBtn = ref(false);
+let pulseTimeoutId = null;
+
+// 监听输入框内容变化，当用户输入内容时触发闪烁效果
+watch(messageText, (newVal, oldVal) => {
+  // 只有当输入内容有实际变化且不为空时才闪烁
+  if (newVal !== oldVal && newVal.trim() && !isOptimizing.value) {
+    shouldPulseOptimizeBtn.value = true;
+    
+    // 清除上一个倒计时
+    if (pulseTimeoutId) {
+      clearTimeout(pulseTimeoutId);
+    }
+    
+    // 5秒后停止闪烁
+    pulseTimeoutId = setTimeout(() => {
+      shouldPulseOptimizeBtn.value = false;
+    }, 5000);
+  }
+  
+  // 如果输入框为空，停止闪烁
+  if (!newVal.trim()) {
+    shouldPulseOptimizeBtn.value = false;
+  }
+});
+
+// 优化处理优化提示词函数的反馈
+const handleOptimizePrompt = async () => {
+  // 检查消息是否为空
+  if (!messageText.value.trim()) {
+    ElMessage.warning('请先输入消息内容');
+    return;
+  }
+  
+  // 如果已经在生成中或优化中，显示通知
+  if (isGenerating.value || isOptimizing.value) {
+    ElMessage.info('正在处理中，请稍候...');
+    return;
+  }
+  
+  // 显示加载中通知
+  let loadingMessageInstance = null;
+  
+  try {
+    // 设置优化中状态
+    isOptimizing.value = true;
+    shouldPulseOptimizeBtn.value = false; // 优化时停止闪烁
+    
+    // 显示加载中通知 - 使用变量存储实例而不是常量
+    loadingMessageInstance = ElMessage({
+      type: 'info',
+      message: '正在优化提示词，请稍候...',
+      duration: 0,
+      showClose: true
+    });
+    
+    // 保存原始消息
+    originalMessage.value = messageText.value;
+    
+    // 使用提示词模板而不是硬编码的提示词
+    const optimizePrompt = `优化下面的内容，使其成为更清晰、更具体，以便获得更好回答的提示词(不要添加解释,不要用markdown包裹)：\n\n${messageText.value}`;
+    
+    // 调用API优化提示词
+    const response = await messageHandler.optimizePrompt(
+      optimizePrompt,
+      settingsStore.actualApiKey,
+      settingsStore.actualApiEndpoint,
+      {
+        model: settingsStore.model,
+        temperature: 0.7,
+        max_tokens: 2000
+      }
+    );
+    
+    // 更新输入框内容为优化后的提示词
+    if (response && response.content) {
+      messageText.value = response.content.trim();
+      
+      // 确保在显示成功消息前关闭加载消息
+      if (loadingMessageInstance) {
+        loadingMessageInstance.close();
+        loadingMessageInstance = null;
+      }
+      
+      // 显示成功消息
+      ElMessage.success({
+        message: '提示词已优化',
+        duration: 1500
+      });
+    } else {
+      throw new Error('优化失败，未收到有效响应');
+    }
+    
+  } catch (error) {
+    console.error('优化提示词失败:', error);
+    
+    // 确保在显示错误消息前关闭加载消息
+    if (loadingMessageInstance) {
+      loadingMessageInstance.close();
+      loadingMessageInstance = null;
+    }
+    
+    ElMessage.error(`优化失败: ${error.message || '未知错误'}`);
+    // 恢复原始消息
+    messageText.value = originalMessage.value;
+  } finally {
+    // 确保加载消息被关闭
+    if (loadingMessageInstance) {
+      loadingMessageInstance.close();
+    }
+    // 清除优化中状态
+    isOptimizing.value = false;
+  }
+}
+
+// 在组件卸载时清除所有计时器
+onUnmounted(() => {
+  if (pulseTimeoutId) {
+    clearTimeout(pulseTimeoutId);
+    pulseTimeoutId = null;
+  }
+});
 </script>
 
 <style lang="scss" scoped>
@@ -832,11 +1207,17 @@ const adjustHeight = () => {
   align-items: center;
   justify-content: flex-end;
   transition: all 0.3s ease;
-
+  gap: 4px;
+  
   @media (max-width: 768px) {
     font-size: 0.7rem;
     margin-top: 2px;
     opacity: 0.7;
+  }
+  
+  .info-icon {
+    cursor: help;
+    font-size: 14px;
   }
 }
 
@@ -1208,6 +1589,169 @@ const adjustHeight = () => {
   
   :deep(.el-upload) {
     display: block;
+  }
+}
+
+/* 自定义角色编辑器样式 */
+.custom-role-dialog {
+  .el-form-item {
+    margin-bottom: 20px;
+  }
+  
+  .prompt-tips {
+    font-size: 12px;
+    color: #909399;
+    margin-top: 8px;
+    line-height: 1.4;
+  }
+}
+
+/* 角色项编辑按钮 */
+.role-item {
+  position: relative;
+  
+  .edit-role-btn {
+    position: absolute;
+    right: 8px;
+    top: 8px;
+    padding: 4px;
+    color: #909399;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+    
+    &:hover {
+      opacity: 1;
+      background-color: rgba(0, 0, 0, 0.05);
+    }
+  }
+  
+  .delete-role-btn {
+    position: absolute;
+    right: 8px;
+    top: 36px;
+    padding: 4px;
+    color: #F56C6C;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+    
+    &:hover {
+      opacity: 1;
+      background-color: rgba(245, 108, 108, 0.1);
+    }
+  }
+}
+
+/* 优化按钮的炫彩动画效果 */
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(64, 158, 255, 0.7);
+    transform: scale(1);
+    filter: brightness(1);
+  }
+  25% {
+    box-shadow: 0 0 10px 3px rgba(64, 158, 255, 0.6), 0 0 20px 6px rgba(120, 200, 255, 0.4);
+    transform: scale(1.03);
+    filter: brightness(1.1) hue-rotate(10deg);
+  }
+  50% {
+    box-shadow: 0 0 15px 5px rgba(64, 158, 255, 0.4), 0 0 25px 10px rgba(140, 220, 255, 0.2);
+    transform: scale(1.05);
+    filter: brightness(1.2) hue-rotate(20deg);
+  }
+  75% {
+    box-shadow: 0 0 10px 3px rgba(64, 158, 255, 0.6), 0 0 20px 6px rgba(120, 200, 255, 0.4);
+    transform: scale(1.03);
+    filter: brightness(1.1) hue-rotate(10deg);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(64, 158, 255, 0);
+    transform: scale(1);
+    filter: brightness(1);
+  }
+}
+
+.optimize-btn-pulse {
+  position: relative;
+  animation: pulse 2s infinite;
+  overflow: visible;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    border-radius: 50%;
+    background: linear-gradient(45deg, #12c2e9, #c471ed, #f64f59);
+    z-index: -1;
+    opacity: 0.6;
+    animation: rotate 3s linear infinite, fade 2s infinite alternate;
+  }
+  
+  &:hover {
+    animation: none;
+    
+    &::before {
+      animation: none;
+      opacity: 0;
+    }
+  }
+}
+
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes fade {
+  0% {
+    opacity: 0.4;
+  }
+  100% {
+    opacity: 0.7;
+  }
+}
+
+/* 暗黑模式下的动画颜色 */
+[data-theme="dark"] .optimize-btn-pulse {
+  animation-name: pulse-dark;
+  
+  &::before {
+    background: linear-gradient(45deg, #00c6fb, #a139ff, #ff7e84);
+    opacity: 0.7;
+  }
+}
+
+@keyframes pulse-dark {
+  0% {
+    box-shadow: 0 0 0 0 rgba(84, 178, 255, 0.7);
+    transform: scale(1);
+    filter: brightness(1);
+  }
+  25% {
+    box-shadow: 0 0 10px 5px rgba(84, 178, 255, 0.6), 0 0 20px 10px rgba(130, 210, 255, 0.4);
+    transform: scale(1.03);
+    filter: brightness(1.2) hue-rotate(15deg);
+  }
+  50% {
+    box-shadow: 0 0 15px 7px rgba(84, 178, 255, 0.4), 0 0 25px 15px rgba(150, 230, 255, 0.2);
+    transform: scale(1.05);
+    filter: brightness(1.3) hue-rotate(30deg);
+  }
+  75% {
+    box-shadow: 0 0 10px 5px rgba(84, 178, 255, 0.6), 0 0 20px 10px rgba(130, 210, 255, 0.4);
+    transform: scale(1.03);
+    filter: brightness(1.2) hue-rotate(15deg);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(84, 178, 255, 0);
+    transform: scale(1);
+    filter: brightness(1);
   }
 }
 </style>

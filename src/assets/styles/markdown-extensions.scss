@@ -186,70 +186,6 @@
     padding: 10px 0;
     width: 100%;
     min-height: 100px;
-    
-    svg {
-      height: auto !important;
-      width: 100% !important;
-      max-width: 100%;
-      
-      .label {
-        font-family: 'Arial', sans-serif !important;
-        font-size: 14px !important;
-        fill: #000 !important;
-        color: #000 !important;
-      }
-      
-      text {
-        font-family: 'Arial', sans-serif !important;
-        font-size: 14px !important;
-        fill: #000 !important;
-        color: #000 !important;
-        visibility: visible !important;
-      }
-      
-      g.label {
-        visibility: visible !important;
-      }
-      
-      [data-theme="dark"] & {
-        text, .label {
-          fill: #fff !important;
-          color: #fff !important;
-        }
-      }
-      
-      .node rect, 
-      .node circle, 
-      .node ellipse, 
-      .node polygon, 
-      .node path {
-        fill: #fff !important;
-        stroke: #999 !important;
-        stroke-width: 1px !important;
-        
-        [data-theme="dark"] & {
-          fill: #2d2d33 !important;
-          stroke: #777 !important;
-        }
-      }
-      
-      .edgePath .path {
-        stroke: #999 !important;
-        stroke-width: 1.5px !important;
-        
-        [data-theme="dark"] & {
-          stroke: #777 !important;
-        }
-      }
-      
-      marker {
-        fill: #999 !important;
-        
-        [data-theme="dark"] & {
-          fill: #777 !important;
-        }
-      }
-    }
   }
 
   .mermaid-loading {
@@ -279,110 +215,41 @@
   }
   
   .mermaid-error {
-    color: #e53e3e;
     padding: 12px;
-    font-size: 0.9rem;
-    text-align: center;
-    border: 1px dashed #e53e3e;
-    margin: 10px;
+    margin: 10px 0;
     border-radius: 6px;
-    background-color: rgba(229, 62, 62, 0.05);
-    
+    background-color: rgba(244, 67, 54, 0.05);
+    border: 1px solid rgba(244, 67, 54, 0.2);
+    color: rgba(244, 67, 54, 0.8);
+
+    /* 暗色模式 */
     [data-theme="dark"] & {
-      color: #fc8181;
-      border-color: #fc8181;
-      background-color: rgba(252, 129, 129, 0.05);
+      background-color: rgba(244, 67, 54, 0.1);
+      border-color: rgba(244, 67, 54, 0.3);
+      color: rgba(255, 99, 71, 0.9);
     }
-    
-    .error-title {
-      font-weight: bold;
-      margin-bottom: 8px;
-      font-size: 1rem;
+
+    strong {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 600;
     }
-    
-    .error-message {
-      margin-bottom: 10px;
-      font-family: monospace;
-      padding: 5px;
-      background-color: rgba(229, 62, 62, 0.1);
-      border-radius: 4px;
-      display: inline-block;
+
+    p {
+      margin: 5px 0;
+      font-size: 14px;
+    }
+
+    a {
+      color: #2196F3;
+      text-decoration: none;
+      
+      &:hover {
+        text-decoration: underline;
+      }
       
       [data-theme="dark"] & {
-        background-color: rgba(252, 129, 129, 0.1);
-      }
-    }
-    
-    .error-code {
-      text-align: left;
-      margin: 10px 0;
-      
-      pre {
-        background-color: #f8f9fa;
-        padding: 8px;
-        border-radius: 4px;
-        overflow-x: auto;
-        font-family: monospace;
-        font-size: 0.85rem;
-        border: 1px solid #eaecef;
-        line-height: 1.5;
-        
-        [data-theme="dark"] & {
-          background-color: #2d2d33;
-          border-color: #444;
-        }
-        
-        .error-line {
-          background-color: rgba(229, 62, 62, 0.2);
-          display: block;
-          position: relative;
-          margin: 0 -8px;
-          padding: 0 8px;
-          border-left: 3px solid #e53e3e;
-          
-          [data-theme="dark"] & {
-            background-color: rgba(252, 129, 129, 0.15);
-            border-left-color: #fc8181;
-          }
-        }
-        
-        .code-line {
-          display: block;
-          
-          &:hover {
-            background-color: rgba(0, 0, 0, 0.05);
-            
-            [data-theme="dark"] & {
-              background-color: rgba(255, 255, 255, 0.05);
-            }
-          }
-        }
-        
-        .line-number {
-          color: #a0aec0;
-          margin-right: 12px;
-          user-select: none;
-          
-          [data-theme="dark"] & {
-            color: #718096;
-          }
-        }
-      }
-    }
-    
-    .error-suggestion {
-      margin-top: 12px;
-      padding: 10px;
-      background-color: #ebf8ff;
-      border: 1px solid #bee3f8;
-      border-radius: 6px;
-      color: #2a4365;
-      text-align: left;
-      
-      [data-theme="dark"] & {
-        background-color: #2a4365;
-        border-color: #4299e1;
-        color: #e2e8f0;
+        color: #64B5F6;
       }
     }
   }
@@ -1039,7 +906,7 @@ table tbody tr {
   animation: none !important;
   transition: none !important;
   opacity: 1 !important;
-  transform: none !important;
+ //transform: none !important;
 }
 
 /* 自定义滚动条样式 */
@@ -1106,182 +973,7 @@ pre.code-block:hover::-webkit-scrollbar-thumb {
   }
 }
 
-.mermaid-error {
-  color: #e53e3e;
-  padding: 12px;
-  font-size: 0.9rem;
-  text-align: center;
-  border: 1px dashed #e53e3e;
-  margin: 10px;
-  border-radius: 6px;
-  background-color: rgba(229, 62, 62, 0.05);
-  
-  [data-theme="dark"] & {
-    color: #fc8181;
-    border-color: #fc8181;
-    background-color: rgba(252, 129, 129, 0.05);
-  }
-  
-  .error-title {
-    font-weight: bold;
-    margin-bottom: 8px;
-    font-size: 1rem;
-  }
-  
-  .error-message {
-    margin-bottom: 10px;
-    font-family: monospace;
-    padding: 5px;
-    background-color: rgba(229, 62, 62, 0.1);
-    border-radius: 4px;
-    display: inline-block;
-    
-    [data-theme="dark"] & {
-      background-color: rgba(252, 129, 129, 0.1);
-    }
-  }
-  
-  .error-code {
-    text-align: left;
-    margin: 10px 0;
-    
-    pre {
-      background-color: #f8f9fa;
-      padding: 8px;
-      border-radius: 4px;
-      overflow-x: auto;
-      font-family: monospace;
-      font-size: 0.85rem;
-      border: 1px solid #eaecef;
-      line-height: 1.5;
-      
-      [data-theme="dark"] & {
-        background-color: #2d2d33;
-        border-color: #444;
-      }
-      
-      .error-line {
-        background-color: rgba(229, 62, 62, 0.2);
-        display: block;
-        position: relative;
-        margin: 0 -8px;
-        padding: 0 8px;
-        border-left: 3px solid #e53e3e;
-        
-        [data-theme="dark"] & {
-          background-color: rgba(252, 129, 129, 0.15);
-          border-left-color: #fc8181;
-        }
-      }
-      
-      .code-line {
-        display: block;
-        
-        &:hover {
-          background-color: rgba(0, 0, 0, 0.05);
-          
-          [data-theme="dark"] & {
-            background-color: rgba(255, 255, 255, 0.05);
-          }
-        }
-      }
-      
-      .line-number {
-        color: #a0aec0;
-        margin-right: 12px;
-        user-select: none;
-        
-        [data-theme="dark"] & {
-          color: #718096;
-        }
-      }
-    }
-  }
-  
-  .error-suggestion {
-    margin-top: 12px;
-    padding: 10px;
-    background-color: #ebf8ff;
-    border: 1px solid #bee3f8;
-    border-radius: 6px;
-    color: #2a4365;
-    text-align: left;
-    
-    [data-theme="dark"] & {
-      background-color: #2a4365;
-      border-color: #4299e1;
-      color: #e2e8f0;
-    }
-  }
-  
-  .fix-info {
-    margin: 10px 0;
-    padding: 8px;
-    background-color: #ebf8ff;
-    border: 1px solid #bee3f8;
-    border-radius: 4px;
-    color: #2c5282;
-    text-align: left;
-    
-    [data-theme="dark"] & {
-      background-color: #2a4365;
-      border-color: #4299e1;
-      color: #ebf8ff;
-    }
-    
-    .fix-title {
-      font-weight: bold;
-      margin-bottom: 4px;
-    }
-    
-    .fix-list {
-      margin: 0;
-      padding-left: 20px;
-      
-      li {
-        margin-bottom: 2px;
-      }
-    }
-  }
-  
-  .error-help {
-    margin-top: 15px;
-    padding: 10px;
-    background-color: #fffaf0;
-    border: 1px solid #fbd38d;
-    border-radius: 6px;
-    color: #7b341e;
-    text-align: left;
-    
-    [data-theme="dark"] & {
-      background-color: #7b341e;
-      border-color: #fbd38d;
-      color: #fffaf0;
-    }
-    
-    .help-title {
-      font-weight: bold;
-      margin-bottom: 8px;
-    }
-    
-    ul {
-      margin: 0;
-      padding-left: 20px;
-      
-      li {
-        margin-bottom: 5px;
-      }
-      
-      code {
-        background-color: rgba(255, 255, 255, 0.7);
-        padding: 2px 4px;
-        border-radius: 3px;
-        font-family: monospace;
-        
-        [data-theme="dark"] & {
-          background-color: rgba(0, 0, 0, 0.3);
-        }
-      }
-    }
-  }
+/* 确保错误SVG不显示 */
+svg[aria-roledescription="error"] {
+  display: none !important;
 } 

@@ -1,3 +1,5 @@
+import { promptTemplates } from '../config/promptTemplates'
+
 export const messageHandler = {
     formatMessage(role, content) {
         const hasImage = content.includes('![') && content.includes('](data:image/')
@@ -363,8 +365,8 @@ export const messageHandler = {
         }
     },
 
-    // 集成sendMessage方法到messageHandler对象
-    async sendMessage(messages, apiKey, apiEndpoint, options = {}, onUpdate = () => {}) {
+    // 发送消息到API，支持流式和同步响应
+    async sendMessage(messages, apiKey, apiEndpoint, apiOptions, onUpdate, isRegeneration = false) {
         const controller = new AbortController();
         const signal = controller.signal;
         
@@ -373,7 +375,7 @@ export const messageHandler = {
             temperature = 0.7,
             max_tokens = 1000,
             stream = true
-        } = options;
+        } = apiOptions;
         
         // 检查API Key是否有效
         if (!apiKey) {
@@ -521,5 +523,79 @@ export const messageHandler = {
             console.error('API请求失败:', error);
             throw error;
         }
-    }
+    },
+
+    /**
+     * 优化用户的提示词
+     * @param {string} promptText - 需要优化的提示词文本
+     * @param {string} apiKey - API密钥
+     * @param {string} apiEndpoint - API端点URL
+     * @param {Object} apiOptions - API选项（模型、温度等）
+     * @returns {Promise<Object>} - 返回包含优化后内容的对象
+     */    
+    optimizePrompt: async function(promptText, apiKey, apiEndpoint, apiOptions) {
+        try {
+            if (!promptText || !apiKey) {
+                throw new Error('缺少必要参数');
+            }
+
+            // 使用较低的温度以获得更可靠的结果
+            const options = {
+                ...apiOptions,
+                temperature: 0.5,
+                stream: false  // 不使用流式响应
+            };
+
+            // 准备请求体 - 提示词本身已经包含了指令，不需要额外的系统消息
+            const requestBody = {
+                model: options.model,
+                messages: [
+                    {
+                        role: 'system',
+                        content: promptTemplates.optimizer
+                    },
+                    {
+                        role: 'user',
+                        content: promptText
+                    }
+                ],
+                temperature: options.temperature,
+                max_tokens: options.max_tokens || 2000,
+                top_p: options.top_p || 1,
+                frequency_penalty: 0,
+                presence_penalty: 0
+            };
+
+            // 发送请求
+            const response = await fetch(apiEndpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${apiKey}`
+                },
+                body: JSON.stringify(requestBody)
+            });
+            console.log('提示词优化请求体:', requestBody);
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(`API错误: ${errorData.error?.message || response.statusText || '未知错误'}`);
+            }
+
+            const data = await response.json();
+            
+            if (!data.choices || data.choices.length === 0) {
+                throw new Error('API返回无效响应');
+            }
+
+            return {
+                content: data.choices[0].message.content,
+                success: true
+            };
+        } catch (error) {
+            console.error('提示词优化失败:', error);
+            throw error;
+        }
+    },
+
+    // 集成sendMessage方法到messageHandler对象
 }; 

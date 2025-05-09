@@ -641,3 +641,28 @@ function updateStatusIndicator(message, type) {
   // 设置文本内容
   statusIndicator.textContent = message;
 }
+
+// 设置全局事件委托监听器，捕获所有run-btn的点击事件
+document.addEventListener('click', (e) => {
+  // 查找最近的run-btn类的按钮元素
+  const runButton = e.target.closest('.run-btn');
+  if (runButton) {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    console.log('Run button clicked via global handler');
+    
+    // 查找代码块
+    const codeBlock = runButton.closest('.code-block');
+    if (codeBlock) {
+      const codeElement = codeBlock.querySelector('code');
+      if (codeElement) {
+        const htmlCode = codeElement.textContent || '';
+        console.log('Opening code modal with HTML code via global handler');
+        openCodeModal(htmlCode);
+      }
+    }
+  }
+}, true);
+
+export default { openCodeModal, closeModal };

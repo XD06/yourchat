@@ -560,7 +560,7 @@ const formatTime = (timestamp) => {
 
 // 高亮代码块并添加复制功能
 const setupCodeBlockInteractions = () => {
-  console.log('Setting up code block interactions');
+  //console.log('Setting up code block interactions');
   
       // 添加复制功能处理
       const copyButtons = messageText.value.querySelectorAll('.copy-btn');
@@ -572,7 +572,7 @@ const setupCodeBlockInteractions = () => {
   
   // 添加运行HTML代码块功能
   const runButtons = messageText.value.querySelectorAll('.run-btn');
-  console.log(`Found ${runButtons.length} run buttons`);
+  //console.log(`Found ${runButtons.length} run buttons`);
   runButtons.forEach(button => {
     // 移除旧的事件监听器以避免重复绑定
     button.removeEventListener('click', handleRunClick);
@@ -1047,10 +1047,10 @@ onUnmounted(() => {
         padding: 12px !important;
         display: block;
         overflow-x: auto;
-        font-family: 'Fira Code', 'JetBrains Mono', monospace;
+        font-family: "Roboto Mono","Courier New",'Fira Code', 'JetBrains Mono', monospace;
         margin: 0;
         background-color: inherit;
-        color: #7e2379;
+        color: #f56c6c;
         line-height: 1.6;
         scrollbar-width: none;
         

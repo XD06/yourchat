@@ -3,7 +3,6 @@ import ChatView from '../views/ChatView.vue'
 import MathTest from '../components/MathTest.vue'
 import MermaidTest from '../components/MermaidTest.vue'
 import MermaidErrorTest from '../components/MermaidErrorTest.vue'
-import MermaidSimpleTest from '../components/MermaidSimpleTest.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -27,11 +26,6 @@ const router = createRouter({
       path: '/mermaid-error-test',
       name: 'mermaid-error-test',
       component: MermaidErrorTest
-    },
-    {
-      path: '/mermaid-simple-test',
-      name: 'mermaid-simple-test',
-      component: MermaidSimpleTest
     }
   ]
 })

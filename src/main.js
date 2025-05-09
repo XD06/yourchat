@@ -12,6 +12,7 @@ import 'element-plus/dist/index.css'
 // 导入并初始化Mermaid
 import mermaid from 'mermaid'
 import { reinitializeMermaidTheme, renderMermaidDiagrams } from './utils/mermaid-plugin'
+import './utils/codeExecutor' // 确保代码执行器模块被正确加载
 
 // 初始Mermaid配置在mermaid-plugin.js中设置，这里只初始化一次
 
@@ -63,6 +64,10 @@ setTimeout(() => {
         // 延迟后重新渲染所有图表
         setTimeout(() => {
           renderMermaidDiagrams();
+          // 清理可能的错误SVG
+          if (window.mermaidCleanupErrorSvg) {
+            window.mermaidCleanupErrorSvg();
+          }
         }, 300);
       }
     })
@@ -70,6 +75,31 @@ setTimeout(() => {
     // 确保页面上的图表都正确渲染
     setTimeout(() => {
       renderMermaidDiagrams();
+      // 清理可能的错误SVG
+      if (window.mermaidCleanupErrorSvg) {
+        window.mermaidCleanupErrorSvg();
+      }
     }, 1000);
   })
 }, 100)
+
+// 设置全局MutationObserver监控DOM变化，自动清理错误SVG
+setTimeout(() => {
+  if (window.mermaidCleanupErrorSvg) {
+    // 创建观察器实例
+    const observer = new MutationObserver(function(mutations) {
+      // 检测到DOM变化时，延迟执行清理
+      window.mermaidCleanupErrorSvg();
+    });
+    
+    // 配置观察选项
+    const config = { 
+      childList: true,     // 观察目标子节点的变化
+      subtree: true        // 观察所有后代节点
+    };
+    
+    // 开始观察document.body的变化
+    observer.observe(document.body, config);
+    console.log("已设置DOM变化监控，自动清理错误SVG");
+  }
+}, 2000);

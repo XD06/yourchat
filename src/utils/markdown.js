@@ -24,15 +24,34 @@ const md = new MarkdownIt({
           ignoreIllegals: true 
         }).value
         // 添加语言标识和复制按钮，保持与ChatMessage.vue一致
-        return `<pre class="code-block" data-lang="${lang}">
-          <div class="code-header">
-          <span class="code-lang">${lang}</span>
+        // 为HTML代码块添加运行按钮
+        const isHtml = lang.toLowerCase() === 'html';
+        let headerContent = `<span class="code-lang">${lang}</span>
+          <div class="code-actions">`;
+        
+        // 只为HTML代码块添加运行按钮
+        if (isHtml) {
+          headerContent += `
+            <button class="run-btn" title="在沙盒中运行代码">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="5 3 19 12 5 21 5 3"></polygon>
+              </svg>
+            </button>`;
+        }
+        
+        // 所有代码块都有复制按钮
+        headerContent += `
             <button class="copy-btn">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
                 <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
               </svg>
             </button>
+          </div>`;
+        
+        return `<pre class="code-block" data-lang="${lang}">
+          <div class="code-header">
+            ${headerContent}
           </div>
           <code>${highlighted}</code>
         </pre>`
@@ -42,12 +61,14 @@ const md = new MarkdownIt({
     return `<pre class="code-block" data-lang="plaintext">
       <div class="code-header">
         <span class="code-lang">plaintext</span>
+        <div class="code-actions">
         <button class="copy-btn">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
             <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
           </svg>
         </button>
+        </div>
       </div>
       <code>${md.utils.escapeHtml(str)}</code>
     </pre>`

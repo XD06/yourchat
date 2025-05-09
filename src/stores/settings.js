@@ -45,10 +45,11 @@ export const useSettingsStore = defineStore('settings', {
         topP: 0.7,
         // Top K 参数
         topK: 50,
-        // 系统提示词字段
-        systemPrompt: '',
+        // 系统提示词已移除，现在通过currentRole处理
         // 当前选择的角色
         currentRole: null,
+        // 用户自定义角色列表
+        customRoles: [],
         // 可用模型选项列表 - 从环境变量读取默认值或使用预设值
         modelOptions: import.meta.env.VITE_MODELS 
             ? parseEnvModels(import.meta.env.VITE_MODELS)
@@ -124,6 +125,49 @@ export const useSettingsStore = defineStore('settings', {
             Object.assign(this.$state, settings)
         },
         
+        // 添加自定义角色
+        addCustomRole(role) {
+            // 确保角色有所有必要的字段
+            const newRole = {
+                name: role.name || '自定义角色',
+                description: role.description || '自定义提示词',
+                prompt: role.prompt,
+                color: role.color || '#34A853',
+                isUserCreated: true,
+                id: Date.now().toString() // 添加唯一ID
+            };
+            
+            this.customRoles.push(newRole);
+            return newRole;
+        },
+        
+        // 更新自定义角色
+        updateCustomRole(roleId, updatedRole) {
+            const index = this.customRoles.findIndex(role => role.id === roleId);
+            if (index !== -1) {
+                this.customRoles[index] = {
+                    ...this.customRoles[index],
+                    ...updatedRole
+                };
+                return true;
+            }
+            return false;
+        },
+        
+        // 删除自定义角色
+        deleteCustomRole(roleId) {
+            const index = this.customRoles.findIndex(role => role.id === roleId);
+            if (index !== -1) {
+                this.customRoles.splice(index, 1);
+                // 如果当前选中的角色被删除，清除当前角色
+                if (this.currentRole && this.currentRole.id === roleId) {
+                    this.currentRole = null;
+                }
+                return true;
+            }
+            return false;
+        },
+        
         // 设置自定义 API 凭证
         setCustomAPI(apiKey, apiEndpoint) {
             this.apiKey = apiKey || '';
@@ -190,7 +234,7 @@ export const useSettingsStore = defineStore('settings', {
                 // 存储方式，这里使用的是 localStorage
                 storage: localStorage,
                 // 排除敏感信息，只持久化非敏感设置
-                paths: ['isDarkMode', 'temperature', 'maxTokens', 'model', 'streamResponse', 'topP', 'topK', 'systemPrompt', 'currentRole', 'modelOptions', 'userCustomizedAPI', 'apiKey', 'apiEndpoint']
+                paths: ['isDarkMode', 'temperature', 'maxTokens', 'model', 'streamResponse', 'topP', 'topK', 'currentRole', 'customRoles', 'modelOptions', 'userCustomizedAPI', 'apiKey', 'apiEndpoint']
             },
         ],
     },

@@ -74,6 +74,16 @@
                         <el-icon><Edit /></el-icon>
                     </el-button>
                 </div>
+                
+                <!-- 移动端专用功能按钮区域 -->
+                <div class="mobile-actions" v-if="isMobileView">
+                    <el-button class="mobile-action-btn theme-btn" @click="toggleDarkMode" title="Toggle Dark Mode">
+                        <el-icon><Moon v-if="settingsStore.isDarkMode" /><Sunny v-else /></el-icon>
+                    </el-button>
+                    <el-button class="mobile-action-btn settings-btn" @click="toggleSettings" title="Settings">
+                        <el-icon><Setting /></el-icon>
+                    </el-button>
+                </div>
             </div>
             
             <!-- 收藏的聊天 -->
@@ -147,18 +157,10 @@
             <div class="chat-header">
                 <!-- 移动端左侧按钮组 -->
                 <div class="header-left-actions" v-if="isMobileView">
-                    <!-- 移动端汉堡按钮 -->
-                    <el-button class="mobile-menu-button" @click="toggleMobileSidebar" :icon="Menu" text circle></el-button>
-                    
-                    <!-- 暗黑模式切换按钮 - 只在移动端显示 -->
-                    <el-button 
-                        class="action-btn theme-btn" 
-                        type="default" 
-                        @click="toggleDarkMode" 
-                        title="Toggle Dark Mode"
-                    >
-                        <el-icon><Moon v-if="settingsStore.isDarkMode" /><Sunny v-else /></el-icon>
-                    </el-button>
+                    <!-- 移动端汉堡按钮，使用新图标 -->
+                    <button class="mobile-menu-button" @click="toggleMobileSidebar">
+                    <svg style = "width: 20px ;height:auto;"data-v-a497a79e="" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024"><path fill="currentColor" d="M896 192H128v128h768zm0 256H384v128h512zm0 256H128v128h768zM320 384 128 512l192 128z"></path></svg>
+                    </button>
                 </div>
                 
                 <!-- 左侧模型信息和状态区域 - 桌面端显示在左侧，移动端居中 -->
@@ -210,30 +212,14 @@
                     
                     <el-button class="share-btn" type="default" @click="handleShare">
                         <span class="button-text">Share</span>
-                        <el-icon><Share /></el-icon>
+                        <img style="width: 20px; height: 20px;" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAYAAABw4pVUAAAACXBIWXMAAAsTAAALEwEAmpwYAAADQklEQVR4nO3cS4hOYRzH8e8Ycg255LYhFmo2kktJWFi6LOSSyG6QhYUFCyGLWVA0lBI1LpmkFBtWNCImt42NZGNlIxau4zJHp85keuuc9/X2PM/7P8/5ferZPj3n+fa+58w58x4QERERERERERERCWwMcAC4DpwE5oVegPwzGngOJMPGZ2CxNqk19tXEGBr3W7SeyruUE+RLZDvTBqwENgBzMOxGTpB0xGI60D/suH4ChzCqCkGu5RxfegFjTuxBRmRfv0lZosQehOyqMSlLlCoEuVgniKkoVQgyEXhZlihVCJKaDDxtIMopWqwqQYaiPLMepUpBShGlTEGmZffY1gIbgc1Njj3AV6vnFKtBRgKrgGNAH/ChgQ30MbqqHqQj+7p436IAtWMQWF3FIEuBW9kGJMZGd5WCTMkO+I+Bjc8bp6lIkE3ARwMbXjQGs3NZ1EFGAWcNbHYjI/qT+njgbhMb8xroBY4CncB2Xfa6uaf05D8i9GePmGfjzlTr97VCfUJGA/caDHEHWIF75mOEDNLbwEa8A9bj72rOfIxQQfY2sBG3s03zYVJZYoQI0gF8r7MR3dmjVl8ulyWG7yBtwIM6G3ECv9LQ38oSw3eQHXU24koWzad2YKAsMXwGaQfeFMz9ChhHGDfLEsNnkG0F8/4CFhHOzJqT+m/gCEb5CvKozkk8tPRcsgbYAszFMB9BFhTcRk+vuGY5XH90fAQ5XDDnOYdrj5KPIH0Fcy5xuPYouQ4yFviRM99bx2uPkusgywrmO+947VFyHWRnwXy7HK89Sq6DHC+Yb7njtUfJdZCiR7MzHK89Sq6D5P1mMQl4q6TUXAcpmq/N8dqjFDKINEBBjFEQYxTEGAUxRkGMURBjFMQYBTFGQYxREGMUxBgFMUZBjFEQYxQk8iAXcub65Hjd0XIdZF3OXD2O1x0tH0/4umr+t/exx5+rRcfXI9f5wNbs5cV6lm4giDRJQYxREGMUxBgFMUZBShSkymMg+/vJx0twFITmw6Svk12oIJgaZ0IG6TFwwInxkb4JIpjdBg44MT4OhgySvpDyoYGDToyOF8CEkEGGonRmX1/pVZcGXAX261dfIiIiIiIiIiIiQmh/AenAVRtFBnygAAAAAElFTkSuQmCC" alt="share-3">
                     </el-button>
-                    <el-button class="config-btn" type="default" @click="toggleSettings"style="background-color: black;">
+                    <el-button class="config-btn" type="default" @click="toggleSettings" style="background-color: black;" v-if="!isMobileView">
                         <span style="color: white" class="button-text">Settings</span>
                         <el-icon style="color: white" ><Setting /></el-icon>
                     </el-button>
                     
                     <!-- 移除New下拉按钮，只在PC端显示 -->
-                    <el-dropdown trigger="click" v-if="!isMobileView">
-                        <el-button class="action-btn" type="primary">
-                            <span class="button-text">New</span>
-                            <el-icon><Plus /></el-icon>
-                        </el-button>
-                        <template #dropdown>
-                            <el-dropdown-menu>
-                                <el-dropdown-item @click="handleNewChat">
-                                    <el-icon><ChatRound /></el-icon> New Chat
-                                </el-dropdown-item>
-                                <el-dropdown-item @click="handleRefresh">
-                                    <el-icon><Refresh /></el-icon> Refresh
-                                </el-dropdown-item>
-                            </el-dropdown-menu>
-                        </template>
-                    </el-dropdown>
                 </div>
             </div>
             
@@ -387,17 +373,7 @@
                         />
                     </el-select>
                 </el-form-item>
-                <el-form-item label="System Prompt">
-                    <el-input
-                        v-model="settingsForm.systemPrompt"
-                        type="textarea"
-                        :rows="3"
-                        placeholder="设置默认的系统提示词（可选）"
-                    />
-                    <div class="form-item-tip">
-                        系统提示词将作为指令发送给AI，不会显示在对话中
-                    </div>
-                </el-form-item>
+                <!-- 移除系统提示词设置，该功能将整合到角色设定功能中 -->
                 <el-form-item label="Temperature">
                     <el-slider
                         v-model="settingsForm.temperature"
@@ -614,8 +590,8 @@ const initSettingsForm = () => {
         maxTokens: settingsStore.maxTokens,
         topP: settingsStore.topP,
         topK: settingsStore.topK,
-        streamResponse: settingsStore.streamResponse,
-        systemPrompt: settingsStore.systemPrompt
+        streamResponse: settingsStore.streamResponse
+        // 已移除 systemPrompt 字段
     }
 }
 
@@ -951,7 +927,10 @@ const handleRoleSelected = (role) => {
     prompt: role.prompt
   };
   // 不需要重新发送消息，只需要更新系统状态
-  ElMessage.success(`已设置角色: ${role.name}`);
+  ElMessage.success({
+    message: `已设置角色: ${role.name}`,
+    description: '该角色提示词将作为系统指令发送给AI，取代系统提示词设置'
+  });
 }
 
 // 准备发送给API的消息
@@ -961,16 +940,10 @@ const prepareMessagesForAPI = () => {
   
   // 添加系统提示词（如果有）
   if (settingsStore.currentRole?.prompt) {
-    // 优先使用当前角色的提示词
+    // 使用当前角色的提示词作为系统提示
     apiMessages.push({
       role: 'system',
       content: settingsStore.currentRole.prompt
-    });
-  } else if (settingsStore.systemPrompt) {
-    // 如果没有角色提示词，但有系统提示词设置，使用系统提示词
-    apiMessages.push({
-      role: 'system',
-      content: settingsStore.systemPrompt
     });
   }
   
@@ -1094,7 +1067,7 @@ const saveSettings = () => {
   settingsStore.topP = settingsForm.value.topP;
   settingsStore.topK = settingsForm.value.topK;
   settingsStore.streamResponse = settingsForm.value.streamResponse;
-  settingsStore.systemPrompt = settingsForm.value.systemPrompt;
+  // 已移除 systemPrompt 的保存
   
   // 强制刷新模型选择器显示
   modelOptionsLastUpdated.value = Date.now();
@@ -1695,7 +1668,7 @@ const isLatestAIMessage = (message) => {
         width: 1px;
         height: 1px;
     }
-    scrollbar-width: thin;
+    scrollbar-width: auto;
     
     &::-webkit-scrollbar-thumb {
         background-color: rgba(0, 0, 0, 0.2);
@@ -1924,6 +1897,61 @@ const isLatestAIMessage = (message) => {
                 }
             }
         }
+        
+        /* 移动端功能按钮样式 */
+        .mobile-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 16px;
+            padding: 8px 0;
+            border-top: 1px solid #f0f0f0;
+            border-bottom: 1px solid #f0f0f0;
+            
+            [data-theme="dark"] & {
+                border-color: #333;
+            }
+            
+            .mobile-action-btn {
+                flex: 1;
+                padding: 8px;
+                margin: 0 4px;
+                border-radius: 8px;
+                background-color: #f5f5f5;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border: none;
+                
+                [data-theme="dark"] & {
+                    background-color: #2d2d33;
+                }
+                
+                &:hover {
+                    background-color: #e8e8e8;
+                    
+                    [data-theme="dark"] & {
+                        background-color: #383842;
+                    }
+                }
+                
+                .el-icon {
+                    font-size: 16px;
+                    color: #333;
+                    
+                    [data-theme="dark"] & {
+                        color: #ddd;
+                    }
+                }
+                
+                &.theme-btn .el-icon {
+                    color: #ffa500;
+                }
+                
+                &.settings-btn .el-icon {
+                    color: #4284f5;
+                }
+            }
+        }
     }
 
     /* 侧边栏分组 */
@@ -2057,12 +2085,34 @@ const isLatestAIMessage = (message) => {
     
     .mobile-menu-button {
         display: none; // 默认隐藏
-        background-color: black;
-        border-color: #dedfe0;
+        background-color: transparent;
+        border: none;
         border-radius: 5px;
-        color: white;
+        cursor: pointer;
+        padding: 8px;
+        transition: background-color 0.2s ease;
+        
         @media (max-width: 768px) {
-            display: inline-flex; // 移动端显示
+            display: flex; // 移动端显示
+            align-items: center;
+            justify-content: center;
+        }
+        
+        &:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+            
+            [data-theme="dark"] & {
+                background-color: rgba(255, 255, 255, 0.1);
+            }
+        }
+        
+        img {
+            width: 24px;
+            height: 24px;
+            
+            [data-theme="dark"] & {
+                filter: invert(1); // 暗色模式下反转颜色
+            }
         }
     }
     
@@ -2270,8 +2320,8 @@ const isLatestAIMessage = (message) => {
             display: flex;
             align-items: center;
             gap: 6px;
-            background-color: #f9fafb;
-            border: 1px solid #e5e7eb;
+            background-color: transparent;
+            border: 1px solid #0000003b;
             color: #333;
             margin-left: 0px;
             
@@ -2330,6 +2380,7 @@ const isLatestAIMessage = (message) => {
                 padding: 8px !important; // 减小内边距
                 min-width: 36px !important; // 确保按钮不会太小
                 margin-left: 0px;
+                border: none;
                 
                 // 移动端隐藏按钮文字，只显示图标
                 .button-text {
@@ -2700,7 +2751,7 @@ const isLatestAIMessage = (message) => {
         &::-webkit-scrollbar {
             width: 1px;
         }
-        scrollbar-width: thin;
+        scrollbar-width: auto;
         
         &::-webkit-scrollbar-track {
             background: transparent;
@@ -2761,6 +2812,7 @@ const isLatestAIMessage = (message) => {
                 line-height: 1.5;
                 max-height: 100px;
                 overflow-y: auto;
+                scrollbar-width: none;
             }
         }
     }
@@ -3058,6 +3110,12 @@ const isLatestAIMessage = (message) => {
   }
 }
 </style>
+<!-- <script>
+document.querySelector('.toggle-thinking-btn').addEventListener('click', function() {
+    var thinkingHeader = document.getElementById('thinking-header');
+    thinkingHeader.style.backgroundColor = 'lightblue';  // 修改颜色
+  });
+</script>    -->
 <!-- <script>
 document.querySelector('.toggle-thinking-btn').addEventListener('click', function() {
     var thinkingHeader = document.getElementById('thinking-header');
