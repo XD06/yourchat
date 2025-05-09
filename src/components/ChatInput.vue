@@ -704,6 +704,7 @@ const adjustHeight = () => {
   overflow: hidden;
   transition: all 0.3s ease;
 
+
   @media (max-width: 768px) {
     border-radius: 16px;
     margin-bottom: 5px;
@@ -724,7 +725,7 @@ const adjustHeight = () => {
     max-height: 150px;
     color: var(--text-color, #333);
     transition: all 0.3s ease;
-
+    scrollbar-width: none;
     &::placeholder {
       color: var(--placeholder-color, #888);
     }
@@ -1038,9 +1039,11 @@ const adjustHeight = () => {
   .input-control-area {
     background-color: var(--dark-input-bg, #2c2c2e);
     border-color: var(--dark-border-color, #3c3c3e);
+
     
     :deep(.el-textarea__inner) {
       color: var(--dark-text-color, #e0e0e0);
+      //scrollbar-width: none;
       
       &::placeholder {
         color: var(--dark-placeholder-color, #777);

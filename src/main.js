@@ -11,19 +11,9 @@ import 'element-plus/dist/index.css'
 
 // 导入并初始化Mermaid
 import mermaid from 'mermaid'
-mermaid.initialize({
-  startOnLoad: true,
-  theme: 'default',
-  securityLevel: 'loose',
-  fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, sans-serif',
-  flowchart: {
-    htmlLabels: true,
-    curve: 'basis'
-  },
-  themeVariables: {
-    darkMode: false, // 初始非暗色模式
-  }
-})
+import { reinitializeMermaidTheme, renderMermaidDiagrams } from './utils/mermaid-plugin'
+
+// 初始Mermaid配置在mermaid-plugin.js中设置，这里只初始化一次
 
 // 使用深色代码主题, 异步按需加载
 import './assets/styles/main.scss'
@@ -58,4 +48,28 @@ setTimeout(() => {
   // 异步加载代码高亮样式（可以延迟）
   import('highlight.js/styles/github-dark.css')
     .catch(error => console.error('Failed to load syntax highlighting:', error))
+  
+  // 从设置中获取当前主题模式并更新Mermaid配置
+  import('./stores/settings').then(({ useSettingsStore }) => {
+    const settingsStore = useSettingsStore()
+    // 同步Mermaid主题配置
+    reinitializeMermaidTheme(settingsStore.isDarkMode)
+    
+    // 监听主题变化
+    settingsStore.$subscribe((mutation, state) => {
+      if (mutation.type === 'patch object' && 'isDarkMode' in mutation.payload) {
+        // 当暗黑模式设置变化时，更新Mermaid主题
+        reinitializeMermaidTheme(state.isDarkMode)
+        // 延迟后重新渲染所有图表
+        setTimeout(() => {
+          renderMermaidDiagrams();
+        }, 300);
+      }
+    })
+    
+    // 确保页面上的图表都正确渲染
+    setTimeout(() => {
+      renderMermaidDiagrams();
+    }, 1000);
+  })
 }, 100)

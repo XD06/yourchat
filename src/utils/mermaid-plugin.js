@@ -5,28 +5,15 @@ import mermaid from 'mermaid';
 // 添加版本检查和日志
 console.log('当前使用的 Mermaid 版本:', mermaid.version || '未知');
 
-// 使用增强的初始化配置
+// 使用简单的初始化配置
 mermaid.initialize({
   startOnLoad: false,
   theme: 'default',
   securityLevel: 'loose',
   logLevel: 'error',
-  fontFamily: 'system-ui, -apple-system, sans-serif',
-  fontSize: 14,
   flowchart: {
     htmlLabels: true,
-    curve: 'basis',
-    useMaxWidth: true,
-    nodeSpacing: 40,
-    rankSpacing: 50
-  },
-  themeVariables: {
-    primaryColor: '#5a67d8',
-    primaryTextColor: '#333',
-    primaryBorderColor: '#4c51bf',
-    lineColor: '#5a67d8',
-    secondaryColor: '#6b7280',
-    tertiaryColor: '#f3f4f6'
+    curve: 'basis'
   }
 });
 
@@ -51,34 +38,9 @@ const processMermaidQueue = () => {
           const element = document.getElementById(id);
           if (element && !element.querySelector('svg')) {
             try {
-              console.log('准备渲染图表:', id, '代码:', code);
-              
-              // 确保使用graph而非flowchart以避免v2版本问题
-              const processedCode = code.replace(/^flowchart\s/gm, 'graph ');
-              
               // 使用标准的mermaid render API
-              mermaid.render(id + '-svg', processedCode).then(result => {
-                console.log('渲染成功:', id);
+              mermaid.render(id + '-svg', code).then(result => {
                 element.innerHTML = result.svg;
-                
-                // 添加后处理修复节点文字不显示问题
-                const svgElement = element.querySelector('svg');
-                if (svgElement) {
-                  // 确保所有text元素可见
-                  const texts = svgElement.querySelectorAll('text');
-                  texts.forEach(text => {
-                    if (!text.getAttribute('fill') || text.getAttribute('fill') === 'transparent') {
-                      text.setAttribute('fill', '#333');
-                    }
-                    if (text.style.display === 'none') {
-                      text.style.display = 'block';
-                    }
-                    // 确保足够大的字体大小
-                    if (!text.style.fontSize || parseInt(text.style.fontSize) < 12) {
-                      text.style.fontSize = '12px';
-                    }
-                  });
-                }
               }).catch(error => {
                 console.error('渲染图表失败:', error);
                 element.innerHTML = `<div class="mermaid-error">图表渲染失败: ${error.message}</div>`;
@@ -114,31 +76,9 @@ export function reinitializeMermaidTheme(isDarkMode) {
       theme: isDarkMode ? 'dark' : 'default',
       securityLevel: 'loose',
       logLevel: 'error',
-      fontFamily: 'system-ui, -apple-system, sans-serif',
-      fontSize: 14,
       flowchart: {
         htmlLabels: true,
-        curve: 'basis',
-        useMaxWidth: true,
-        nodeSpacing: 40,
-        rankSpacing: 50
-      },
-      themeVariables: isDarkMode ? {
-        // 暗色主题变量
-        primaryColor: '#818cf8',
-        primaryTextColor: '#f9fafb',
-        primaryBorderColor: '#6366f1',
-        lineColor: '#818cf8',
-        secondaryColor: '#9ca3af',
-        tertiaryColor: '#374151'
-      } : {
-        // 亮色主题变量
-        primaryColor: '#5a67d8',
-        primaryTextColor: '#333',
-        primaryBorderColor: '#4c51bf',
-        lineColor: '#5a67d8',
-        secondaryColor: '#6b7280',
-        tertiaryColor: '#f3f4f6'
+        curve: 'basis'
       }
     });
     

@@ -105,6 +105,14 @@ function renderMathFormulas(html) {
     return placeholder;
   });
   
+  // 标记Mermaid图表，防止处理图表内的符号
+  const mermaidBlocks = [];
+  html = html.replace(/<div class="mermaid-wrapper">[\s\S]*?<\/div>/g, (match) => {
+    const placeholder = `MERMAID_BLOCK_${mermaidBlocks.length}`;
+    mermaidBlocks.push({ placeholder, content: match });
+    return placeholder;
+  });
+  
   // 处理块级公式 $$ ... $$ 或 [ ... ]
   html = html.replace(/\$\$([\s\S]*?)\$\$|\[([\s\S]*?)\]/g, (match, formula1, formula2) => {
     const formula = formula1 || formula2;
@@ -126,13 +134,19 @@ function renderMathFormulas(html) {
         const rendered = katex.renderToString(formula.trim(), {
           displayMode: true,
           throwOnError: false,
-          errorColor: '#FF0000'
+          errorColor: '#FF0000',
+          output: 'html',
+          trust: true
         });
         mathBlocks.push({ placeholder, rendered });
         return placeholder;
       } catch (error) {
         console.error('KaTeX display error:', error);
-        return match;
+        // 提供优雅的错误显示而不是保留原始文本
+        const placeholder = `MATH_BLOCK_ERROR_${mathBlocks.length}`;
+        const errorMessage = `<div class="katex-error">公式渲染错误: ${error.message}</div>`;
+        mathBlocks.push({ placeholder, rendered: errorMessage });
+        return placeholder;
       }
     }
     
@@ -165,13 +179,19 @@ function renderMathFormulas(html) {
         const rendered = katex.renderToString(formula.trim(), {
           displayMode: false,
           throwOnError: false,
-          errorColor: '#FF0000'
+          errorColor: '#FF0000',
+          output: 'html',
+          trust: true
         });
         mathBlocks.push({ placeholder, rendered });
         return placeholder;
       } catch (error) {
         console.error('KaTeX inline error:', error);
-        return match;
+        // 提供更优雅的错误显示
+        const placeholder = `MATH_INLINE_ERROR_${mathBlocks.length}`;
+        const errorMessage = `<span class="katex-inline-error">${formula}</span>`;
+        mathBlocks.push({ placeholder, rendered: errorMessage });
+        return placeholder;
       }
     }
     
@@ -180,6 +200,14 @@ function renderMathFormulas(html) {
   
   // 替换占位符为渲染后的公式
   mathBlocks.forEach(block => {
+    const isError = block.placeholder.includes('ERROR');
+    
+    // 不对错误块应用额外包装，直接使用错误消息
+    if (isError) {
+      html = html.replace(block.placeholder, block.rendered);
+      return;
+    }
+    
     // 为行内公式添加特殊样式类
     if (block.placeholder.startsWith('MATH_INLINE')) {
       // 确保渲染结果有类名 katex-inline
@@ -199,6 +227,11 @@ function renderMathFormulas(html) {
     }
     
     html = html.replace(block.placeholder, block.rendered);
+  });
+  
+  // 恢复Mermaid图表
+  mermaidBlocks.forEach(block => {
+    html = html.replace(block.placeholder, block.content);
   });
   
   // 恢复代码块

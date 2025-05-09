@@ -20,7 +20,6 @@
     "katex": "^0.16.22",
     "markdown-it": "^14.1.0",
     "markdown-it-highlightjs": "^4.0.1",
-    "markdown-it-mermaid": "^0.2.5",
     "markdown-it-task-lists": "^2.1.1",
     "markdown-it-texmath": "^1.0.0",
     "mermaid": "^10.9.3",

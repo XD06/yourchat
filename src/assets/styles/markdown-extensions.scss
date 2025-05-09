@@ -117,117 +117,325 @@
 
 /* Mermaid 图表样式 */
 .mermaid-wrapper {
-  margin: 1rem 0;
-  
+  margin: 1.5rem 0;
+  overflow-x: auto;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+  border: 1px solid #eaecef;
+  background-color: #f8f9fa;
+
+  [data-theme="dark"] & {
+    background-color: #1e1e1e;
+    border-color: #333;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+  }
+
   .mermaid-container {
-    background-color: var(--background-color-secondary);
-    border-radius: 6px;
-    border: 1px solid var(--border-color);
-    overflow: hidden;
+    padding: 12px;
+    width: 100%;
+  }
+
+  .mermaid-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 8px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #e2e8f0;
     
-    .mermaid-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 6px 12px;
-      background-color: var(--background-color-tertiary);
-      border-bottom: 1px solid var(--border-color);
+    [data-theme="dark"] & {
+      border-bottom-color: #333;
+    }
+    
+    .mermaid-label {
+      font-size: 0.85rem;
+      color: #718096;
+      font-family: monospace;
       
-      .mermaid-label {
-        font-size: 0.8rem;
-        color: var(--text-color-secondary);
-      }
-      
-      .copy-btn {
-        background: none;
-        border: none;
-        cursor: pointer;
-        color: var(--text-color-secondary);
-        padding: 2px;
-        transition: all 0.2s;
-        
-        &:hover {
-          color: var(--primary-color);
-        }
+      [data-theme="dark"] & {
+        color: #a0aec0;
       }
     }
     
-    .mermaid {
-      padding: 1rem;
-      overflow: auto;
+    .copy-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      opacity: 0.7;
+      padding: 4px;
+      border-radius: 4px;
       display: flex;
+      align-items: center;
       justify-content: center;
-      min-height: 100px;
+      transition: all 0.15s ease;
       
-      svg {
-        max-width: 100%;
-        height: auto !important;
+      &:hover {
+        opacity: 1;
+        background-color: rgba(0, 0, 0, 0.05);
         
-        text {
-          font-family: system-ui, -apple-system, sans-serif !important;
-          font-size: 14px !important;
-          fill: var(--text-color-primary) !important;
-          color: var(--text-color-primary) !important;
-          visibility: visible !important;
-          opacity: 1 !important;
-          display: block !important;
+        [data-theme="dark"] & {
+          background-color: rgba(255, 255, 255, 0.1);
         }
-        
-        .node rect, 
-        .node circle, 
-        .node polygon, 
-        .node ellipse,
-        .node path {
-          stroke: var(--primary-color) !important;
-          stroke-width: 1.5px !important;
-          fill: var(--background-color-secondary) !important;
-        }
-        
-        .edgePath path {
-          stroke: var(--text-color-secondary) !important;
-          stroke-width: 1.5px !important;
-        }
-        
-        .edgeLabel {
-          background-color: var(--background-color-secondary) !important;
-          color: var(--text-color-primary) !important;
-          font-family: system-ui, -apple-system, sans-serif !important;
-          font-size: 12px !important;
-        }
-        
-        .label {
-          font-family: system-ui, -apple-system, sans-serif !important;
-          color: var(--text-color-primary) !important;
-          fill: var(--text-color-primary) !important;
-        }
-        
-        foreignObject {
-          overflow: visible;
-          
-          div {
-            color: var(--text-color-primary) !important;
-            font-family: system-ui, -apple-system, sans-serif !important;
-            font-size: 14px !important;
-            overflow: visible;
-          }
+      }
+    }
+  }
+
+  .mermaid {
+    display: flex;
+    justify-content: center;
+    padding: 10px 0;
+    width: 100%;
+    min-height: 100px;
+    
+    svg {
+      height: auto !important;
+      width: 100% !important;
+      max-width: 100%;
+      
+      .label {
+        font-family: 'Arial', sans-serif !important;
+        font-size: 14px !important;
+        fill: #000 !important;
+        color: #000 !important;
+      }
+      
+      text {
+        font-family: 'Arial', sans-serif !important;
+        font-size: 14px !important;
+        fill: #000 !important;
+        color: #000 !important;
+        visibility: visible !important;
+      }
+      
+      g.label {
+        visibility: visible !important;
+      }
+      
+      [data-theme="dark"] & {
+        text, .label {
+          fill: #fff !important;
+          color: #fff !important;
         }
       }
       
-      .mermaid-loading {
-        color: var(--text-color-secondary);
-        padding: 1rem;
-        text-align: center;
+      .node rect, 
+      .node circle, 
+      .node ellipse, 
+      .node polygon, 
+      .node path {
+        fill: #fff !important;
+        stroke: #999 !important;
+        stroke-width: 1px !important;
+        
+        [data-theme="dark"] & {
+          fill: #2d2d33 !important;
+          stroke: #777 !important;
+        }
       }
+      
+      .edgePath .path {
+        stroke: #999 !important;
+        stroke-width: 1.5px !important;
+        
+        [data-theme="dark"] & {
+          stroke: #777 !important;
+        }
+      }
+      
+      marker {
+        fill: #999 !important;
+        
+        [data-theme="dark"] & {
+          fill: #777 !important;
+        }
+      }
+    }
+  }
+
+  .mermaid-loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 120px;
+    font-style: italic;
+    color: #718096;
+    background-image: linear-gradient(90deg, transparent, rgba(0,0,0,0.05), transparent);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    
+    [data-theme="dark"] & {
+      color: #a0aec0;
+      background-image: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
+    }
+  }
+  
+  @keyframes shimmer {
+    0% {
+      background-position: -200% 0;
+    }
+    100% {
+      background-position: 200% 0;
     }
   }
   
   .mermaid-error {
-    color: var(--error-color);
-    padding: 1rem;
-    border: 1px dashed var(--error-color);
-    border-radius: 4px;
-    font-family: monospace;
-    white-space: pre-wrap;
+    color: #e53e3e;
+    padding: 12px;
+    font-size: 0.9rem;
+    text-align: center;
+    border: 1px dashed #e53e3e;
+    margin: 10px;
+    border-radius: 6px;
+    background-color: rgba(229, 62, 62, 0.05);
+    
+    [data-theme="dark"] & {
+      color: #fc8181;
+      border-color: #fc8181;
+      background-color: rgba(252, 129, 129, 0.05);
+    }
+    
+    .error-title {
+      font-weight: bold;
+      margin-bottom: 8px;
+      font-size: 1rem;
+    }
+    
+    .error-message {
+      margin-bottom: 10px;
+      font-family: monospace;
+      padding: 5px;
+      background-color: rgba(229, 62, 62, 0.1);
+      border-radius: 4px;
+      display: inline-block;
+      
+      [data-theme="dark"] & {
+        background-color: rgba(252, 129, 129, 0.1);
+      }
+    }
+    
+    .error-code {
+      text-align: left;
+      margin: 10px 0;
+      
+      pre {
+        background-color: #f8f9fa;
+        padding: 8px;
+        border-radius: 4px;
+        overflow-x: auto;
+        font-family: monospace;
+        font-size: 0.85rem;
+        border: 1px solid #eaecef;
+        line-height: 1.5;
+        
+        [data-theme="dark"] & {
+          background-color: #2d2d33;
+          border-color: #444;
+        }
+        
+        .error-line {
+          background-color: rgba(229, 62, 62, 0.2);
+          display: block;
+          position: relative;
+          margin: 0 -8px;
+          padding: 0 8px;
+          border-left: 3px solid #e53e3e;
+          
+          [data-theme="dark"] & {
+            background-color: rgba(252, 129, 129, 0.15);
+            border-left-color: #fc8181;
+          }
+        }
+        
+        .code-line {
+          display: block;
+          
+          &:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+            
+            [data-theme="dark"] & {
+              background-color: rgba(255, 255, 255, 0.05);
+            }
+          }
+        }
+        
+        .line-number {
+          color: #a0aec0;
+          margin-right: 12px;
+          user-select: none;
+          
+          [data-theme="dark"] & {
+            color: #718096;
+          }
+        }
+      }
+    }
+    
+    .error-suggestion {
+      margin-top: 12px;
+      padding: 10px;
+      background-color: #ebf8ff;
+      border: 1px solid #bee3f8;
+      border-radius: 6px;
+      color: #2a4365;
+      text-align: left;
+      
+      [data-theme="dark"] & {
+        background-color: #2a4365;
+        border-color: #4299e1;
+        color: #e2e8f0;
+      }
+    }
+  }
+  
+  .mermaid-tip {
+    margin-top: 15px;
+    padding: 10px;
+    background-color: #ebf8ff;
+    border: 1px solid #bee3f8;
+    border-radius: 6px;
+    color: #2a4365;
+    text-align: left;
+    
+    [data-theme="dark"] & {
+      background-color: #2a4365;
+      border-color: #4299e1;
+      color: #e2e8f0;
+    }
+    
+    p {
+      margin: 5px 0;
+    }
+    
+    pre {
+      background-color: #fff;
+      padding: 8px;
+      border-radius: 4px;
+      overflow-x: auto;
+      font-family: monospace;
+      font-size: 0.85rem;
+      border: 1px solid #e2e8f0;
+      margin: 8px 0;
+      color: #2d3748;
+      
+      [data-theme="dark"] & {
+        background-color: #1a202c;
+        border-color: #4a5568;
+        color: #e2e8f0;
+      }
+    }
+    
+    ul {
+      margin: 8px 0;
+      padding-left: 20px;
+      
+      li {
+        margin-bottom: 4px;
+      }
+    }
+    
+    strong {
+      font-weight: bold;
+    }
   }
 }
 

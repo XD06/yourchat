@@ -84,17 +84,19 @@ pie title 语言使用比例
         </div>
       </div>
       
-      <h2>甘特图示例</h2>
+      <h2>类图示例</h2>
       <pre>```mermaid
-gantt
-    title 项目进度
-    dateFormat  YYYY-MM-DD
-    section 阶段1
-    需求分析      :a1, 2023-01-01, 30d
-    设计         :after a1, 20d
-    section 阶段2
-    开发         :2023-02-20, 35d
-    测试         :15d
+classDiagram
+    class User {
+        +String name
+        +login()
+        +logout()
+    }
+    class Message {
+        +String content
+        +Date timestamp
+    }
+    User "1" --> "*" Message: sends
 ```</pre>
       <div class="mermaid-wrapper">
         <div class="mermaid-container">
@@ -103,15 +105,17 @@ gantt
           </div>
           <div class="mermaid-diagram">
             <div class="mermaid">
-              gantt
-                  title 项目进度
-                  dateFormat  YYYY-MM-DD
-                  section 阶段1
-                  需求分析      :a1, 2023-01-01, 30d
-                  设计         :after a1, 20d
-                  section 阶段2
-                  开发         :2023-02-20, 35d
-                  测试         :15d
+              classDiagram
+                  class User {
+                      +String name
+                      +login()
+                      +logout()
+                  }
+                  class Message {
+                      +String content
+                      +Date timestamp
+                  }
+                  User "1" --> "*" Message: sends
             </div>
           </div>
         </div>
@@ -119,34 +123,173 @@ gantt
     </div>
     
     <div class="usage">
-      <h2>如何在对话中使用</h2>
-      <p>
-        只需在消息中使用<code>```mermaid</code>代码块包裹Mermaid语法即可。AI将自动理解并生成相应的图表。
-      </p>
-      <div class="example-chat">
-        <div class="user-message">
-          请生成一个简单的流程图，描述AI聊天的过程。
+      <h2>使用方法</h2>
+      <p>只需在消息中使用<code>```mermaid</code>代码块包裹Mermaid语法即可。AI将自动理解并生成相应的图表。</p>
+      
+      <div class="syntax-tips">
+        <h3>常见语法说明</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>图表类型</th>
+              <th>开始语法</th>
+              <th>说明</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>流程图</td>
+              <td><code>flowchart TD</code> 或 <code>graph TD</code></td>
+              <td>TD=从上到下, LR=从左到右</td>
+            </tr>
+            <tr>
+              <td>时序图</td>
+              <td><code>sequenceDiagram</code></td>
+              <td>描述对象之间的交互</td>
+            </tr>
+            <tr>
+              <td>类图</td>
+              <td><code>classDiagram</code></td>
+              <td>展示类的结构和关系</td>
+            </tr>
+            <tr>
+              <td>甘特图</td>
+              <td><code>gantt</code></td>
+              <td>项目进度和时间规划</td>
+            </tr>
+            <tr>
+              <td>饼图</td>
+              <td><code>pie</code></td>
+              <td>展示数据比例</td>
+            </tr>
+            <tr>
+              <td>状态图</td>
+              <td><code>stateDiagram-v2</code></td>
+              <td>描述状态和转换</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    
+    <div class="error-handling">
+      <h2>自动错误修复功能</h2>
+      <p>本应用内置了Mermaid语法的自动修复功能，当你的图表语法存在以下常见错误时，系统会尝试自动修复：</p>
+      
+      <div class="error-section">
+        <h3>1. 括号不闭合问题</h3>
+        <div class="error-example">
+          <div class="code-block">
+            <div class="wrong">❌ <code>A[节点内容</code> (缺少右括号)</div>
+            <div class="right">✅ <code>A[节点内容]</code> (自动修复)</div>
+          </div>
+          <p>系统会自动检测并闭合缺失的方括号 <code>[]</code>、圆括号 <code>()</code> 和花括号 <code>{}</code>。</p>
         </div>
-        <div class="ai-message">
-          以下是AI聊天的基本流程图：
-          
-          ```mermaid
-          graph LR;
-              A[用户输入] --> B[请求处理];
-              B --> C[AI模型生成];
-              C --> D[响应格式化];
-              D --> E[显示给用户];
-              E --> A;
-          ```
+        
+        <h3>2. 节点名称与括号之间的空格</h3>
+        <div class="error-example">
+          <div class="code-block">
+            <div class="wrong">❌ <code>A [内容]</code> (节点名与括号间有空格)</div>
+            <div class="right">✅ <code>A[内容]</code> (自动移除空格)</div>
+          </div>
         </div>
+        
+        <h3>3. 箭头标签语法问题</h3>
+        <div class="error-example">
+          <div class="code-block">
+            <div class="wrong">❌ <code>A -->|标签 B</code> (缺少右侧管道符)</div>
+            <div class="right">✅ <code>A -->|标签| B</code> (自动添加管道符)</div>
+          </div>
+          <p>箭头标签必须用管道符 <code>|</code> 包裹，系统会自动补全缺失的管道符。</p>
+        </div>
+        
+        <h3>4. 缺少图表类型</h3>
+        <div class="error-example">
+          <div class="code-block">
+            <div class="wrong">❌ <code>TD</code> (只有方向标识)</div>
+            <div class="right">✅ <code>flowchart TD</code> (自动添加图表类型)</div>
+          </div>
+          <p>当图表没有指定类型时，系统会尝试添加适当的图表类型前缀。</p>
+        </div>
+        
+        <h3>5. 箭头格式问题</h3>
+        <div class="error-example">
+          <div class="code-block">
+            <div class="wrong">❌ <code>A ---> B</code> (箭头格式不正确)</div>
+            <div class="right">✅ <code>A --> B</code> (修正箭头格式)</div>
+          </div>
+        </div>
+        
+        <h3>6. 中文引号问题</h3>
+        <div class="error-example">
+          <div class="code-block">
+            <div class="wrong">❌ <code>"中文引号"</code> (使用了中文引号)</div>
+            <div class="right">✅ <code>"中文引号"</code> (转换为英文引号)</div>
+          </div>
+          <p>系统会自动将中文引号转换为英文引号，以避免解析错误。</p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="error-tips">
+      <h2>常见错误与解决方法</h2>
+      
+      <div class="error-card">
+        <h3>语法错误：节点定义</h3>
+        <p><strong>错误表现：</strong> 节点定义语法错误</p>
+        <p><strong>解决方法：</strong></p>
+        <ul>
+          <li>方框节点: <code>A[文本]</code></li>
+          <li>圆角框: <code>B(文本)</code></li>
+          <li>菱形: <code>C{文本}</code></li>
+          <li>圆形: <code>D((文本))</code></li>
+          <li>确保节点名称与括号之间没有空格</li>
+        </ul>
+      </div>
+      
+      <div class="error-card">
+        <h3>语法错误：箭头连接</h3>
+        <p><strong>错误表现：</strong> 箭头连接或标签语法错误</p>
+        <p><strong>解决方法：</strong></p>
+        <ul>
+          <li>普通箭头: <code>A --> B</code></li>
+          <li>带标签箭头: <code>A -->|标签文本| B</code></li>
+          <li>虚线箭头: <code>A -.-> B</code></li>
+          <li>粗线箭头: <code>A ==> B</code></li>
+          <li>确保管道符 <code>|</code> 成对出现</li>
+        </ul>
+      </div>
+      
+      <div class="error-card">
+        <h3>语法错误：图表类型</h3>
+        <p><strong>错误表现：</strong> 未知图表类型或方向错误</p>
+        <p><strong>解决方法：</strong></p>
+        <ul>
+          <li>始终以正确的图表类型开始: <code>flowchart TD</code>, <code>sequenceDiagram</code>, <code>classDiagram</code> 等</li>
+          <li>流程图方向可选: TD(上到下), LR(左到右), RL(右到左), BT(下到上)</li>
+        </ul>
+      </div>
+      
+      <div class="error-card">
+        <h3>未定义节点错误</h3>
+        <p><strong>错误表现：</strong> "Undefined identifier" 错误</p>
+        <p><strong>解决方法：</strong></p>
+        <ul>
+          <li>确保所有通过箭头连接的节点都已定义</li>
+          <li>节点名称区分大小写，检查大小写是否一致</li>
+          <li>节点首次出现时应包含形状定义，如 <code>A[文本]</code></li>
+        </ul>
       </div>
     </div>
     
     <div class="more-info">
       <h2>更多资源</h2>
-      <p>
-        查看 <a href="https://mermaid.js.org/" target="_blank">Mermaid官方文档</a> 了解更多语法和图表类型。
-      </p>
+      <p>查看 <a href="https://mermaid.js.org/" target="_blank">Mermaid官方文档</a> 了解更多语法和图表类型。</p>
+      <p>测试工具：</p>
+      <ul>
+        <li><a href="#/mermaid-test">Mermaid基本图表测试</a> - 查看各种图表类型的示例</li>
+        <li><a href="#/mermaid-error-test">Mermaid错误修复测试</a> - 测试自动修复功能</li>
+      </ul>
     </div>
   </div>
 </template>
@@ -155,148 +298,129 @@ gantt
 import { onMounted } from 'vue';
 import mermaid from 'mermaid';
 
+// 在组件挂载后初始化Mermaid图表
 onMounted(() => {
-  // 在组件挂载后初始化Mermaid图表
-  setTimeout(() => {
-    mermaid.contentLoaded();
-  }, 100);
+  mermaid.contentLoaded();
 });
 </script>
 
-<style scoped lang="scss">
+<style scoped>
 .mermaid-help {
   max-width: 900px;
   margin: 0 auto;
   padding: 20px;
-  
-  h1 {
-    font-size: 2rem;
-    margin-bottom: 20px;
-    color: #333;
-    
-    [data-theme="dark"] & {
-      color: #e2e8f0;
-    }
-  }
-  
-  .intro {
-    font-size: 1.1rem;
-    line-height: 1.6;
-    margin-bottom: 30px;
-    color: #4a5568;
-    
-    [data-theme="dark"] & {
-      color: #a0aec0;
-    }
-  }
-  
-  code {
-    background-color: #f7fafc;
-    padding: 2px 5px;
-    border-radius: 3px;
-    font-family: monospace;
-    color: #3182ce;
-    
-    [data-theme="dark"] & {
-      background-color: #2d3748;
-      color: #63b3ed;
-    }
-  }
-  
-  .examples {
-    h2 {
-      font-size: 1.5rem;
-      margin: 30px 0 15px;
-      color: #2d3748;
-      
-      [data-theme="dark"] & {
-        color: #e2e8f0;
-      }
-    }
-    
-    pre {
-      background-color: #f7fafc;
-      padding: 15px;
-      border-radius: 8px;
-      overflow-x: auto;
-      font-family: monospace;
-      margin: 15px 0;
-      border: 1px solid #e2e8f0;
-      
-      [data-theme="dark"] & {
-        background-color: #2d3748;
-        border-color: #4a5568;
-        color: #e2e8f0;
-      }
-    }
-  }
-  
-  .usage {
-    margin-top: 40px;
-    
-    .example-chat {
-      margin-top: 20px;
-      border: 1px solid #e2e8f0;
-      border-radius: 10px;
-      overflow: hidden;
-      
-      [data-theme="dark"] & {
-        border-color: #4a5568;
-      }
-      
-      .user-message, .ai-message {
-        padding: 15px;
-        
-        &:not(:last-child) {
-          border-bottom: 1px solid #e2e8f0;
-          
-          [data-theme="dark"] & {
-            border-color: #4a5568;
-          }
-        }
-      }
-      
-      .user-message {
-        background-color: #ebf8ff;
-        
-        [data-theme="dark"] & {
-          background-color: #2c5282;
-          color: #e2e8f0;
-        }
-      }
-      
-      .ai-message {
-        background-color: #f7fafc;
-        
-        [data-theme="dark"] & {
-          background-color: #2d3748;
-          color: #e2e8f0;
-        }
-      }
-    }
-  }
-  
-  .more-info {
-    margin-top: 40px;
-    padding-top: 20px;
-    border-top: 1px solid #e2e8f0;
-    
-    [data-theme="dark"] & {
-      border-color: #4a5568;
-    }
-    
-    a {
-      color: #3182ce;
-      text-decoration: none;
-      
-      &:hover {
-        text-decoration: underline;
-      }
-      
-      [data-theme="dark"] & {
-        color: #63b3ed;
-      }
-    }
-  }
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 30px;
+  color: var(--color-heading);
+}
+
+h2 {
+  margin-top: 40px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: 8px;
+  color: var(--color-heading);
+}
+
+h3 {
+  margin-top: 24px;
+  margin-bottom: 16px;
+  color: var(--color-heading);
+}
+
+.intro {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  margin-bottom: 30px;
+}
+
+pre {
+  background-color: var(--color-background-soft);
+  padding: 15px;
+  border-radius: 8px;
+  overflow-x: auto;
+  margin: 15px 0;
+  border: 1px solid var(--color-border);
+}
+
+code {
+  font-family: monospace;
+  padding: 2px 4px;
+  background-color: var(--color-background-mute);
+  border-radius: 4px;
+}
+
+.syntax-tips {
+  margin: 25px 0;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+}
+
+th, td {
+  text-align: left;
+  padding: 10px;
+  border: 1px solid var(--color-border);
+}
+
+th {
+  background-color: var(--color-background-soft);
+}
+
+.error-section {
+  background-color: var(--color-background-soft);
+  padding: 20px;
+  border-radius: 10px;
+  margin: 25px 0;
+}
+
+.error-example {
+  background-color: var(--color-background-mute);
+  padding: 15px;
+  border-radius: 8px;
+  margin: 15px 0;
+}
+
+.code-block {
+  padding: 10px;
+  border-radius: 6px;
+  background-color: var(--color-background);
+  margin-bottom: 10px;
+}
+
+.wrong {
+  color: #e53e3e;
+  margin-bottom: 5px;
+}
+
+.right {
+  color: #38a169;
+}
+
+.error-card {
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 20px;
+  background-color: var(--color-background-soft);
+}
+
+.error-card h3 {
+  margin-top: 0;
+  color: #4a5568;
+}
+
+.more-info {
+  margin-top: 40px;
+  padding: 20px;
+  background-color: var(--color-background-soft);
+  border-radius: 10px;
 }
 </style> 
