@@ -13,7 +13,19 @@ mermaid.initialize({
   logLevel: 'error',
   flowchart: {
     htmlLabels: true,
-    curve: 'basis'
+    curve: 'basis',
+    useMaxWidth: false  // 改为false以避免SVG宽度受限
+  },
+  // 添加字体设置
+  fontFamily: 'Arial, sans-serif',
+  fontSize: 14,
+  themeVariables: {
+    primaryColor: '#5a67d8',
+    primaryTextColor: '#000',
+    primaryBorderColor: '#4c51bf',
+    lineColor: '#5a67d8',
+    secondaryColor: '#6b7280',
+    tertiaryColor: '#f3f4f6'
   }
 });
 
@@ -38,9 +50,41 @@ const processMermaidQueue = () => {
           const element = document.getElementById(id);
           if (element && !element.querySelector('svg')) {
             try {
+              // 确保在渲染前代码是正确的
+              console.log('渲染图表:', id, '代码:', code);
+              
               // 使用标准的mermaid render API
               mermaid.render(id + '-svg', code).then(result => {
+                console.log('渲染成功:', id);
                 element.innerHTML = result.svg;
+                
+                // 添加后处理，确保SVG中的文本是可见的
+                const svg = element.querySelector('svg');
+                if (svg) {
+                  // 确保SVG有适当的宽高
+                  svg.setAttribute('width', '100%');
+                  svg.setAttribute('height', 'auto');
+                  svg.style.maxWidth = '100%';
+                  
+                  // 确保所有文本元素可见
+                  svg.querySelectorAll('text').forEach(text => {
+                    text.style.fill = '#000';
+                    text.style.fontFamily = 'Arial, sans-serif';
+                    text.style.fontSize = '14px';
+                    text.style.visibility = 'visible';
+                  });
+                  
+                  // 确保所有标签可见
+                  svg.querySelectorAll('.label').forEach(label => {
+                    label.style.visibility = 'visible';
+                    label.style.display = 'block';
+                    const textElements = label.querySelectorAll('text');
+                    textElements.forEach(text => {
+                      text.style.visibility = 'visible';
+                      text.style.fill = '#000';
+                    });
+                  });
+                }
               }).catch(error => {
                 console.error('渲染图表失败:', error);
                 element.innerHTML = `<div class="mermaid-error">图表渲染失败: ${error.message}</div>`;
@@ -78,7 +122,32 @@ export function reinitializeMermaidTheme(isDarkMode) {
       logLevel: 'error',
       flowchart: {
         htmlLabels: true,
-        curve: 'basis'
+        curve: 'basis',
+        useMaxWidth: false // 改为false以避免SVG宽度受限
+      },
+      // 添加字体设置
+      fontFamily: 'Arial, sans-serif',
+      fontSize: 14,
+      themeVariables: isDarkMode ? {
+        // 暗色主题变量
+        primaryColor: '#818cf8',
+        primaryTextColor: '#fff',
+        primaryBorderColor: '#6366f1',
+        lineColor: '#818cf8',
+        secondaryColor: '#9ca3af',
+        tertiaryColor: '#374151',
+        nodeBorder: '#777',
+        textColor: '#fff'
+      } : {
+        // 亮色主题变量
+        primaryColor: '#5a67d8',
+        primaryTextColor: '#000',
+        primaryBorderColor: '#4c51bf',
+        lineColor: '#5a67d8',
+        secondaryColor: '#6b7280',
+        tertiaryColor: '#f3f4f6',
+        nodeBorder: '#999',
+        textColor: '#000'
       }
     });
     
@@ -142,4 +211,4 @@ export default function mermaidPlugin(md) {
     // 对于非mermaid代码块，使用默认处理
     return defaultFence(tokens, idx, options, env, slf);
   };
-} 
+}
