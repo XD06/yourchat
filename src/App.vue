@@ -1,7 +1,7 @@
 <template>
   <div id="app" :class="{ 'app-loaded': isAppLoaded }">
-    <!-- Loading Screen -->
-    <div class="loading-screen" v-if="!isAppLoaded">
+    <!-- Loading Screen - Will be visible immediately with inline critical styles -->
+    <div class="loading-screen" v-if="!isAppLoaded || !resourcesLoaded">
       <div class="loading-content">
         <div class="loading-logo">
           <AppLogo :size="120" color="#000000" />
@@ -14,8 +14,11 @@
       </div>
     </div>
 
-    <!-- Main App Content -->
-    <router-view v-show="isAppLoaded" />
+    <!-- Main App Content - Only shown when both app and resources are loaded -->
+    <router-view v-if="isAppLoaded && resourcesLoaded" />
+    
+    <!-- Migration Helper - Will show if old history format is detected -->
+    <MigrationHelper v-if="isAppLoaded && resourcesLoaded" />
     
     <!-- 滚动到底部按钮 - 更新为箭头图标 -->
     <!-- <div 
@@ -39,27 +42,45 @@
 import { ref, onMounted, onBeforeMount, nextTick, watch } from 'vue'
 import { useSettingsStore } from './stores/settings'
 import AppLogo from './components/AppLogo.vue'
+import MigrationHelper from './components/MigrationHelper.vue'
 import './assets/mobileFixStyles.css' // Import mobile fixes CSS
 
 const settingsStore = useSettingsStore()
 const isAppLoaded = ref(false)
+const resourcesLoaded = ref(false)
 const loadingMessage = ref('初始化应用...')
 const showScrollButton = ref(false)
 const isDarkMode = ref(false)
 let scrolling = false
 let scrollTimeout
+let resourceLoadTimeout
 
 // 监听应用加载状态，移除body上的loading类
-watch(isAppLoaded, (newVal) => {
-  if (newVal === true) {
-    // 移除body上的loading类
+watch([isAppLoaded, resourcesLoaded], ([appLoaded, resLoaded]) => {
+  if (appLoaded && resLoaded) {
+    // 只有当两个加载状态都完成时才移除loading类
     document.body.classList.remove('loading')
+    console.log('应用和资源加载完成，显示主界面')
   }
 })
 
-// 初始化时获取当前主题状态
+// 初始化时获取当前主题状态并立即显示加载动画
 onBeforeMount(() => {
+  console.log('应用初始化开始，添加loading类')
+  // 立即添加loading类到body确保加载动画立即显示
+  document.body.classList.add('loading')
+  
+  // 设置主题以确保加载屏幕使用正确的主题
   isDarkMode.value = settingsStore.isDarkMode
+  document.documentElement.setAttribute('data-theme', isDarkMode.value ? 'dark' : 'light')
+  
+  // 创建应用加载超时保障机制
+  resourceLoadTimeout = setTimeout(() => {
+    if (!resourcesLoaded.value) {
+      console.warn('资源加载超时，强制显示主界面')
+      resourcesLoaded.value = true
+    }
+  }, 5000) // 5秒超时保障
 })
 
 // 切换主题模式
@@ -69,49 +90,85 @@ const toggleTheme = () => {
   settingsStore.isDarkMode = isDarkMode.value
 }
 
-// 简化的应用初始化流程，确保DOM渲染稳定性
+// 优化的资源预加载函数
+const preloadCriticalResources = async () => {
+  try {
+    loadingMessage.value = '加载核心资源...'
+    
+    // 预加载关键图片资源
+    const preloadImages = [
+      '/favicon.ico',
+      // Add other critical images here
+    ]
+    
+    // 并行加载所有图片
+    await Promise.all(preloadImages.map(src => {
+      return new Promise((resolve) => {
+        const img = new Image()
+        img.onload = resolve
+        img.onerror = resolve // 即使加载失败也继续
+        img.src = src
+      })
+    }))
+    
+    // 一旦核心资源加载完成，更新消息
+    loadingMessage.value = '准备界面...'
+    
+    return true
+  } catch (error) {
+    console.error('预加载资源时出错:', error)
+    return false
+  }
+}
+
+// 优化的应用初始化流程，确保首先显示加载界面
 const initApp = async () => {
   try {
-    // 立即应用主题，不等待
-    const isDarkModeVal = settingsStore.isDarkMode
-    isDarkMode.value = isDarkModeVal
-    document.documentElement.setAttribute('data-theme', isDarkModeVal ? 'dark' : 'light')
+    // 确保加载动画至少显示1秒，以避免闪烁
+    const minimumLoadingTime = new Promise(resolve => setTimeout(resolve, 1000))
     
-    // 确保DOM已更新
-    await nextTick()
+    // 并行预加载关键资源
+    const preloadResult = preloadCriticalResources()
     
-    // 无需延迟，允许页面立即显示
-    // 仅做基本的API检查
-    if (!settingsStore.actualApiEndpoint || !settingsStore.actualApiKey) {
-      console.warn('API配置缺失，可能需要在设置中配置')
-    }
+    // 等待最小加载时间
+    await minimumLoadingTime
     
-    // 设置延迟只是为了确保平滑过渡
+    // 标记应用核心已加载
+    isAppLoaded.value = true
+    
+    // 等待资源预加载完成
+    loadingMessage.value = '加载资源中...'
+    await preloadResult
+    
+    // 延迟一小段时间使过渡更平滑
     setTimeout(() => {
-      isAppLoaded.value = true
-      // 初始化时立即检查滚动按钮状态
+      // 标记所有资源已加载
+      resourcesLoaded.value = true
+      
+      // 清除保障超时
+      if (resourceLoadTimeout) {
+        clearTimeout(resourceLoadTimeout)
+        resourceLoadTimeout = null
+      }
+      
+      // 初始化滚动相关功能
       setTimeout(() => {
         showScrollButton.value = true
-        console.log('强制显示滚动按钮')
       }, 1000)
-    }, 100)
+    }, 400)
   } catch (error) {
     console.error('应用初始化错误:', error)
     // 即使出错也显示应用
     isAppLoaded.value = true
+    resourcesLoaded.value = true
+    
+    // 清除保障超时
+    if (resourceLoadTimeout) {
+      clearTimeout(resourceLoadTimeout)
+      resourceLoadTimeout = null
+    }
   }
 }
-
-// 优化后的加载流程
-onBeforeMount(() => {
-  // 设置较短的超时以确保应用始终能够加载
-  setTimeout(() => {
-    if (!isAppLoaded.value) {
-      console.warn('应用加载超时，强制显示')
-      isAppLoaded.value = true
-    }
-  }, 1000)
-})
 
 // 检查是否需要显示滚动按钮
 const checkScrollPosition = () => {
@@ -165,6 +222,7 @@ const scrollToBottom = () => {
 
 // 在mounted时初始化应用
 onMounted(() => {
+  console.log('应用组件已挂载，开始初始化流程')
   // 开始初始化
   initApp()
   
@@ -174,14 +232,14 @@ onMounted(() => {
   // 初始检查滚动位置
   updateScrollButtonVisibility()
   
-  // Add global touch event handler to prevent unwanted behaviors
+  // 添加全局触摸事件处理以防止不需要的行为
   document.addEventListener('touchstart', (e) => {
     if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
-      // Allow default behavior for inputs
+      // 允许输入框的默认行为
       return;
     }
     
-    // This helps prevent potential highlight issues in various mobile browsers
+    // 帮助防止在各种移动浏览器中的潜在高亮问题
     if (e.target.classList.contains('mobile-input') ||
         e.target.closest('.mobile-input-wrapper')) {
       e.preventDefault();
@@ -210,6 +268,24 @@ onMounted(() => {
   -webkit-tap-highlight-color: transparent;
 }
 
+// 优先加载的关键样式，确保加载动画立即显示
+body.loading {
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+  
+  /* 确保加载动画页面全屏 - 关键样式 */
+  #app {
+    visibility: visible !important;
+    
+    .loading-screen {
+      display: flex !important;
+      opacity: 1 !important;
+      visibility: visible !important;
+    }
+  }
+}
+
 // Optimized Loading Screen Styles
 .loading-screen {
   position: fixed;
@@ -223,60 +299,116 @@ onMounted(() => {
   justify-content: center;
   z-index: 9999;
   opacity: 1;
-  transition: opacity 0.3s ease;
+  transition: opacity 0.5s ease;
+  will-change: opacity, visibility; // 优化渲染性能
+  
+  /* Add gradient background for more visual appeal */
+  background: linear-gradient(135deg, #f5f7fa 0%, #e4e9f2 100%);
+  
+  [data-theme="dark"] & {
+    background: linear-gradient(135deg, #121212 0%, #1e1e2e 100%);
+  }
   
   .loading-content {
     text-align: center;
     max-width: 90%;
+    transform: scale(1);
+    animation: pulseLoad 2s infinite ease-in-out;
   }
   
   .loading-logo {
     margin-bottom: 20px;
-    // Simplified animation with transformed properties
-    animation: simple-pulse 1.5s infinite ease-in-out;
-    transform: translateZ(0); // Only essential hardware acceleration
+    animation: floatLogo 2s infinite ease-in-out;
+    will-change: transform;
+    transform: translateZ(0); // Hardware acceleration
+    filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.1));
+    
+    [data-theme="dark"] & {
+      filter: drop-shadow(0 5px 15px rgba(255, 255, 255, 0.1)) brightness(0) invert(1);
+    }
   }
   
   .loading-title {
-    font-size: 2.2rem;
+    font-size: 2.5rem;
     font-weight: 700;
     color: #333333;
     margin-bottom: 20px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     
     [data-theme="dark"] & {
       color: #f0f0f0;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
     }
   }
   
   .loading-spinner {
     margin: 20px auto;
-    width: 36px;
-    height: 36px;
+    width: 40px;
+    height: 40px;
+    position: relative;
     
     .spinner {
       width: 100%;
       height: 100%;
-      border: 3px solid rgba(0, 0, 0, 0.1);
+      border: 3px solid rgba(0, 0, 0, 0.05);
       border-radius: 50%;
-      border-top-color: #333333;
-      animation: spin 0.8s linear infinite;
+      border-top-color: #000000;
+      border-left-color: #000000;
+      animation: spinnerAnimation 1.2s linear infinite;
+      will-change: transform;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
       
       [data-theme="dark"] & {
-        border-color: rgba(255, 255, 255, 0.1);
-        border-top-color: #f0f0f0;
+        border-color: rgba(255, 255, 255, 0.05);
+        border-top-color: #000000;
+        border-left-color: #000000;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
       }
     }
   }
   
   .loading-message {
-    font-size: 0.95rem;
+    font-size: 1rem;
     color: #666666;
-    margin-top: 10px;
+    margin-top: 20px;
+    position: relative;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    animation: fadeMessage 2s infinite alternate;
     
     [data-theme="dark"] & {
       color: #aaaaaa;
     }
   }
+}
+
+// 优化的app加载过渡效果
+.app-loaded .loading-screen {
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden; // 完全隐藏元素
+  transition: opacity 0.8s ease, visibility 0.8s ease; // 延长过渡时间
+}
+
+// 增强的动画
+@keyframes spinnerAnimation {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes floatLogo {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-10px) scale(1.05); }
+}
+
+@keyframes pulseLoad {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+}
+
+@keyframes fadeMessage {
+  0% { opacity: 0.7; }
+  100% { opacity: 1; }
 }
 
 // 滚动到底部按钮样式 - 完全重新设计
@@ -387,29 +519,6 @@ onMounted(() => {
   60% {
     transform: translateY(-2px);
   }
-}
-
-// Streamlined animations
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-@keyframes simple-pulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.02); }
-}
-
-// Optimized dark mode for loading logo
-[data-theme="dark"] .loading-logo {
-  filter: brightness(0) invert(1);
-}
-
-// Improved transition for app loading
-.app-loaded .loading-screen {
-  opacity: 0;
-  pointer-events: none;
-  visibility: hidden; // 完全隐藏元素
-  transition: opacity 0.3s ease, visibility 0.3s ease; // 同时过渡可见性属性
 }
 </style>
 

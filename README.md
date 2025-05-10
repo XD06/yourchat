@@ -65,17 +65,6 @@
    - 清理定时器和事件监听
    - 通过适当缓存减少不必要的重复计算
 
-## 技术栈
-
-- **前端框架**: Vue 3
-- **状态管理**: Pinia
-- **UI组件**: Element Plus
-- **样式处理**: SCSS
-- **Markdown解析**: markdown-it
-- **数学公式**: KaTeX
-- **图表支持**: Mermaid.js
-- **代码高亮**: highlight.js
-
 ## 关键技术细节
 
 ### 消息流式处理
@@ -270,25 +259,11 @@ VITE_OPENAI_API_KEY=your_api_key
 VITE_OPENAI_API_ENDPOINT=https://api.openai.com/v1/chat/completions
 ```
 
-## 已知问题和解决方案
 
-### CSS滚动条宽度限制
-`scrollbar-width: thin` 不能设置为具体像素值（如1px或1em），因为这是CSS规范中的枚举属性，只接受`thin`、`auto`或`none`。如需精确控制滚动条宽度，必须使用WebKit私有属性`::-webkit-scrollbar`，但这会限制浏览器兼容性。
 
-### 移动端特定优化
-在移动设备上，我们使用更紧凑的UI布局并简化某些交互。字体选择上也特别注重移动设备的可读性，使用了更适合小屏幕的字体设置：
 
-```scss
-@media (max-width: 768px) {
-  font-family: "Microsoft YaHei", "PingFang SC", "Heiti SC", "Noto Sans SC", sans-serif;
-  font-weight: 400;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  letter-spacing: 0.015em;
-}
-```
-
-## 许可证
+## 相关
 
 [MIT](LICENSE)
+[AIchat](https://github.com/wjc7jx/AIchat)
 

@@ -372,7 +372,7 @@ const roleCategories = ref([
   {
     name: '通用',
     roles: [
-      { name: '通用助手', description: '一个通用的AI助手', prompt: '你是一个乐于助人的AI助手。', color: '#4285F4' },
+      { name: '通用助手', description: '一个通用的AI助手', prompt: promptTemplates.aiassistant, color: '#4285F4' },
       { name: '写作助手', description: '协助各类文体写作和润色', prompt: promptTemplates.writer, color: '#DB4437' },
       { name: '编程助手', description: '提供高质量代码和技术解决方案', prompt: promptTemplates.programmer, color: '#F4B400' },
       { name: '自定义', description: '创建自定义系统提示词', prompt: '', color: '#34A853', isCustom: true }
@@ -1266,6 +1266,7 @@ onUnmounted(() => {
   gap: 8px;
   padding: 10px;
   border-bottom: 1px solid var(--border-color, #eaeaea);
+  scrollbar-width: thin;
     
     .role-category {
       padding: 6px 12px;
@@ -1338,6 +1339,8 @@ onUnmounted(() => {
     margin: 0;
     font-size: 16px;
     color: var(--text-color, #333);
+    text-align: center;
+    flex:1;
   }
 }
 

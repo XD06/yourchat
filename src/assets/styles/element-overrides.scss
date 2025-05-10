@@ -33,4 +33,395 @@
   .el-scrollbar__thumb {
     background-color: rgba(180, 180, 180, 0.3);
   }
+}
+
+// 美化导出对话框
+.el-message-box {
+  border-radius: 12px !important;
+  overflow: hidden !important;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15) !important;
+  border: none !important;
+  width: 420px !important;
+  max-width: 95vw !important;
+  transform: translateY(0) !important;
+  animation: slide-in 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  
+  // 导出对话框标题
+  .el-message-box__header {
+    // 
+    background-color: transparent;
+    padding: 15px 20px !important;
+    position: relative !important;
+    display:flex;
+    justify-content: center;
+    align-items: center;
+    
+    &::before {
+      //content: '📄' !important; // Download icon
+      font-family: 'Font Awesome 5 Free', sans-serif !important;
+      position: absolute !important;
+      left: 20px !important;
+      font-weight: 900 !important;
+      font-size: 18px !important;
+      color: white !important;
+      opacity: 0.8 !important;
+    }
+    
+    .el-message-box__title {
+      color: rgb(0, 0, 0) !important;
+      font-weight: 600 !important;
+      font-size: 18px !important;
+      //padding-left: 28px !important; // Make room for the icon
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
+    }
+    
+    .el-message-box__headerbtn {
+      top: 15px !important;
+      right: 15px !important;
+      
+      .el-message-box__close {
+        color: white !important;
+        font-size: 18px !important;
+        transition: transform 0.2s !important;
+        
+        &:hover {
+          transform: rotate(90deg) !important;
+        }
+      }
+    }
+  }
+  
+  // 对话框内容
+  .el-message-box__content {
+    padding: 24px !important;
+    
+    .el-message-box__container {
+      .el-message-box__message {
+        padding-left: 0 !important;
+        
+        label {
+          font-size: 15px !important;
+          white-space: pre-line !important;
+          line-height: 1.6 !important;
+          color: #333 !important;
+          display: block !important;
+          margin-bottom: 15px !important;
+          position: relative !important;
+          padding-left: 2px !important;
+          
+          // Format options styling
+          &::after {
+            content: '' !important;
+            display: block !important;
+            height: 1px !important;
+            background: linear-gradient(to right, rgba(66, 132, 245, 0.2), rgba(66, 132, 245, 0.05)) !important;
+            margin-top: 15px !important;
+          }
+        }
+      }
+    }
+    
+    // 输入框样式
+    .el-message-box__input {
+      padding-top: 15px !important;
+      
+      .el-input__wrapper {
+        box-shadow: 0 0 0 1px #d9d9d9 inset !important;
+        border-radius: 8px !important;
+        padding: 8px 12px !important;
+        transition: all 0.3s !important;
+        
+        &:hover {
+          box-shadow: 0 0 0 1px #b3b3b3 inset !important;
+        }
+        
+        &.is-focus {
+          box-shadow: 0 0 0 2px rgba(66, 132, 245, 0.3) inset !important;
+        }
+      }
+      
+      .el-input__inner {
+        font-size: 24px !important;
+        text-align: center !important;
+        font-weight: bold !important;
+        color: #4284f5 !important;
+        letter-spacing: 2px !important;
+      }
+      
+      .el-message-box__errormsg {
+        color: #e74c3c !important;
+        font-size: 13px !important;
+        margin-top: 8px !important;
+        text-align: center !important;
+      }
+    }
+  }
+  
+  // 按钮区域
+  .el-message-box__btns {
+    padding: 10px 20px 24px !important;
+    display: flex !important;
+    justify-content: center !important;
+    gap: 15px !important;
+    
+    .el-button {
+      padding: 10px 24px !important;
+      font-size: 15px !important;
+      border-radius: 8px !important;
+      font-weight: 500 !important;
+      transition: all 0.3s !important;
+      min-width: 100px !important;
+      
+      &:not(.el-button--primary) {
+        border-color: #e0e0e0 !important;
+        color: #606266 !important;
+        
+        &:hover {
+          background-color: #f5f7fa !important;
+          border-color: #d9d9d9 !important;
+          transform: translateY(-2px) !important;
+        }
+      }
+      
+      &.el-button--primary {
+        background: linear-gradient(135deg, #4284f5, #42a5f5) !important;
+        border: none !important;
+        position: relative !important;
+        overflow: hidden !important;
+        
+        &::before {
+          content: '' !important;
+          position: absolute !important;
+          top: -50% !important;
+          left: -50% !important;
+          width: 200% !important;
+          height: 200% !important;
+          background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 70%) !important;
+          opacity: 0 !important;
+          transform: scale(0.5) !important;
+          transition: transform 0.6s, opacity 0.6s !important;
+        }
+        
+        &:hover {
+          transform: translateY(-2px) !important;
+          box-shadow: 0 6px 15px rgba(66, 132, 245, 0.35) !important;
+          
+          &::before {
+            opacity: 1 !important;
+            transform: scale(1) !important;
+          }
+        }
+        
+        &:active {
+          transform: translateY(0) !important;
+        }
+      }
+    }
+  }
+}
+
+// 深色模式下的导出对话框样式
+[data-theme="dark"] .el-message-box {
+  background-color: #252529 !important;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5) !important;
+  
+  .el-message-box__header {
+    background: linear-gradient(135deg, #3374dc, #3b95e3) !important;
+  }
+  
+  .el-message-box__content {
+    .el-message-box__container {
+      .el-message-box__message {
+        label {
+          color: #e0e0e0 !important;
+          
+          &::after {
+            background: linear-gradient(to right, rgba(66, 132, 245, 0.3), rgba(66, 132, 245, 0.05)) !important;
+          }
+        }
+      }
+    }
+    
+    .el-message-box__input {
+      .el-input__wrapper {
+        background-color: #333336 !important;
+        box-shadow: 0 0 0 1px #4c4c4c inset !important;
+        
+        &:hover {
+          box-shadow: 0 0 0 1px #666 inset !important;
+        }
+        
+        &.is-focus {
+          box-shadow: 0 0 0 2px rgba(66, 132, 245, 0.5) inset !important;
+        }
+      }
+      
+      .el-input__inner {
+        background-color: transparent !important;
+        color: #42a5f5 !important;
+      }
+      
+      .el-message-box__errormsg {
+        color: #ff6b6b !important;
+      }
+    }
+  }
+  
+  .el-message-box__btns {
+    .el-button {
+      &:not(.el-button--primary) {
+        background-color: #333336 !important;
+        border-color: #4c4c4c !important;
+        color: #e0e0e0 !important;
+        
+        &:hover {
+          background-color: #3f3f44 !important;
+          border-color: #666 !important;
+          box-shadow: 0 6px 15px rgba(0, 0, 0, 0.25) !important;
+        }
+      }
+      
+      &.el-button--primary {
+        box-shadow: 0 4px 12px rgba(51, 116, 220, 0.4) !important;
+        
+        &:hover {
+          box-shadow: 0 6px 20px rgba(51, 116, 220, 0.5) !important;
+        }
+      }
+    }
+  }
+}
+
+@keyframes slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// 美化导出对话框选择样式
+.export-format-dialog {
+  .el-message-box__message {
+    overflow: visible !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  
+  .export-format-selector {
+    margin: -10px -20px !important;
+    
+    .format-title {
+      font-size: 16px !important;
+      margin: 0 20px 15px !important;
+      color: #555 !important;
+      font-weight: 500 !important;
+    }
+    
+    .format-options {
+      display: grid !important;
+      grid-template-columns: repeat(2, 1fr) !important;
+      gap: 15px !important;
+      padding: 0 20px 20px !important;
+      
+      @media (max-width: 500px) {
+        grid-template-columns: 1fr !important;
+      }
+      
+      .format-option {
+        cursor: pointer !important;
+        border-radius: 10px !important;
+        padding: 15px !important;
+        background-color: #f9f9fb !important;
+        border: 1px solid #eaeaea !important;
+        transition: all 0.2s ease !important;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05) !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        text-align: center !important;
+        
+        &:hover {
+          transform: translateY(-3px) !important;
+          box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1) !important;
+          border-color: rgba(66, 132, 245, 0.5) !important;
+        }
+        
+        .format-icon {
+          width: 50px !important;
+          height: 50px !important;
+          border-radius: 8px !important;
+          margin-bottom: 10px !important;
+          display: flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          font-weight: bold !important;
+          font-size: 18px !important;
+          color: white !important;
+          font-family: 'Fira Code', monospace !important;
+        }
+        
+        .txt-icon {
+          background: linear-gradient(135deg, #3949ab, #1e88e5) !important;
+        }
+        
+        .html-icon {
+          background: linear-gradient(135deg, #e53935, #e91e63) !important;
+        }
+        
+        .md-icon {
+          background: linear-gradient(135deg, #43a047, #00acc1) !important;
+        }
+        
+        .json-icon {
+          background: linear-gradient(135deg, #fb8c00, #ffb300) !important;
+        }
+        
+        .format-label {
+          font-weight: 600 !important;
+          font-size: 15px !important;
+          margin-bottom: 5px !important;
+          color: #333 !important;
+        }
+        
+        .format-desc {
+          font-size: 13px !important;
+          color: #666 !important;
+          line-height: 1.4 !important;
+        }
+      }
+    }
+  }
+}
+
+// Dark mode for export format dialog
+[data-theme="dark"] .export-format-dialog {
+  .export-format-selector {
+    .format-title {
+      color: #e0e0e0 !important;
+    }
+    
+    .format-options {
+      .format-option {
+        background-color: #2c2c30 !important;
+        border-color: #444 !important;
+        
+        &:hover {
+          border-color: rgba(66, 133, 244, 0.6) !important;
+          box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3) !important;
+        }
+        
+        .format-label {
+          color: #e0e0e0 !important;
+        }
+        
+        .format-desc {
+          color: #aaa !important;
+        }
+      }
+    }
+  }
 } 

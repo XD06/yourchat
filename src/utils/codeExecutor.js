@@ -30,11 +30,11 @@ function initializeModal() {
       modalContainer.className = 'code-modal';
       document.body.appendChild(modalContainer);
       
-      // Create modal content - 更新状态指示器样式
+      // Create modal content - 修改状态指示器的 ID，避免与全局状态指示器冲突
       const modalContent = `
         <div class="modal-content">
           <div class="modal-header">
-            <h3>代码预览 <span id="status-indicator" class="status-indicator"></span></h3>
+            <h3>代码预览 <span id="sandbox-status-indicator" class="sandbox-status-indicator"></span></h3>
             <div class="modal-actions">
               <span class="fullscreen-btn" id="modal-fullscreen-btn">⛶</span>
               <span class="close-btn" id="modal-close-btn">×</span>
@@ -51,7 +51,7 @@ function initializeModal() {
       try {
         const styleElement = document.createElement('style');
         styleElement.textContent = `
-          .status-indicator {
+          .sandbox-status-indicator {
             display: inline-block;
             margin-left: 10px;
             font-size: 12px;
@@ -62,19 +62,19 @@ function initializeModal() {
             transition: all 0.3s ease;
             opacity: 0;
           }
-          .status-indicator.success {
+          .sandbox-status-indicator.success {
             background-color: #52c41a;
             opacity: 1;
           }
-          .status-indicator.error {
+          .sandbox-status-indicator.error {
             background-color: #f5222d;
             opacity: 1;
           }
-          .status-indicator.running {
+          .sandbox-status-indicator.running {
             background-color: #1890ff;
             opacity: 1;
           }
-          .status-indicator.timeout {
+          .sandbox-status-indicator.timeout {
             background-color: #fa8c16;
             opacity: 1;
           }
@@ -314,7 +314,8 @@ function resizeModal() {
 function executeCode(code) {
   try {
     const sandbox = document.getElementById('code-sandbox');
-    const statusIndicator = document.getElementById('status-indicator');
+    // 修改这里，使用新的 ID 和类名
+    const statusIndicator = document.getElementById('sandbox-status-indicator');
     
     if (!sandbox) {
       console.error('Sandbox iframe not found');
@@ -340,7 +341,7 @@ function executeCode(code) {
     
     // 仍然设置超时但使用更好的状态显示
     executionTimeoutId = setTimeout(() => {
-      if (document.getElementById('status-indicator')) {
+      if (document.getElementById('sandbox-status-indicator')) {
         updateStatusIndicator('执行超时', 'timeout');
       }
     }, EXECUTION_TIMEOUT_MS);
@@ -371,7 +372,7 @@ function executeCode(code) {
               clearTimeout(executionTimeoutId);
               executionTimeoutId = null;
             }
-            if (document.getElementById('status-indicator')) {
+            if (document.getElementById('sandbox-status-indicator')) {
               updateStatusIndicator('执行出错', 'error');
             }
             console.error("沙盒错误:", detail);
@@ -382,7 +383,7 @@ function executeCode(code) {
               clearTimeout(executionTimeoutId);
               executionTimeoutId = null;
             }
-            if (document.getElementById('status-indicator')) {
+            if (document.getElementById('sandbox-status-indicator')) {
               updateStatusIndicator('执行成功', 'success');
             }
             break;
@@ -534,7 +535,7 @@ function createSandboxHtml(userCode) {
         }
         /* For Firefox */
         body {
-          scrollbar-width: thin;
+          scrollbar-width: auto;
           scrollbar-color: #ccc transparent;
         }
         
@@ -629,7 +630,8 @@ function createSandboxHtml(userCode) {
  * @param {string} type - 状态类型 (running, success, error, timeout)
  */
 function updateStatusIndicator(message, type) {
-  const statusIndicator = document.getElementById('status-indicator');
+  // 修改查找 ID，使用沙盒特定的状态指示器 ID
+  const statusIndicator = document.getElementById('sandbox-status-indicator');
   if (!statusIndicator) return;
   
   // 移除所有状态类

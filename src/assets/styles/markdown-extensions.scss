@@ -9,8 +9,10 @@
   border-radius: 10px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
   border: 1px solid #eaecef;
-  animation: fadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-  opacity: 0.2;
+  /* 移除动画和初始透明度 */
+  opacity: 1;
+  animation: none !important;
+  transition: none !important;
   scrollbar-width: none;
 }
 
@@ -103,243 +105,338 @@
   background-color: rgba(45, 45, 51, 0.5);
 }
 
-/* 公式渲染动画 */
+/* 移除公式渲染动画 */
 @keyframes fadeIn {
   from {
-    opacity: 0;
-    transform: translateY(8px);
+    opacity: 1;
+    transform: none;
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: none;
   }
 }
 
-/* Mermaid 图表样式 */
+/* 修复Mermaid图表样式，防止闪烁 */
 .mermaid-wrapper {
   margin: 1.5rem 0;
   overflow-x: auto;
   border-radius: 10px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
-  border: 1px solid #eaecef;
-  background-color: #f8f9fa;
+  border: 1px solid var(--border-color, #eaecef);
+  background-color: var(--bg-color-secondary, #f8f9fa);
+  opacity: 1 !important;
 
-  [data-theme="dark"] & {
-    background-color: #1e1e1e;
-    border-color: #333;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
-  }
+  /* 防止渲染时的闪烁 */
+  animation: none !important;
+  transition: none !important;
+  will-change: transform; /* 使用更具体的will-change值 */
+  transform: translateZ(0); /* 强制硬件加速 */
+  backface-visibility: hidden; /* 防止背面闪烁 */
+  -webkit-font-smoothing: antialiased; /* 改善文本渲染 */
+  contain: content; /* 优化渲染性能 */
 
   .mermaid-container {
-    padding: 12px;
+   // padding: 12px;
     width: 100%;
+    contain: content; /* 添加包含优化 */
+    min-height: 100px!important;
   }
 
   .mermaid-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 6px 8px;
-    margin-bottom: 10px;
-    border-bottom: 1px solid #e2e8f0;
+    padding: 8px 12px;
+    background-color: rgba(0, 0, 0, 0.03);
+    border-bottom: 1px solid var(--border-color, #eaecef);
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
     
-    [data-theme="dark"] & {
-      border-bottom-color: #333;
-    }
-    
-    .mermaid-label {
+    .mermaid-title {
       font-size: 0.85rem;
-      color: #718096;
-      font-family: monospace;
+      font-weight: 500;
+      color: var(--text-color-secondary, #666);
+    }
+  }
+  
+  /* 设置合理的加载状态样式 */
+  &[data-mermaid-rendering="true"] {
+    min-height: 100px;
+    
+    .mermaid-container:after {
+      content: "正在渲染图表...";
+      display: block;
+      padding: 1rem;
+      font-style: italic;
+      color: var(--text-color-secondary, #666);
+      text-align: center;
+    }
+  }
+  
+  svg {
+    max-width: 100%;
+    height: auto;
+    contain: content; /* 优化渲染性能 */
+    display: block; /* 防止底部间隙 */
+    margin: 0 auto; /* 居中显示 */
+  }
+
+  /* 黑暗模式优化 */
+  @media (prefers-color-scheme: dark) {
+    border-color: #303030;
+    background-color: #afa3a3;
+    
+    .mermaid-header {
+      background-color:rgb(236 237 238);
+      border-bottom-color: #303030;
       
-      [data-theme="dark"] & {
-        color: #a0aec0;
+      .mermaid-title {
+        color: #aaa;
       }
     }
+  }
+}
+
+/* 使用更现代的代码块样式，同时优化渲染性能 */
+pre.code-block {
+  margin: 1.5rem 0;
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: var(--code-bg-color, #f6f8fa);
+  border: 1px solid var(--border-color, #eaecef);
+  position: relative;
+  
+  /* 优化渲染性能 */
+  contain: content;
+  will-change: transform; 
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  
+  /* 逐步显示优化 */
+  opacity: 1;
+  transition: opacity 0.3s ease;
+  
+  /* 预留空间的代码块在完全渲染前显示半透明 */
+  &[data-render="pending"] {
+    opacity: 0.6;
+  }
+  
+  /* 对于已预设大小的代码块，确保平滑过渡 */
+  &.pre-sized {
+    transition: opacity 0.3s ease;
     
-    .copy-btn {
-      background: none;
-      border: none;
-      cursor: pointer;
-      opacity: 0.7;
-      padding: 4px;
-      border-radius: 4px;
+    &.code-visible {
+      opacity: 1;
+    }
+  }
+
+  .code-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    background-color: rgba(0, 0, 0, 0.03);
+    border-bottom: 1px solid var(--border-color, #eaecef);
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+    
+    .code-lang {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text-color-secondary, #666);
+      text-transform: uppercase;
+    }
+    
+    .code-actions {
       display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.15s ease;
+      gap: 6px;
       
-      &:hover {
-        opacity: 1;
-        background-color: rgba(0, 0, 0, 0.05);
+      button {
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: var(--text-color-secondary, #666);
+        padding: 4px;
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         
-        [data-theme="dark"] & {
-          background-color: rgba(255, 255, 255, 0.1);
+        &:hover {
+          background-color: rgba(0, 0, 0, 0.05);
+          color: var(--text-color-primary, #333);
         }
       }
     }
   }
-
-  .mermaid {
-    display: flex;
-    justify-content: center;
-    padding: 10px 0;
-    width: 100%;
-    min-height: 100px;
+  
+  code {
+    font-family: 'Fira Code', 'JetBrains Mono', 'Courier New', Courier, monospace !important;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    padding: 1rem;
+    display: block;
+    overflow-x: auto;
+    tab-size: 4;
+    -moz-tab-size: 4;
   }
 
-  .mermaid-loading {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 120px;
-    font-style: italic;
-    color: #718096;
-    background-image: linear-gradient(90deg, transparent, rgba(0,0,0,0.05), transparent);
-    background-size: 200% 100%;
-    animation: shimmer 1.5s infinite;
+  /* 黑暗模式优化 */
+  @media (prefers-color-scheme: dark) {
+    background-color: #1a1a1a;
+    border-color: #303030;
     
-    [data-theme="dark"] & {
-      color: #a0aec0;
-      background-image: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
+    .code-header {
+      background-color: rgba(255, 255, 255, 0.05);
+      border-bottom-color: #303030;
+      
+      .code-lang {
+        color: #aaa;
+      }
+      
+      .code-actions button {
+        color: #aaa;
+        
+        &:hover {
+          background-color: rgba(255, 255, 255, 0.1);
+          color: #eee;
+        }
+      }
     }
   }
+}
+
+/* 当代码块位于引用中时，使用稍微不同的样式 */
+blockquote pre.code-block {
+  background-color: rgba(0, 0, 0, 0.02);
+  border-color: rgba(0, 0, 0, 0.1);
   
-  @keyframes shimmer {
-    0% {
-      background-position: -200% 0;
-    }
-    100% {
-      background-position: 200% 0;
-    }
+  @media (prefers-color-scheme: dark) {
+    background-color: rgba(255, 255, 255, 0.03);
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+}
+
+/* 增强行内代码样式，确保一致性 */
+code:not(pre code) {
+  font-family: 'Fira Code', 'JetBrains Mono', 'Courier New', Courier, monospace;
+  background-color: rgba(0, 0, 0, 0.05);
+  border-radius: 3px;
+  padding: 0.1em 0.3em;
+  font-size: 0.9em;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  margin: 0 0.2em;
+  white-space: nowrap;
+  
+  @media (prefers-color-scheme: dark) {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+}
+
+/* 优化数学公式渲染，防止闪烁 */
+.katex-display {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.5rem 0;
+  contain: content;
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+.katex-inline {
+  contain: content;
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+/* 针对markdown内容的基本优化，确保平滑逐字渲染 */
+.markdown-content {
+  /* 段落渲染优化：确保文本平滑出现 */
+  p, li, h1, h2, h3, h4, h5, h6 {
+    contain: content;
+    min-height: 1.2em; /* 即使为空也保持一致高度 */
   }
   
-  .mermaid-error {
-    padding: 12px;
-    margin: 10px 0;
-    border-radius: 6px;
-    background-color: rgba(244, 67, 54, 0.05);
-    border: 1px solid rgba(244, 67, 54, 0.2);
-    color: rgba(244, 67, 54, 0.8);
-
-    /* 暗色模式 */
-    [data-theme="dark"] & {
-      background-color: rgba(244, 67, 54, 0.1);
-      border-color: rgba(244, 67, 54, 0.3);
-      color: rgba(255, 99, 71, 0.9);
+  /* 移除所有可能的动画，确保内容立即显示 */
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+  
+  /* 平滑出现的列表项 */
+  li {
+    will-change: contents;
+  }
+  
+  /* 优化表格渲染 */
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 1rem 0;
+    overflow-x: auto;
+    display: block;
+    contain: content;
+    
+    th, td {
+      border: 1px solid var(--border-color, #eaecef);
+      padding: 0.5rem;
+      text-align: left;
     }
-
-    strong {
-      display: block;
-      margin-bottom: 5px;
+    
+    th {
+      background-color: rgba(0, 0, 0, 0.03);
       font-weight: 600;
     }
-
-    p {
-      margin: 5px 0;
-      font-size: 14px;
+    
+    tr:nth-child(even) {
+      background-color: rgba(0, 0, 0, 0.01);
     }
-
-    a {
-      color: #2196F3;
-      text-decoration: none;
-      
-      &:hover {
-        text-decoration: underline;
+    
+    @media (prefers-color-scheme: dark) {
+      th {
+        background-color: rgba(255, 255, 255, 0.05);
       }
       
-      [data-theme="dark"] & {
-        color: #64B5F6;
+      tr:nth-child(even) {
+        background-color: rgba(255, 255, 255, 0.02);
       }
-    }
-  }
-  
-  .mermaid-tip {
-    margin-top: 15px;
-    padding: 10px;
-    background-color: #ebf8ff;
-    border: 1px solid #bee3f8;
-    border-radius: 6px;
-    color: #2a4365;
-    text-align: left;
-    
-    [data-theme="dark"] & {
-      background-color: #2a4365;
-      border-color: #4299e1;
-      color: #e2e8f0;
-    }
-    
-    p {
-      margin: 5px 0;
-    }
-    
-    pre {
-      background-color: #fff;
-      padding: 8px;
-      border-radius: 4px;
-      overflow-x: auto;
-      font-family: monospace;
-      font-size: 0.85rem;
-      border: 1px solid #e2e8f0;
-      margin: 8px 0;
-      color: #2d3748;
       
-      [data-theme="dark"] & {
-        background-color: #1a202c;
-        border-color: #4a5568;
-        color: #e2e8f0;
+      th, td {
+        border-color: #303030;
       }
     }
+  }
+  
+  /* 引用块样式优化 */
+  blockquote {
+    border-left: 4px solid var(--border-color, #eaecef);
+    margin: 1rem 0;
+    padding: 0.5rem 1rem;
+    background-color: rgba(0, 0, 0, 0.01);
+    color: var(--text-color-secondary, #666);
     
-    ul {
-      margin: 8px 0;
-      padding-left: 20px;
-      
-      li {
-        margin-bottom: 4px;
-      }
+    @media (prefers-color-scheme: dark) {
+      border-left-color: #444;
+      background-color: rgba(255, 255, 255, 0.03);
+      color: #aaa;
     }
     
-    strong {
-      font-weight: bold;
+    &.info {
+      border-left-color: #4299e1;
+      background-color: rgba(66, 153, 225, 0.05);
     }
-  }
-}
-
-/* 确保SVG图表适应容器 */
-.mermaid svg {
-  max-width: 100%;
-  height: auto !important;
-  margin: 0 auto;
-}
-
-/* Mermaid主题覆盖 - 确保暗色模式下的更好可见性 */
-[data-theme="dark"] .mermaid-diagram {
-  .label {
-    color: #e2e8f0 !important;
-    fill: #e2e8f0 !important;
-  }
-  
-  .node rect,
-  .node circle,
-  .node ellipse,
-  .node polygon,
-  .node path {
-    fill: #2d3748 !important;
-    stroke: #4a5568 !important;
-  }
-  
-  .edgePath .path {
-    stroke: #a0aec0 !important;
-  }
-  
-  .arrowheadPath {
-    fill: #a0aec0 !important;
-  }
-  
-  .edgeLabel {
-    background-color: #2d3748 !important;
-    color: #e2e8f0 !important;
+    
+    &.warning {
+      border-left-color: #ed8936;
+      background-color: rgba(237, 137, 54, 0.05);
+    }
+    
+    &.error {
+      border-left-color: #f56565;
+      background-color: rgba(245, 101, 101, 0.05);
+    }
   }
 }
 
@@ -356,34 +453,41 @@ table {
   font-size: 0.95rem;
   line-height: 1.5;
   background-color: #fff;
-  opacity: 0.2;
-  animation: fadeInTable 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  /* 移除动画和初始透明度 */
+  opacity: 1;
+  animation: none !important;
+  transition: none !important;
   display: table;
   overflow-x: auto;
   white-space: normal;
+  transform: translateZ(0);
+  contain: content;
 }
 
+/* 移除表格相关动画 */
 @keyframes fadeInTable {
   from {
-    opacity: 0.2;
-    transform: translateY(8px);
+    opacity: 1;
+    transform: none;
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: none;
   }
 }
 
-/* 表头行和表体行同时显示，无需逐行动画 */
+/* 表头行和表体行同时显示，移除动画 */
 table thead tr,
 table tbody tr {
-  opacity: 0.2;
-  animation: fadeInTableContent 0.4s ease-out 0.15s forwards;
+  opacity: 1;
+  animation: none !important;
+  transition: none !important;
 }
 
+/* 移除表格内容动画 */
 @keyframes fadeInTableContent {
   from {
-    opacity: 0.2;
+    opacity: 1;
   }
   to {
     opacity: 1;
@@ -407,6 +511,10 @@ th {
   border-bottom: 2px solid #e2e8f0;
   position: relative;
   white-space: nowrap;
+  transform: translateZ(0);
+  transition: none !important;
+  animation: none !important;
+  contain: content;
 }
 
 /* 表头分隔线 */
@@ -427,6 +535,10 @@ td {
   color: #475569;
   transition: background-color 0.2s;
   word-break: break-word;
+  transform: translateZ(0);
+  transition: none !important;
+  animation: none !important;
+  contain: content;
 }
 
 /* 表格连续行分组样式 */
@@ -454,6 +566,7 @@ td:first-child {
 [data-theme="dark"] table {
   background-color: #1e1e2e;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  color: #931152;
 }
 
 [data-theme="dark"] th {
@@ -494,7 +607,8 @@ blockquote {
   position: relative;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   overflow: hidden;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  /* 移除动画 */
+  transition: none !important;
 
   &::before {
     content: '""';
@@ -515,9 +629,10 @@ blockquote {
     margin-bottom: 0;
   }
 
-  /* 引用块悬停效果 */
+  /* 引用块悬停效果 - 移除变换动画 */
   &:hover {
-    transform: translateY(-2px);
+    /* 移除变换动画 */
+    transform: none;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   }
 
@@ -719,8 +834,10 @@ ul.task-list {
   border-radius: 8px;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
   border: 1px solid #eaecef;
-  animation: fadeIn 0.4s ease-in-out 0.1s forwards;
-  opacity: 0.2;
+  /* 移除动画和初始透明度 */
+  opacity: 1;
+  animation: none !important;
+  transition: none !important;
 }
 
 .katex {
@@ -752,64 +869,39 @@ ul.task-list {
   background-color: rgba(45, 45, 51, 0.5);
 }
 
-/* 公式渲染动画 */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* 代码块淡入动画 - 只在生成时显示 */
+/* 移除代码块淡入动画 */
 .message-container.latest-message:not(.completed) pre.code-block,
 .message-container.latest-message.regenerating pre.code-block {
-  opacity: 0.2;
-  animation: fadeInCode 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-  transform-origin: center top;
-}
-
-/* 非生成过程中的代码块直接显示，无动画 */
-pre.code-block {
+  /* 移除透明度和动画 */
   opacity: 1;
-  transform: none;
-  border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  animation: none !important;
+  transition: none !important;
+  transform: none !important;
 }
 
-@keyframes fadeInCode {
-  from {
-    opacity: 0.2;
-    transform: translateY(8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+/* 移除可能导致闪烁的代码块高亮过渡 */
+.hljs {
+  transition: none !important;
+  background: transparent !important; /* 使用容器背景色，避免背景色冲突 */
 }
 
-/* 代码块内容同样只在生成时才有动画 */
-.message-container.latest-message:not(.completed) pre.code-block code,
-.message-container.latest-message.regenerating pre.code-block code {
-  opacity: 0.8;
-  animation: fadeInCodeContent 0.25s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+/* 修复mermaid代码块在夜间模式的问题 */
+.mermaid-source-error {
+  background-color: var(--bg-color-secondary, #f5f7fa);
+  color: var(--danger-color, #f56c6c);
+  border: 1px dashed var(--danger-color, #f56c6c);
+  border-radius: 8px;
+  padding: 12px;
+  margin: 10px 0;
+  white-space: pre-wrap;
+  overflow-x: auto;
+  font-family: var(--code-font-family, monospace);
+  font-size: 0.9rem;
 }
 
-/* 非生成过程中的代码块内容直接显示 */
-pre.code-block code {
-  opacity: 1;
-}
-
-@keyframes fadeInCodeContent {
-  from {
-    opacity: 0.8;
-  }
-  to {
-    opacity: 1;
-  }
+[data-theme="dark"] .mermaid-source-error {
+  background-color: rgba(245, 108, 108, 0.1);
+  color: #ff6b6b;
 }
 
 /* 数学公式也只在生成时有动画 */
@@ -819,8 +911,10 @@ pre.code-block code {
 .message-container.latest-message.regenerating .math-block,
 .message-container.latest-message.regenerating .katex-display,
 .message-container.latest-message.regenerating .texmath {
-  opacity: 0.2;
-  animation: fadeIn 0.4s ease-in-out 0.1s forwards;
+  /* 移除透明度和动画 */
+  opacity: 1;
+  animation: none !important;
+  transition: none !important;
 }
 
 /* 非生成过程中的数学公式直接显示 */
@@ -840,8 +934,10 @@ pre.code-block code {
 /* 表格相关动画也是相同处理 */
 .message-container.latest-message:not(.completed) table,
 .message-container.latest-message.regenerating table {
-  opacity: 0.2;
-  animation: fadeInTable 0.4s ease-out 0.1s forwards;
+  /* 移除透明度和动画 */
+  opacity: 1;
+  animation: none !important;
+  transition: none !important;
 }
 
 /* 非生成过程中的表格直接显示 */
@@ -868,8 +964,10 @@ table {
 .message-container.latest-message:not(.completed) table tbody tr,
 .message-container.latest-message.regenerating table thead tr,
 .message-container.latest-message.regenerating table tbody tr {
-  opacity: 0.2;
-  animation: fadeInTableContent 0.4s ease-out 0.15s forwards;
+  /* 移除透明度和动画 */
+  opacity: 1;
+  animation: none !important;
+  transition: none !important;
 }
 
 /* 非生成过程中的表格行直接显示 */
@@ -906,6 +1004,7 @@ table tbody tr {
   animation: none !important;
   transition: none !important;
   opacity: 1 !important;
+  border: none;
  //transform: none !important;
 }
 
@@ -976,4 +1075,62 @@ pre.code-block:hover::-webkit-scrollbar-thumb {
 /* 确保错误SVG不显示 */
 svg[aria-roledescription="error"] {
   display: none !important;
+}
+
+/* 新增：优化渲染机制，减少重绘和重排 */
+.message-text, .message-display {
+  contain: content; /* 优化渲染性能 */
+  transform: translateZ(0); /* 启用GPU加速 */
+}
+
+/* 优化代码块行号区域 */
+.hljs-ln-numbers {
+  contain: strict;
+  transform: translateZ(0);
+}
+
+/* 修复表格渲染性能 */
+table {
+  transform: translateZ(0);
+  contain: content;
+  opacity: 1 !important;
+  
+  th, td {
+    transform: translateZ(0);
+    transition: none !important;
+    animation: none !important;
+    contain: content;
+  }
+}
+
+/* 全局禁用可能导致闪烁的所有动画 */
+@keyframes none-animation {
+  from { opacity: 1; }
+  to { opacity: 1; }
+}
+
+/* 确保所有内容在完成前就完全可见 */
+.message-container.latest-message pre.code-block,
+.message-container.latest-message .math-block,
+.message-container.latest-message .katex-display,
+.message-container.latest-message .texmath,
+.message-container.latest-message table,
+.message-container.latest-message .mermaid-wrapper,
+.message-container.latest-message pre.code-block code,
+.message-container.latest-message table thead tr,
+.message-container.latest-message table tbody tr {
+  opacity: 1 !important;
+  transform: translateZ(0) !important;
+  animation: none-animation 0s !important;
+  transition: none !important;
+  background-color: #f8f9fa !important;
+}
+
+/* 强制所有内容立即可见 */
+[data-message-status="generating"] *, 
+[data-message-status="completed"] * {
+  animation-delay: 0s !important;
+  animation-duration: 0s !important;
+  transition-duration: 0s !important;
+  opacity: 1 !important;
 } 

@@ -19,10 +19,21 @@ const md = new MarkdownIt({
     
     if (lang && hljs.getLanguage(lang)) {
       try {
+        // 使用预处理机制，避免代码块突然出现导致的卡顿
+        // 统计代码行数，提前计算高度
+        const lines = str.split('\n');
+        const lineCount = lines.length;
+        const minHeight = lineCount * 21 + 20; // 估算高度：每行21px + 边距
+
+        // 使用内联样式预设高度，避免布局抖动
+        const preClass = `code-block pre-sized`;
+        
+        // 延迟高亮处理，先显示原始代码
         const highlighted = hljs.highlight(str, { 
           language: lang, 
           ignoreIllegals: true 
-        }).value
+        }).value;
+        
         // 添加语言标识和复制按钮，保持与ChatMessage.vue一致
         // 为HTML代码块添加运行按钮
         const isHtml = lang.toLowerCase() === 'html';
@@ -49,16 +60,22 @@ const md = new MarkdownIt({
             </button>
           </div>`;
         
-        return `<pre class="code-block" data-lang="${lang}">
+        // 添加 data-line-count 属性，用于进一步优化渲染
+        return `<pre class="${preClass}" data-lang="${lang}" data-line-count="${lineCount}" style="min-height:${minHeight}px">
           <div class="code-header">
             ${headerContent}
           </div>
           <code>${highlighted}</code>
-        </pre>`
+        </pre>`;
       } catch (__) {}
     }
+    
     // 无法识别语言时，使用相同的结构以保持一致性
-    return `<pre class="code-block" data-lang="plaintext">
+    const lines = str.split('\n');
+    const lineCount = lines.length;
+    const minHeight = lineCount * 21 + 20; // 估算高度：每行21px + 边距
+    
+    return `<pre class="code-block pre-sized" data-lang="plaintext" data-line-count="${lineCount}" style="min-height:${minHeight}px">
       <div class="code-header">
         <span class="code-lang">plaintext</span>
         <div class="code-actions">
@@ -71,7 +88,7 @@ const md = new MarkdownIt({
         </div>
       </div>
       <code>${md.utils.escapeHtml(str)}</code>
-    </pre>`
+    </pre>`;
   }
 })
 
@@ -120,7 +137,7 @@ function renderMathFormulas(html) {
   
   // 标记代码块，防止处理代码块内的数学公式
   const codeBlocks = [];
-  html = html.replace(/<pre class="code-block"[\s\S]*?<\/pre>/g, (match) => {
+  html = html.replace(/<pre class="code-block.*?"[\s\S]*?<\/pre>/g, (match) => {
     const placeholder = `CODE_BLOCK_${codeBlocks.length}`;
     codeBlocks.push({ placeholder, content: match });
     return placeholder;
@@ -263,21 +280,68 @@ function renderMathFormulas(html) {
   return html;
 }
 
-// 导出渲染函数
-export const renderMarkdown = (content) => {
-  if (content === undefined || content === null) {
-    return '';
-  }
+// 优化的渲染函数，支持更流畅的输出
+export const renderMarkdown = (content, options = {}) => {
+  if (!content) return '';
   
-  // 首先处理markdown
-  let html = md.render(content.toString());
+  // 使用提供的自定义渲染器（如果指定）
+  const renderer = options.useCustomRenderer && options.md ? options.md : md;
   
-  // 然后处理数学公式
+  try {
+    // 检查是否需要延迟渲染代码块
+    const smoothOutput = options.smoothOutput !== false;
+    
+    // 首次渲染 - 将 markdown 转换为 HTML
+    let html = renderer.render(content);
+  
+    // 处理数学公式
   html = renderMathFormulas(html);
   
-  // 给表格添加容器
-  html = html.replace(/<table>/g, '<div class="table-container"><table>');
-  html = html.replace(/<\/table>/g, '</table></div>');
+    // 标记代码块，添加初始隐藏状态以避免布局变化
+    if (smoothOutput) {
+      const codeBlockRegex = /<pre class="code-block.*?".*?>([\s\S]*?)<\/pre>/g;
+      html = html.replace(codeBlockRegex, (match, innerContent) => {
+        // 为代码块添加渐进渲染标记
+        return match.replace('<pre', '<pre data-render="pending"');
+      });
+    }
   
   return html;
+  } catch (error) {
+    console.error('Markdown rendering error:', error);
+    return `<div class="markdown-error">Error rendering content: ${error.message}</div>`;
+  }
 }
+
+// 添加一个新函数用于延迟处理代码块
+export const processPendingCodeBlocks = () => {
+  // 查找所有待处理的代码块
+  const pendingBlocks = document.querySelectorAll('pre[data-render="pending"]');
+  
+  if (pendingBlocks.length === 0) return;
+  
+  // 使用RAF和批处理来平滑处理
+  requestAnimationFrame(() => {
+    // 每次处理一小批代码块，减少性能影响
+    const batchSize = Math.min(5, pendingBlocks.length);
+    for (let i = 0; i < batchSize; i++) {
+      if (pendingBlocks[i]) {
+        pendingBlocks[i].removeAttribute('data-render');
+        // 添加可见性类，可以通过CSS添加平滑过渡
+        pendingBlocks[i].classList.add('code-visible');
+      }
+    }
+    
+    // 如果还有剩余的代码块，稍后继续处理
+    if (pendingBlocks.length > batchSize) {
+      setTimeout(processPendingCodeBlocks, 50);
+    }
+  });
+};
+
+// 导出处理函数以便在需要时调用
+export default {
+  md,
+  renderMarkdown,
+  processPendingCodeBlocks
+};

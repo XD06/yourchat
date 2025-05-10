@@ -62,12 +62,12 @@
       <!-- 消息气泡 -->
       <div class="message-bubble">
         <div v-if="message.loading" class="message-loading">
-          <div class="loading-circle">
-            <svg class="spinner-svg" viewBox="0 0 24 24">
-              <circle class="path" cx="12" cy="12" r="10" fill="none" stroke-width="2.5"></circle>
+          <div class="loading-spinner">
+            <svg viewBox="0 0 50 50" class="spinner">
+              <circle class="path" cx="25" cy="25" r="20" fill="none" stroke-width="4"></circle>
             </svg>
           </div>
-          <span class="loading-text">AI思考中</span>
+          <span class="loading-text">AI思考中...</span>
         </div>
         <div v-else class="message-text" ref="messageText">
           <div
@@ -355,27 +355,22 @@ const handleCopy = async () => {
 }
 
 // 监听消息完成状态
-watch(() => props.message.completed, (newVal, oldVal) => {
-  // Only trigger if the message is newly marked as completed
-  if (newVal && !oldVal) {
-    console.log(`ChatMessage ${props.message.id}: Received completed=true signal.`);
-    messageCompleted.value = true; // Update local completion state
-        
-    // Force rendering of all dynamic content now that the message is fully received.
-    // Using nextTick to ensure the DOM has settled with the final content.
-    nextTick(() => {
-      console.log(`ChatMessage ${props.message.id}: Forcing final render of dynamic content.`);
-      // Ensure code blocks are highlighted and interactive
-      setupCodeBlockInteractions(); 
-      // Ensure any pending markdown code blocks are processed
+watch(() => props.message.completed, (newVal) => {
+  if (newVal && !messageCompleted.value) {
+    messageCompleted.value = true;
+    
+    // 延迟处理代码块，以确保它们在所有字符显示后再显示
+    setTimeout(() => {
+      console.log("消息完成状态变更，处理代码块和图表");
       processPendingCodeBlocks();
-      // Force Mermaid diagrams to render, bypassing user typing checks
-      if (window.renderMermaidDiagrams) {
-        window.renderMermaidDiagrams(true); 
-      }
-    });
+      
+      // 延迟触发Mermaid图表渲染
+      setTimeout(() => {
+        renderMermaidDiagrams();
+      }, 300);
+    }, 150);
   }
-}, { immediate: false }); // immediate: false to only react to changes
+})
 
 // 修改updateContentDisplay函数，增加消息完成的判断逻辑
 const updateContentDisplay = (content) => {
@@ -672,8 +667,8 @@ onUnmounted(() => {
       background-color: white;
       color: #333;
       border-radius: 16px 16px 16px 4px;
-      //box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-     // border: 1px solid #f0f0f0;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      border: 1px solid #f0f0f0;
       
       @media (max-width: 768px) {
         border-radius: 16px 16px 16px 4px;
@@ -947,7 +942,7 @@ onUnmounted(() => {
 
       [data-theme="dark"] & {
         background-color: #1e1e1e;
-        border: 1px solid #3a3a3a;
+        border: 1px solid #333;
         
         &:hover {
           box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
@@ -965,26 +960,20 @@ onUnmounted(() => {
         justify-content: space-between;
         align-items: center;
         padding: 8px 12px;
-        background: linear-gradient(135deg, rgba(243, 156, 18, 0.1), rgba(44, 122, 101, 0.1));
+        background-color: rgba(128, 128, 128, 0.1);
         font-size: 0.9em;
-        color: #4a4a4a;
-        border-bottom: 1px solid rgba(0,0,0,0.05);
+        color: #555;
+        border-bottom: 1px solid #e3e3e3;
         font-family: 'Fira Code', 'JetBrains Mono', monospace;
 
         [data-theme="dark"] & {
-          background: linear-gradient(135deg, rgba(211, 84, 0, 0.15), rgba(30, 132, 73, 0.15));
-          color: #c5c5c5;
-          border-bottom-color: rgba(255,255,255,0.1);
+          color: #bbb;
+          border-bottom-color: #333;
         }
         .code-lang {
-            font-weight: 600;
+            font-weight: 500;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            color: #e74c3c;
-            
-            [data-theme="dark"] & {
-              color: #ff6b6b;
-            }
         }
       }
       .code-actions {
@@ -1026,7 +1015,7 @@ onUnmounted(() => {
         font-weight: 500;
         
         [data-theme="dark"] & {
-          color: #96419c;
+          color: #e2e8f0;
         }
       }
     }
@@ -1079,77 +1068,25 @@ onUnmounted(() => {
 .message-loading {
     display: flex;
     align-items: center;
-  padding: 1rem 0;
-  
-  .loading-circle {
-    margin-right: 10px;
+  justify-content: center;
+  padding: 0.8rem 0;
+  .loading-spinner {
     width: 20px;
     height: 20px;
-    
-    .spinner-svg {
-      width: 20px;
-      height: 20px;
-      animation: rotate 1.5s linear infinite!important;
-      
-      .path {
-        stroke: #000000;
-        stroke-linecap: round;
-        animation: dash 1s cubic-bezier(0.4, 0, 0.2, 1) infinite!important;
-      }
-    }
+    margin-right: 8px;
   }
-  
-  [data-theme="dark"] & {
-    .loading-circle .spinner-svg .path {
-      stroke: #ffffff;
-    }
-    .loading-text {
-       color: #bbb;
-    }
-  }
-
   .loading-text {
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     color: #555;
-    font-weight: 500;
-    position: relative;
-    
-    &::after {
-      content: "";
-      width: 12px;
-      display: inline-block;
-      text-align: left;
-      animation: loading-dots 1.4s infinite;
-      vertical-align: bottom;
+    [data-theme="dark"] & {
+      color: #bbb;
     }
   }
 }
 
-@keyframes rotate {
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
-@keyframes dash {
-  0% {
-    stroke-dasharray: 1, 200;
-    stroke-dashoffset: 0;
-  }
-  50% {
-    stroke-dasharray: 89, 200;
-    stroke-dashoffset: -35px;
-  }
-  100% {
-    stroke-dasharray: 89, 200;
-    stroke-dashoffset: -124px;
-  }
-}
-
-@keyframes loading-dots {
-  0%, 20% { content: "."; }
-  40%, 60% { content: ".."; }
-  80%, 100% { content: "..."; }
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 .message-editing {
@@ -1208,8 +1145,7 @@ onUnmounted(() => {
 }
 
 :deep(thead tr) {
-  // Softer gradient for table headers
-  background: linear-gradient(135deg, rgba(231, 76, 60, 0.7), rgba(243, 156, 18, 0.7), rgba(44, 122, 101, 0.7));
+  background: linear-gradient(90deg, #e74c3c 0%, #f39c12 50%, #2c7a65 100%);
   color: #ffffff;
   text-align: left;
 }
@@ -1268,8 +1204,7 @@ onUnmounted(() => {
   }
   
   :deep(thead tr) {
-    // Softer gradient for dark mode table headers
-    background: linear-gradient(135deg, rgba(192, 57, 43, 0.6), rgba(211, 84, 0, 0.6), rgba(30, 132, 73, 0.6));
+    background: linear-gradient(90deg, #c0392b 0%, #d35400 50%, #1e8449 100%);
     color: #e0e0e0;
   }
   
@@ -1583,21 +1518,15 @@ onUnmounted(() => {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  
   .spinner {
-    animation: rotate 1.5s linear infinite;
-    width: 28px;
-    height: 28px;
+    animation: rotate 2s linear infinite;
+    width: 20px;
+    height: 20px;
     
     .path {
-      stroke: #4284f5;
-      stroke-width: 3;
+      stroke: black;
       stroke-linecap: round;
-      animation: dash 1.4s ease-in-out infinite;
-      
-      [data-theme="dark"] & {
-        stroke: #5a9cf7;
-      }
+      animation: dash 1.5s ease-in-out infinite;
     }
   }
 }
@@ -1637,17 +1566,17 @@ onUnmounted(() => {
 /* Inline code styles */
 :deep(p code), :deep(li code), :deep(h1 code), :deep(h2 code), :deep(h3 code), :deep(h4 code), :deep(h5 code), :deep(h6 code) {
   font-family: 'Fira Code', 'JetBrains Mono', 'Courier New', monospace;
-  background-color: rgba(243, 156, 18, 0.1);
+  background-color: rgba(175, 184, 193, 0.2);
   padding: 0.2em 0.4em;
   border-radius: 4px;
   font-size: 0.85em;
   font-weight: 500;
-  color: #d35400;
+  color: #e74c3c;
   white-space: nowrap;
   
   [data-theme="dark"] & {
-    background-color: rgba(44, 122, 101, 0.2);
-    color: #2ecc71;
+    background-color: rgba(175, 184, 193, 0.15);
+    color: #ff6b6b;
   }
 }
 
@@ -1658,124 +1587,6 @@ onUnmounted(() => {
   
   &.code-visible {
     opacity: 1;
-  }
-}
-
-:deep(.mermaid-wrapper) { // Targeting the wrapper for Mermaid diagram specific styles
-  .mermaid-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px 12px;
-    // Applying similar gradient as code block headers
-    background: linear-gradient(135deg, rgba(243, 156, 18, 0.1), rgba(44, 122, 101, 0.1));
-    font-size: 0.9em;
-    color: #4a4a4a;
-    border-bottom: 1px solid rgba(0,0,0,0.05);
-    border-top-left-radius: 8px; // Round corners for the header
-    border-top-right-radius: 8px;
-
-    [data-theme="dark"] & {
-      background: linear-gradient(135deg, rgba(211, 84, 0, 0.15), rgba(30, 132, 73, 0.15));
-      color: #c5c5c5;
-      border-bottom-color: rgba(255,255,255,0.1);
-    }
-
-    .mermaid-label {
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      color: #e74c3c; // Red for mermaid label
-      [data-theme="dark"] & {
-         color: #ff6b6b; // Lighter red for dark mode
-      }
-    }
-
-    .copy-btn {
-      background: none;
-      border: none;
-      color: inherit;
-      cursor: pointer;
-      opacity: 0.7;
-      padding: 4px;
-      border-radius: 4px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.15s ease;
-      
-      &:hover { 
-        opacity: 1;
-        background-color: rgba(0, 0, 0, 0.05);
-        
-        [data-theme="dark"] & {
-          background-color: rgba(255, 255, 255, 0.1);
-        }
-      }
-    }
-  }
-  .mermaid-container {
-    border: 1px solid rgba(0,0,0,0.05);
-    border-bottom-left-radius: 8px;
-    border-bottom-right-radius: 8px;
-    overflow: hidden; // Ensure content respects border radius
-
-    [data-theme="dark"] & {
-       border-color: rgba(255,255,255,0.1);
-    }
-    .mermaid {
-      padding: 10px; // Add some padding around the diagram itself
-      background-color: #fdfdfd; // Slightly off-white background for the diagram area
-       min-height: 100px!important; // Ensure it has some default height
-
-      [data-theme="dark"] & {
-        background-color: #232425; // Darker background for diagram area in dark mode
-      }
-    }
-  }
-}
-
-/* Enhanced loading spinner styles */
-.loading-indicator {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: #888;
-  font-size: 14px;
-  margin-left: auto;
-  
-  .loading-spinner {
-    width: 24px;
-    height: 24px;
-    animation: rotate 1.4s linear infinite;
-    
-    .path {
-      stroke: #4284f5;
-      stroke-dasharray: 80, 200;
-      stroke-dashoffset: 0;
-      animation: dash 1.4s ease-in-out infinite;
-    }
-  }
-}
-
-@keyframes rotate {
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
-@keyframes dash {
-  0% {
-    stroke-dasharray: 1, 150;
-    stroke-dashoffset: 0;
-  }
-  50% {
-    stroke-dasharray: 90, 150;
-    stroke-dashoffset: -35;
-  }
-  100% {
-    stroke-dasharray: 90, 150;
-    stroke-dashoffset: -124;
   }
 }
 </style>

@@ -397,42 +397,7 @@
                         />
                     </el-select>
                 </el-form-item>
-
-                <el-form-item label="Add Custom Model">
-                    <div class="custom-model-input">
-                        <el-input 
-                            v-model="customModelInput" 
-                            placeholder="Enter custom model name" 
-                            class="custom-model-field"
-                        />
-                        <el-button 
-                            type="primary" 
-                            @click="addCustomModel" 
-                            :disabled="!customModelInput.trim()"
-                            size="default"
-                        >
-                            Add
-                        </el-button>
-                    </div>
-                    <div class="form-item-tip">
-                        Add your own model names to use with compatible API endpoints
-                    </div>
-                    
-                    <!-- Show custom model tags if any exist -->
-                    <div v-if="customModels.length > 0" class="custom-models-list">
-                        <el-tag
-                            v-for="(model, index) in customModels"
-                            :key="index"
-                            closable
-                            @close="removeCustomModel(index)"
-                            class="custom-model-tag"
-                        >
-                            {{ model.label }}
-                        </el-tag>
-                    </div>
-                </el-form-item>
-
-                <!-- Temperature slider stays as is -->
+                <!-- 移除系统提示词设置，该功能将整合到角色设定功能中 -->
                 <el-form-item label="Temperature">
                     <el-slider
                         v-model="settingsForm.temperature"
@@ -646,8 +611,6 @@ const messages = computed(() => chatStore.messages)
 const isLoading = computed(() => chatStore.isLoading)
 const messagesContainer = ref(null)
 
-const totalMessages = computed(() => chatStore.messages.length); // Add this line
-
 // 添加一个更新触发器，用于强制更新模型列表
 const modelOptionsLastUpdated = ref(Date.now())
 
@@ -701,11 +664,11 @@ watch(() => showSettings.value, (newValue) => {
 })
 
 // 聊天历史记录
-// const chatHistory = ref([])
+const chatHistory = ref([])
 const currentChatTitle = ref('新对话')
 // 追踪当前活跃的历史记录ID
-// const activeHistoryId = ref('current')
-historyStore.activeId
+const activeHistoryId = ref('current')
+
 // Dedicated state for the "current, unsaved" session
 const currentSessionMessages = ref([]); 
 const currentSessionTitle = ref('新对话'); // For SIDEBAR "Current Chat" ITEM's title
@@ -714,9 +677,9 @@ const currentSessionTitle = ref('新对话'); // For SIDEBAR "Current Chat" ITEM
 const activeController = ref(null);
 
 // 保存聊天历史到localStorage
-// const saveChatHistory = () => {
-//   localStorage.setItem('chatHistory', JSON.stringify(chatHistory.value))
-// }
+const saveChatHistory = () => {
+  localStorage.setItem('chatHistory', JSON.stringify(chatHistory.value))
+}
 
 // 发送消息方法
 const handleSend = async (content) => {
@@ -884,99 +847,69 @@ const handleSend = async (content) => {
 };
 
 // 处理会话项点击
-// src/views/ChatView.vue
-
-// ... 其他代码 ...
-
-// 处理会话项点击
 const handleChatItemClick = (chatId) => {
-  console.log(`[ChatView] Clicked on chat: ${chatId}`);
-  
-  // Add debug info
-  historyStore.debugState();
+  console.log(`Clicked on chat: ${chatId}`);
   
   // If already the active chat, do nothing
   if (chatId === historyStore.activeId) {
-    console.log('[ChatView] Already on this chat, ignoring click');
     return;
   }
   
-  // Save current session messages if needed before switching
-  if (historyStore.isCurrentSession && chatStore.messages.length > 0) {
-    // Only save to localStorage, don't create a history record yet
-    localStorage.setItem('currentChat', JSON.stringify(chatStore.messages));
-    console.log('[ChatView] Saved current session to localStorage before switching');
-  }
-  
-  // Switch to selected chat
-  const success = historyStore.setActiveRecord(chatId);
-  console.log(`[ChatView] setActiveRecord result: ${success ? 'success' : 'failed'}`);
-  
-  // Update UI title based on what we switched to
+  // If clicking on current session
   if (chatId === 'current') {
+    // Switch to current session
+    historyStore.setActiveRecord('current');
+    
+    // Update UI
     currentChatTitle.value = currentSessionTitle.value;
-    console.log('[ChatView] Switched to current session with title:', currentSessionTitle.value);
   } else {
+    // Switch to history record
+    historyStore.setActiveRecord(chatId);
+    
+    // Update UI with the history record's title
     const record = historyStore.getRecordById(chatId);
     if (record) {
       currentChatTitle.value = record.title;
-      console.log('[ChatView] Switched to history record:', record.title);
     }
   }
 };
 
-// ... 其他代码 ...
-
 // 处理新建对话
 const handleNewChat = () => {
-  // 如果已经是空的当前会话，则不做任何处理
-  if (historyStore.isCurrentSession && chatStore.messages.length === 0) {
-    console.log('[ChatView] Already in empty session, no action needed');
-    return;
+  // 仅当有消息且不是空对话时才保存
+  if (chatStore.messages.length > 1) {
+    // 检查是否已经在历史记录中
+    const existingChatIndex = chatHistory.value.findIndex(
+      chat => JSON.stringify(chat.messages) === JSON.stringify(chatStore.messages)
+    );
+    
+    if (existingChatIndex === -1) {
+      // Save current chat to history - using historyStore instead of the undefined function
+      const title = currentSessionTitle.value || '新对话';
+      historyStore.saveCurrentAsHistory(title);
+    }
   }
   
-  // 如果当前有消息且是当前会话，则保存到历史记录
-  if (chatStore.messages.length > 0 && historyStore.isCurrentSession) {
-    const title = currentSessionTitle.value || '新对话';
-    historyStore.saveCurrentAsHistory(title);
-    console.log('[ChatView] Saved current session as history record:', title);
-  } 
-  // else: if viewing history, no need to save anything
-  
-  // Clear messages first
+  // 清空当前消息
   chatStore.clearMessages();
   
-  // Clear localStorage current chat
-  localStorage.removeItem('currentChat');
-  
-  // Then switch to current (prevents loading from localStorage since we just removed it)
-  historyStore.setActiveRecord('current');
-  
-  // Update UI state
+  // 确保currentSessionMessages和currentSessionTitle同步
   currentSessionMessages.value = [];
   currentSessionTitle.value = '新对话';
   currentChatTitle.value = '新对话';
   
-  console.log('[ChatView] Created new empty chat');
+  // 重置活跃ID为当前
+  activeHistoryId.value = 'current'; 
+  
   ElMessage.success('已新建对话');
 }
 
 // 处理历史记录操作
-// 处理历史记录操作
-// src/views/ChatView.vue
-
-// ... 其他代码 ...
-
 const handleHistoryAction = (command, chat) => {
   switch (command) {
     case 'export':
-      if (chat && chat.id) {
-        // 确保传递整个chat对象给exportChat
-        exportChat(chat);
-      } else {
-        ElMessage.warning('无法导出该对话，数据不完整');
-        console.error('Export failed, invalid chat object:', chat);
-      }
+      // 实现导出对话功能
+      exportChat(chat);
       break;
     case 'delete':
       // 实现删除对话功能
@@ -985,9 +918,8 @@ const handleHistoryAction = (command, chat) => {
     default:
       console.log('Unknown command:', command);
   }
-};
+}
 
-// ... 其他代码 ...
 // 保存消息 - 更新为使用新的历史记录系统
 const saveMessages = () => {
   // Only save messages if we're in the current session
@@ -999,15 +931,10 @@ const saveMessages = () => {
     updateCurrentSessionTitle(chatStore.messages);
   } else {
     // If we're viewing a history record, update it with any changes
-    // 在只是查看而没有实际修改内容时，不更新时间戳，避免排序变化
-    historyStore.updateRecord(
-      historyStore.activeId, 
-      {
-        messages: JSON.parse(JSON.stringify(chatStore.messages)),
-        tokenCount: { ...chatStore.tokenCount }
-      },
-      false // 不更新时间戳，保持记录在列表中的位置
-    );
+    historyStore.updateRecord(historyStore.activeId, {
+      messages: JSON.parse(JSON.stringify(chatStore.messages)),
+      tokenCount: { ...chatStore.tokenCount }
+    });
   }
 };
 
@@ -1137,32 +1064,63 @@ const autoSaveCurrentChat = () => {
 }
 
 // 加载历史对话
-// 处理当前聊天的操作
+const loadChatHistory = (chatId) => {
+  // 如果请求加载当前活跃的历史记录，则不执行任何操作
+  if (chatId === activeHistoryId.value) {
+    return;
+  }
+  
+  // 如果是加载普通历史记录项
+  if (chatId !== 'current') {
+    const chat = chatHistory.value.find(c => c.id === chatId);
+    if (chat) {
+      // 设置活跃的历史记录ID
+      activeHistoryId.value = chatId;
+      
+      // 加载消息到聊天区域
+      chatStore.setMessages(JSON.parse(JSON.stringify(chat.messages)));
+      
+      // 更新主聊天标题为历史记录的标题，但不更新当前会话标题
+      currentChatTitle.value = chat.title;
+      
+      // 如果有角色数据，恢复角色设置
+      if (chat.roleData) {
+        settingsStore.currentRole = {
+          name: chat.roleData.name,
+          prompt: chat.roleData.prompt
+        };
+      } else {
+        // 如果没有角色数据，清除当前角色设置
+        settingsStore.currentRole = null;
+      }
+      
+      ElMessage.success(`已加载对话: ${chat.title}`);
+    }
+  } else {
+    // 这里不应该到达，因为current由handleChatItemClick直接处理
+    console.warn('loadChatHistory被调用加载current，但这应该由handleChatItemClick处理');
+  }
+}
 
 // 删除历史对话
-// const handleDeleteChat = (chatId) => {
-//   const indexToDelete = chatHistory.value.findIndex(chat => chat.id === chatId)
-//   if (indexToDelete !== -1) {
-//     const chatToDelete = chatHistory.value[indexToDelete]
-//     ElMessage.success(`已删除对话: ${chatToDelete.title}`)
-//     chatHistory.value.splice(indexToDelete, 1)
-    
-//     // 如果删除的是当前活跃的历史记录，则重置为current
-//     if (activeHistoryId.value === chatId) {
-//       activeHistoryId.value = 'current'
-//       chatStore.clearMessages()
-//       currentChatTitle.value = '新对话'
-//     }
-    
-//     saveChatHistory()
-//   }
-// }
-// 删除历史对话
 const handleDeleteChat = (chatId) => {
-  // 使用historyStore API删除记录
-  historyStore.deleteRecord(chatId);
-  ElMessage.success('已删除对话');
+  const indexToDelete = chatHistory.value.findIndex(chat => chat.id === chatId)
+  if (indexToDelete !== -1) {
+    const chatToDelete = chatHistory.value[indexToDelete]
+    ElMessage.success(`已删除对话: ${chatToDelete.title}`)
+    chatHistory.value.splice(indexToDelete, 1)
+    
+    // 如果删除的是当前活跃的历史记录，则重置为current
+    if (activeHistoryId.value === chatId) {
+      activeHistoryId.value = 'current'
+      chatStore.clearMessages()
+      currentChatTitle.value = '新对话'
+    }
+    
+    saveChatHistory()
+  }
 }
+
 // 切换侧边栏函数
 const toggleSidebar = () => {
   // 这个函数现在主要用于PC端的侧边栏折叠
@@ -1302,16 +1260,16 @@ onMounted(() => {
 // Watch for changes in chatStore.messages to update currentSessionTitle and currentSessionMessages
 // ONLY when the current chat is active.
 watch(() => chatStore.messages, (newMessages) => {
-  // Only save to localStorage if we're in the current session
-  if (historyStore.isCurrentSession) {
-    console.log('[ChatView] Current session changed, saving to localStorage');
-    localStorage.setItem('currentChat', JSON.stringify(newMessages));
-    
-    // Update currentSessionMessages and title
+  // 总是保存消息到localStorage
+  localStorage.setItem('currentChat', JSON.stringify(newMessages));
+  
+  // 当激活的是当前会话时，更新当前会话状态
+  if (activeHistoryId.value === 'current') {
+    // 保持currentSessionMessages和chatStore.messages同步
     currentSessionMessages.value = JSON.parse(JSON.stringify(newMessages));
+    
+    // 更新当前会话标题
     updateCurrentSessionTitle(newMessages);
-  } else {
-    console.log('[ChatView] History record changed, not saving to localStorage');
   }
   
   // 处理滚动
@@ -1330,7 +1288,7 @@ watch(() => chatStore.messages, (newMessages) => {
 const updateCurrentSessionTitle = (messages) => {
   if (!messages || messages.length === 0) {
     currentSessionTitle.value = '新对话';
-    if (historyStore.isCurrentSession) {
+    if (activeHistoryId.value === 'current') {
       currentChatTitle.value = '新对话';
     }
     return;
@@ -1340,7 +1298,7 @@ const updateCurrentSessionTitle = (messages) => {
   const firstUserMsg = messages.find(m => m.role === 'user');
   if (!firstUserMsg) {
     currentSessionTitle.value = '新对话';
-    if (historyStore.isCurrentSession) {
+    if (activeHistoryId.value === 'current') {
       currentChatTitle.value = '新对话';
     }
     return;
@@ -1355,7 +1313,7 @@ const updateCurrentSessionTitle = (messages) => {
   currentSessionTitle.value = newTitle;
   
   // 如果当前会话是激活的，同时也更新主聊天区域的标题
-  if (historyStore.isCurrentSession) {
+  if (activeHistoryId.value === 'current') {
     currentChatTitle.value = newTitle;
   }
   
@@ -1522,130 +1480,71 @@ const handleMessageDelete = (message) => {
 };
 
 // 处理重新生成AI响应
-const handleRegenerate = async (messageToRegenerate) => {
-  // 1. Validate the incoming message object and its ID
-  if (!messageToRegenerate || typeof messageToRegenerate.id === 'undefined') {
-    console.error('[ChatView] Regenerate called with invalid message object:', messageToRegenerate);
-    ElMessage.warning('无法重新生成：消息数据无效。');
-    return;
-  }
-  const messageIdToRegenerate = messageToRegenerate.id;
-  console.log(`[ChatView] Attempting to regenerate AI message ID: ${messageIdToRegenerate}`);
-
+const handleRegenerate = async (message) => {
+  console.log('[ChatView] Regenerating response for message:', message.id);
+  
   if (chatStore.isLoading) {
     ElMessage.warning('已有消息正在处理中，请稍后再试');
     return;
   }
-
-  let result = null; // Initialize result here to be accessible in finally block
-
-  // 2. Take a snapshot of messages for historical context
-  const messagesSnapshotForContext = [...chatStore.messages];
-
-  // 3. Find the original AI message and preceding user message in the SNAPSHOT
-  const aiMessageOriginalIndexInSnapshot = messagesSnapshotForContext.findIndex(m => m.id === messageIdToRegenerate && m.role === 'assistant');
-
-  if (aiMessageOriginalIndexInSnapshot === -1) {
-    console.error('[ChatView] Could not find the AI message to regenerate in the snapshot. Message ID:', messageIdToRegenerate);
-    ElMessage.warning('错误：在消息记录快照中找不到要重新生成的AI消息。');
+  
+  // 检查是否有上一条用户消息
+  const messages = chatStore.messages;
+  const lastAssistantIndex = messages.findIndex(m => m.id === message.id);
+  
+  if (lastAssistantIndex === -1) {
+    ElMessage.warning('找不到要重新生成的消息');
     return;
   }
-  console.log('[ChatView] Found AI message in snapshot at index:', aiMessageOriginalIndexInSnapshot);
-
-  let userMessageIndexInSnapshot = -1;
-  for (let i = aiMessageOriginalIndexInSnapshot - 1; i >= 0; i--) {
-    if (messagesSnapshotForContext[i].role === 'user') {
-      userMessageIndexInSnapshot = i;
+  
+  // 查找上一条用户消息
+  let userMessageIndex = -1;
+  for (let i = lastAssistantIndex - 1; i >= 0; i--) {
+    if (messages[i].role === 'user') {
+      userMessageIndex = i;
       break;
     }
   }
-
-  if (userMessageIndexInSnapshot === -1) {
-    // Fallback: find the latest user message in the snapshot if no direct preceding one
-    const userMessagesInSnapshot = messagesSnapshotForContext.slice(0, aiMessageOriginalIndexInSnapshot).filter(m => m.role === 'user');
-    if (userMessagesInSnapshot.length > 0) {
-      const lastUserMessageInSnapshot = userMessagesInSnapshot[userMessagesInSnapshot.length - 1];
-      userMessageIndexInSnapshot = messagesSnapshotForContext.findIndex(m => m.id === lastUserMessageInSnapshot.id);
-    }
-  }
-
-  if (userMessageIndexInSnapshot === -1) {
-    ElMessage.warning('无法找到相关的用户消息以重新生成（基于快照）。');
+  
+  if (userMessageIndex === -1) {
+    ElMessage.warning('找不到相关的用户消息，无法重新生成');
     return;
   }
-  const userMessageFromSnapshot = messagesSnapshotForContext[userMessageIndexInSnapshot];
-  console.log('[ChatView] Found user message in snapshot:', userMessageFromSnapshot);
+  
+  // 设置加载状态
+  chatStore.isLoading = true;
+  let result = null; // Initialize result
 
   try {
-    chatStore.isLoading = true;
-    // result is already declared above
-
-    // 4. Re-find the AI message in the LIVE chatStore.messages array by ID before modification
-    const liveAiMessageIndex = chatStore.messages.findIndex(m => m.id === messageIdToRegenerate && m.role === 'assistant');
-
-    if (liveAiMessageIndex === -1) {
-      console.error(`[ChatView] AI message ID ${messageIdToRegenerate} disappeared from live store before regeneration.`);
-      ElMessage.warning('错误：AI消息在实时数据中消失，无法替换。');
-      chatStore.isLoading = false;
-      return;
-    }
-    console.log('[ChatView] Found AI message in live store at index:', liveAiMessageIndex);
-
-    // 5. Splice the found AI message from the LIVE store
-    chatStore.messages.splice(liveAiMessageIndex, 1);
-
-    // 6. Add a new placeholder AI message to the LIVE store
-    const newAssistantMessage = {
-      id: Date.now(), // New ID for the new message
+    // 移除当前的AI响应
+    chatStore.messages.splice(lastAssistantIndex, 1);
+    
+    // 添加新的空AI响应
+    const assistantMessage = {
+      id: Date.now(),
       role: 'assistant',
       content: '',
       timestamp: new Date().toISOString(),
       completed: false,
-      loading: true
+      loading: true // 添加loading状态
     };
-    chatStore.addMessage(newAssistantMessage);
-    await nextTick();
-    scrollToBottom(true);
-
-    // 7. Construct apiMessages using the SNAPSHOT for historical accuracy
-    const apiMessages = [];
-    if (settingsStore.currentRole?.prompt) {
-      apiMessages.push({ role: 'system', content: settingsStore.currentRole.prompt });
-    }
-
-    // Take messages from snapshot up to (but not including) the AI message that was meant to be regenerated
-    const historyForApi = messagesSnapshotForContext.slice(0, aiMessageOriginalIndexInSnapshot);
-    historyForApi.forEach(msg => {
-      if ((msg.role === 'user' || msg.role === 'assistant') && msg.content.trim()) {
-        apiMessages.push({ role: msg.role, content: msg.content });
-      }
-    });
+    chatStore.addMessage(assistantMessage);
     
-    // Ensure the user message that prompted the original AI response is the last user message in the context
-    const lastApiMessage = apiMessages.length > 0 ? apiMessages[apiMessages.length -1] : null;
-    if (!lastApiMessage || lastApiMessage.role !== 'user' || lastApiMessage.content !== userMessageFromSnapshot.content) {
-        // If the automatically collected history doesn't end with the correct user message,
-        // ensure it's added. This primarily handles cases where the AI message was the first one after system prompt.
-        if (userMessageFromSnapshot && userMessageFromSnapshot.content.trim()) {
-             // Avoid duplicating if it was already the last one (e.g. if historyForApi was just system + user)
-            if(!(apiMessages.length > 0 && apiMessages[apiMessages.length-1].role === 'user' && apiMessages[apiMessages.length-1].content === userMessageFromSnapshot.content)){
-                apiMessages.push({ role: 'user', content: userMessageFromSnapshot.content });
-            }
-        }
-    }
-
-    console.log('[ChatView] Regenerating with API messages:', JSON.parse(JSON.stringify(apiMessages)));
-
+    // 确保消息列表更新后滚动到底部
+    await nextTick();
+    scrollToBottom(true);//发送消息直接滑动到底部
+    
+    // 准备API消息
+    const apiMessages = prepareMessagesForAPI();
+    
+    // 检查API Key是否已设置
     if (!settingsStore.actualApiKey) {
       ElMessage.error('请在设置中配置有效的API Key');
       showSettings.value = true;
-      throw new Error('API Key not configured');
+      // No need to return here, finally block will handle isLoading
+      throw new Error('API Key not configured'); // Throw error to be caught
     }
-    if (apiMessages.filter(m => m.role ==='user').length === 0) {
-      ElMessage.error('无法重新生成，因为没有有效的用户消息作为上下文。');
-      throw new Error('No valid user messages for regeneration context.');
-    }
-
+    
     result = await messageHandler.sendMessage(
       apiMessages,
       settingsStore.actualApiKey,
@@ -1655,61 +1554,82 @@ const handleRegenerate = async (messageToRegenerate) => {
         temperature: settingsStore.temperature,
         max_tokens: settingsStore.maxTokens,
         stream: settingsStore.streamResponse
-      }, // Pass actual model settings
+      },
       (updatedContent, done) => {
-        // Minimal update callback for regeneration
+        // Update message content (same logic as before)
         const lastMessage = chatStore.messages[chatStore.messages.length - 1];
         if (lastMessage && lastMessage.role === 'assistant') {
+          // 第一次收到内容时移除loading状态
           if (lastMessage.loading) {
             lastMessage.loading = false;
           }
-          if (typeof updatedContent === 'object' && updatedContent.content !== undefined) {
-            lastMessage.content = updatedContent.content;
-          } else if (typeof updatedContent === 'string') {
+          
+          if (typeof updatedContent === 'object') {
+            if (updatedContent.content !== undefined) {
+              lastMessage.content = updatedContent.content;
+            }
+            if (updatedContent.thinkingContent !== undefined) {
+              lastMessage.thinkingContent = updatedContent.thinkingContent;
+            }
+          } else if (updatedContent && updatedContent.length > 0) {
             lastMessage.content = updatedContent;
           }
-          if (isScrolledToBottom()) {
-            nextTick(() => scrollToBottom(true));
-          }
-          if (done) {
+        } else {
+          console.error('[ChatView Regenerate] Cannot find assistant message to update');
+        }
+        
+        if (done) {
+          const lastMessage = chatStore.messages[chatStore.messages.length - 1];
+          if (lastMessage && lastMessage.role === 'assistant') {
             lastMessage.completed = true;
-            saveMessages(); // Save messages when regeneration is done
+            const promptTokens = messageHandler.countTokens(apiMessages.filter(m => m.role !== 'assistant').map(m => m.content).join(''));
+            const completionTokens = messageHandler.countTokens(typeof updatedContent === 'object' ? updatedContent.content || '' : updatedContent || '');
+            chatStore.updateTokenCount(promptTokens, completionTokens);
+            saveMessages();
           }
         }
       },
-      true // isRegeneration = true
+      true // Pass isRegeneration = true to messageHandler
     );
-
+    
+    // 保存controller以便可能的中断
     if (result?.controller) {
-      activeController.value = result.controller;
+        activeController.value = result.controller;
     }
-
+    
+    // 处理请求结果 (only if not aborted)
     if (result && !result.success && !result.aborted) {
       ElMessage.error('重新生成失败，请稍后重试');
+      // 移除最后一条空的助手消息
       const lastMessage = chatStore.messages[chatStore.messages.length - 1];
       if (lastMessage && lastMessage.role === 'assistant' && lastMessage.content === '') {
-        chatStore.messages.pop(); // Clean up placeholder
+        chatStore.messages.pop();
       }
     }
-
-  } catch (error) {
-    console.error('[ChatView Regenerate] Error:', error);
-    if (error.message !== 'API Key not configured' && error.message !== 'No valid user messages for regeneration context.') {
-      ElMessage.error(`重新生成时发生错误: ${error.message || '未知错误'}`);
+    
+  } catch (apiError) {
+    console.error('[ChatView Regenerate] API Error:', apiError);
+    // Avoid showing duplicate error if it's just missing API key
+    if (apiError.message !== 'API Key not configured') {
+        ElMessage.error(`重新生成时API错误: ${apiError.message || '未知错误'}`);
     }
-    // Clean up placeholder on any error during API call
+    
+    // Clean up potentially empty assistant message on error
     const lastMessage = chatStore.messages[chatStore.messages.length - 1];
-    if (lastMessage && lastMessage.role === 'assistant' && lastMessage.content === '' && lastMessage.loading) {
-        chatStore.messages.pop();
+    if (lastMessage && lastMessage.role === 'assistant' && lastMessage.content === '') {
+      chatStore.messages.pop();
     }
   } finally {
+    // 确保加载状态和控制器总是被重置
     chatStore.isLoading = false;
-    if (activeController.value && (!result || !result.aborted)) {
-      activeController.value = null;
+    // Only clear controller if the request wasn't aborted (aborted state is handled elsewhere)
+    if (!result?.aborted && activeController.value) {
+         activeController.value = null;
     }
-    if (result?.aborted) {
-        activeController.value = null;
-    }
+     // If aborted, ensure controller is nullified if it wasn't already by the pause handler
+     if (result?.aborted) {
+         activeController.value = null; 
+     }
   }
 };
 
@@ -1743,7 +1663,6 @@ const scrollToTop = () => {
 }
 
 // 判断是否是最后一条AI消息
-// 判断是否是最后一条AI消息
 const isLatestAIMessage = (message) => {
   // 过滤出所有AI消息
   const assistantMessages = chatStore.messages.filter(msg => msg.role === 'assistant');
@@ -1758,56 +1677,26 @@ const isLatestAIMessage = (message) => {
   return message.id === lastAssistantMessage.id;
 }
 
-// 处理当前聊天的操作
-const handleCurrentChatAction = (command) => {
+// 处理历史记录操作
+const handleHistoryAction = (command, chat) => {
   switch (command) {
     case 'export':
-      // 导出当前聊天记录
-      if (chatStore.messages.length === 0) {
-        ElMessage.warning('没有可导出的对话内容');
-        return;
-      }
-      const currentChat = {
-  id: 'current',
-  title: currentChatTitle.value,
-  messages: JSON.parse(JSON.stringify(chatStore.messages)),
-  roleData: settingsStore.currentRole ? {
-    name: settingsStore.currentRole.name,
-    prompt: settingsStore.currentRole.prompt
-  } : null
-};
-exportChat(currentChat);
+      // 实现导出对话功能
+      exportChat(chat);
       break;
-    case 'clear':
-      // 确认是否清空当前聊天
-      ElMessageBox.confirm(
-        '确定要清空当前对话吗？',
-        '清空确认',
-        {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning',
-        }
-      ).then(() => {
-        chatStore.clearMessages();
-        currentSessionTitle.value = '新对话';
-        currentChatTitle.value = '新对话';
-        ElMessage.success('已清空当前对话');
-      }).catch(() => {
-        // 用户取消操作，不执行任何动作
-      });
+    case 'delete':
+      // 实现删除对话功能
+      handleDeleteChat(chat.id);
       break;
     default:
-      console.log('未知命令:', command);
+      console.log('Unknown command:', command);
   }
-};
+}
 
 // 导出聊天记录功能
 const exportChat = (chat) => {
-  // 检查参数是否合法
-  if (!chat || !chat.messages || !Array.isArray(chat.messages) || chat.messages.length === 0) {
-    ElMessage.warning('无法导出：聊天记录为空或格式不正确');
-    console.error('Export failed, invalid chat object:', chat);
+  if (!chat || !chat.messages || chat.messages.length === 0) {
+    ElMessage.warning('没有可导出的对话内容');
     return;
   }
 
@@ -1859,7 +1748,7 @@ const exportChat = (chat) => {
   }).catch(() => {
     // 用户取消导出
   });
-};
+}
 
 // 根据选择的格式处理导出
 const selectExportFormat = (chat, format) => {
@@ -2131,262 +2020,7 @@ const selectExportFormat = (chat, format) => {
         exportContent += `
       <div class="content-section">
         <h3>📝 内容</h3>
-        <div>${msg.content.split('\n').join('<br>')
-          .replace(/```([a-z]*)([\s\S]*?)```/g, '<pre><code>$2</code></pre>')
-          .replace(/`([^`]+)`/g, '<code>$1</code>')}</div>
-      </div>
-    </div>`;
-      });
-
-      exportContent += `
-  </div>
-  
-  <div class="footer">
-    由 MyChat AI 助手生成 - ${new Date().getFullYear()}
-  </div>
-</body>
-</html>`;
-      break;
-
-    case '2': // HTML 格式
-      exportContent = `<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI 对话记录 - ${dateStr}</title>
-  <style>
-    :root {
-      --primary-color: #4284f5;
-      --primary-gradient: linear-gradient(135deg, #4284f5, #42a5f5);
-      --secondary-color: #f5f7fa;
-      --reasoning-color: #f39c12;
-      --user-gradient: linear-gradient(135deg, #e74c3c, #f39c12, #2c7a65);
-      --ai-gradient: linear-gradient(135deg, #4284f5, #0097a7);
-      --card-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
-      --border-radius: 12px;
-    }
-
-    body {
-      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-      line-height: 1.8;
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 2rem;
-      background: var(--secondary-color);
-      color: #333;
-    }
-
-    .header {
-      text-align: center;
-      margin-bottom: 3rem;
-      padding: 2.5rem;
-      background: var(--primary-gradient);
-      color: white;
-      border-radius: var(--border-radius);
-      box-shadow: var(--card-shadow);
-      position: relative;
-      overflow: hidden;
-    }
-    
-    .header::before {
-      content: '';
-      position: absolute;
-      top: -50%;
-      left: -50%;
-      width: 200%;
-      height: 200%;
-      background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 70%);
-      transform: rotate(30deg);
-      z-index: 1;
-    }
-    
-    .header h1 {
-      position: relative;
-      z-index: 2;
-      margin-bottom: 1rem;
-      font-size: 2.5rem;
-    }
-    
-    .header p {
-      position: relative;
-      z-index: 2;
-      opacity: 0.9;
-    }
-
-    .role-section {
-      margin-bottom: 2.5rem;
-      padding: 1.8rem;
-      background: rgba(66, 132, 245, 0.1);
-      border-radius: var(--border-radius);
-      border-left: 5px solid var(--primary-color);
-      box-shadow: 0 4px 15px rgba(66, 132, 245, 0.1);
-    }
-    
-    .role-section h2 {
-      margin-top: 0;
-      color: var(--primary-color);
-      font-size: 1.5rem;
-      border-bottom: 1px solid rgba(66, 132, 245, 0.2);
-      padding-bottom: 10px;
-    }
-
-    .messages-container {
-      display: flex;
-      flex-direction: column;
-      gap: 2rem;
-    }
-
-    .message {
-      margin-bottom: 1rem;
-      border-radius: var(--border-radius);
-      overflow: hidden;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-      transition: transform 0.3s ease;
-    }
-    
-    .message:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 6px 25px rgba(0, 0, 0, 0.12);
-    }
-
-    .user-message .message-header {
-      background: var(--user-gradient);
-    }
-    
-    .ai-message .message-header {
-      background: var(--ai-gradient);
-    }
-
-    .message-header {
-      padding: 1rem 1.5rem;
-      color: white;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-weight: 500;
-    }
-
-    .reasoning-section {
-      padding: 1.2rem 1.5rem;
-      background: rgba(243, 156, 18, 0.1);
-      border-left: 4px solid var(--reasoning-color);
-      margin: 1rem 1.5rem;
-      border-radius: 8px;
-    }
-    
-    .reasoning-section h3 {
-      margin-top: 0;
-      color: var(--reasoning-color);
-      font-size: 1.1rem;
-    }
-
-    .content-section {
-      padding: 1.5rem;
-      background: white;
-    }
-    
-    .content-section h3 {
-      margin-top: 0;
-      color: #444;
-      font-size: 1.1rem;
-      border-bottom: 1px solid #eee;
-      padding-bottom: 8px;
-    }
-
-    .timestamp {
-      font-size: 0.9em;
-      opacity: 0.8;
-    }
-
-    pre {
-      background: #f8f9fa;
-      padding: 1rem;
-      border-radius: 8px;
-      overflow-x: auto;
-      margin: 1rem 0;
-      border-left: 3px solid #ddd;
-    }
-
-    code {
-      font-family: 'Fira Code', 'Consolas', monospace;
-      font-size: 0.9em;
-    }
-    
-    p code {
-      background: rgba(0,0,0,0.05);
-      padding: 0.2em 0.4em;
-      border-radius: 3px;
-      font-size: 0.9em;
-    }
-    
-    .footer {
-      text-align: center;
-      margin-top: 3rem;
-      padding: 1rem;
-      color: #888;
-      font-size: 0.9rem;
-      border-top: 1px solid #eee;
-    }
-    
-    @media (max-width: 768px) {
-      body {
-        padding: 1rem;
-      }
-      
-      .header {
-        padding: 1.5rem;
-      }
-      
-      .message-header, .content-section, .reasoning-section {
-        padding: 1rem;
-      }
-    }
-  </style>
-</head>
-<body>
-  <div class="header">
-    <h1>AI 对话记录</h1>
-    <p>导出时间: ${dateStr}</p>
-  </div>`;
-
-      // 添加角色设置
-      if (rolePrompt) {
-        exportContent += `
-  <div class="role-section">
-    <h2>💡 角色设置</h2>
-    <div>${rolePrompt.replace(/\n/g, '<br>')}</div>
-  </div>`;
-      }
-
-      exportContent += `
-  <div class="messages-container">`;
-
-      // 添加消息内容
-      messages.forEach(msg => {
-        const role = msg.role === 'user' ? '用户' : 'AI助手';
-        const messageClass = msg.role === 'user' ? 'user-message' : 'ai-message';
-        const time = msg.timestamp ? new Date(msg.timestamp).toLocaleString() : '未知时间';
-
-        exportContent += `
-    <div class="message ${messageClass}">
-      <div class="message-header">
-        <span>${role}</span>
-        <span class="timestamp">${time}</span>
-      </div>`;
-
-        if (msg.thinkingContent) {
-          exportContent += `
-      <div class="reasoning-section">
-        <h3>💭 思考过程</h3>
-        <div>${msg.thinkingContent.replace(/\n/g, '<br>')}</div>
-      </div>`;
-        }
-
-        exportContent += `
-      <div class="content-section">
-        <h3>📝 内容</h3>
-        <div>${msg.content.split('\n').join('<br>')
+        <div>${msg.content.replace(/\n/g, '<br>')
           .replace(/```([a-z]*)([\s\S]*?)```/g, '<pre><code>$2</code></pre>')
           .replace(/`([^`]+)`/g, '<code>$1</code>')}</div>
       </div>
@@ -2535,75 +2169,6 @@ const migrateOldChatHistory = () => {
     console.error('Error migrating old chat history:', error);
   }
 };
-
-// Add this after the Model selection dropdown but before the Temperature slider
-
-
-// Add these variables to the script setup section
-// Add this near where settingsForm is declared
-const customModelInput = ref('');
-const customModels = ref([]);
-
-// Add this function to handle adding custom models
-const addCustomModel = () => {
-    if (customModelInput.value.trim()) {
-        const newModel = {
-            label: customModelInput.value.trim(),
-            value: customModelInput.value.trim()
-        };
-        
-        // Check if the model already exists
-        const modelExists = modelOptions.value.some(model => 
-            model.value === newModel.value
-        );
-        
-        if (!modelExists) {
-            // Add to settings store
-            settingsStore.addModels([newModel.value]);
-            customModels.value.push(newModel);
-            ElMessage.success(`Added custom model: ${newModel.label}`);
-            
-            // Update local form if needed
-            modelOptionsLastUpdated.value = Date.now();
-            
-            // Clear input field
-            customModelInput.value = '';
-        } else {
-            ElMessage.warning('This model already exists in the list');
-        }
-    }
-};
-
-// Add this function to handle removing custom models
-const removeCustomModel = (index) => {
-    const modelToRemove = customModels.value[index];
-    
-    // First confirm with the user
-    ElMessageBox.confirm(
-        `Are you sure you want to remove the custom model "${modelToRemove.label}"?`,
-        'Confirm Removal',
-        {
-            confirmButtonText: 'Yes, Remove',
-            cancelButtonText: 'Cancel',
-            type: 'warning'
-        }
-    ).then(() => {
-        // Remove from the local list
-        customModels.value.splice(index, 1);
-        
-        // We can't easily remove from the store's modelOptions,
-        // but we can update the UI by forcing a refresh
-        modelOptionsLastUpdated.value = Date.now();
-        
-        ElMessage.success(`Removed custom model: ${modelToRemove.label}`);
-    }).catch(() => {
-        // User cancelled, do nothing
-    });
-};
-
-// Add CSS for the custom model input section
-// Inside <style> section, add:
-
 </script>
 
 <style lang="scss" scoped>
@@ -3917,55 +3482,6 @@ const removeCustomModel = (index) => {
                 scrollbar-width: none;
             }
         }
-        
-        .custom-model-input {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 8px;
-            
-            .custom-model-field {
-                flex: 1;
-            }
-        }
-        
-        .custom-models-list {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-top: 12px;
-            
-            .custom-model-tag {
-                margin-bottom: 4px;
-                background-color: #f0f7ff;
-                border-color: #d0e3ff;
-                color: #4284f5;
-                font-size: 12px;
-                padding: 0 8px;
-                height: 28px;
-                line-height: 26px;
-                transition: all 0.3s;
-                
-                .el-tag__close {
-                    color: #4284f5;
-                    
-                    &:hover {
-                        background-color: #4284f5;
-                        color: white;
-                    }
-                }
-                
-                &:hover {
-                    border-color: #4284f5;
-                }
-                
-                [data-theme="dark"] & {
-                    background-color: #2d3748;
-                    border-color: #4a5568;
-                    color: #90cdf4;
-                }
-            }
-        }
     }
     
     .dialog-footer {
@@ -4260,33 +3776,6 @@ const removeCustomModel = (index) => {
     height: 24px;
   }
 }
-
-// Add the custom model styles in the correct location - at the beginning of the style section
-.custom-model-input {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 8px;
-    
-    .custom-model-field {
-        flex: 1;
-    }
-}
-
-.custom-models-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-top: 12px;
-    
-    .custom-model-tag {
-        margin-bottom: 4px;
-    }
-      svg {
-    width: 24px;
-    height: 24px;
-  }
-}
 </style>
 <!-- <script>
 document.querySelector('.toggle-thinking-btn').addEventListener('click', function() {
@@ -4300,5 +3789,3 @@ document.querySelector('.toggle-thinking-btn').addEventListener('click', functio
     thinkingHeader.style.backgroundColor = 'lightblue';  // 修改颜色
   });
 </script>    -->
-  
-

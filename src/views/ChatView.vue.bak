@@ -5,9 +5,8 @@
         <div class="icon-sidebar" v-if="!isMobileView">
             <div class="icon-item main-icon">
                 <el-avatar :size="36" class="blue-avatar" style="background-color: transparent;">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50">
-                        <circle cx="25" cy="25" r="20" fill="white" />
-                    </svg>
+                     <svg width="60" color = "white"  height="60" viewBox="0 0 41 41" fill="none" xmlns="http://www.w3.org/2000/svg" stroke-width="1.5" class="h-2/3 w-2/3 text-black dark:text-white"><path d="M37.5324 16.8707C37.9808 15.5241 38.1363 14.0974 37.9886 12.6859C37.8409 11.2744 37.3934 9.91076 36.676 8.68622C35.6126 6.83404 33.9882 5.3676 32.0373 4.4985C30.0864 3.62941 27.9098 3.40259 25.8215 3.85078C24.8796 2.7893 23.7219 1.94125 22.4257 1.36341C21.1295 0.785575 19.7249 0.491269 18.3058 0.500197C16.1708 0.495044 14.0893 1.16803 12.3614 2.42214C10.6335 3.67624 9.34853 5.44666 8.6917 7.47815C7.30085 7.76286 5.98686 8.3414 4.8377 9.17505C3.68854 10.0087 2.73073 11.0782 2.02839 12.312C0.956464 14.1591 0.498905 16.2988 0.721698 18.4228C0.944492 20.5467 1.83612 22.5449 3.268 24.1293C2.81966 25.4759 2.66413 26.9026 2.81182 28.3141C2.95951 29.7256 3.40701 31.0892 4.12437 32.3138C5.18791 34.1659 6.8123 35.6322 8.76321 36.5013C10.7141 37.3704 12.8907 37.5973 14.9789 37.1492C15.9208 38.2107 17.0786 39.0587 18.3747 39.6366C19.6709 40.2144 21.0755 40.5087 22.4946 40.4998C24.6307 40.5054 26.7133 39.8321 28.4418 38.5772C30.1704 37.3223 31.4556 35.5506 32.1119 33.5179C33.5027 33.2332 34.8167 32.6547 35.9659 31.821C37.115 30.9874 38.0728 29.9178 38.7752 28.684C39.8458 26.8371 40.3023 24.6979 40.0789 22.5748C39.8556 20.4517 38.9639 18.4544 37.5324 16.8707ZM22.4978 37.8849C20.7443 37.8874 19.0459 37.2733 17.6994 36.1501C17.7601 36.117 17.8666 36.0586 17.936 36.0161L25.9004 31.4156C26.1003 31.3019 26.2663 31.137 26.3813 30.9378C26.4964 30.7386 26.5563 30.5124 26.5549 30.2825V19.0542L29.9213 20.998C29.9389 21.0068 29.9541 21.0198 29.9656 21.0359C29.977 21.052 29.9842 21.0707 29.9867 21.0902V30.3889C29.9842 32.375 29.1946 34.2791 27.7909 35.6841C26.3872 37.0892 24.4838 37.8806 22.4978 37.8849ZM6.39227 31.0064C5.51397 29.4888 5.19742 27.7107 5.49804 25.9832C5.55718 26.0187 5.66048 26.0818 5.73461 26.1244L13.699 30.7248C13.8975 30.8408 14.1233 30.902 14.3532 30.902C14.583 30.902 14.8088 30.8408 15.0073 30.7248L24.731 25.1103V28.9979C24.7321 29.0177 24.7283 29.0376 24.7199 29.0556C24.7115 29.0736 24.6988 29.0893 24.6829 29.1012L16.6317 33.7497C14.9096 34.7416 12.8643 35.0097 10.9447 34.4954C9.02506 33.9811 7.38785 32.7263 6.39227 31.0064ZM4.29707 13.6194C5.17156 12.0998 6.55279 10.9364 8.19885 10.3327C8.19885 10.4013 8.19491 10.5228 8.19491 10.6071V19.808C8.19351 20.0378 8.25334 20.2638 8.36823 20.4629C8.48312 20.6619 8.64893 20.8267 8.84863 20.9404L18.5723 26.5542L15.206 28.4979C15.1894 28.5089 15.1703 28.5155 15.1505 28.5173C15.1307 28.5191 15.1107 28.516 15.0924 28.5082L7.04046 23.8557C5.32135 22.8601 4.06716 21.2235 3.55289 19.3046C3.03862 17.3858 3.30624 15.3413 4.29707 13.6194ZM31.955 20.0556L22.2312 14.4411L25.5976 12.4981C25.6142 12.4872 25.6333 12.4805 25.6531 12.4787C25.6729 12.4769 25.6928 12.4801 25.7111 12.4879L33.7631 17.1364C34.9967 17.849 36.0017 18.8982 36.6606 20.1613C37.3194 21.4244 37.6047 22.849 37.4832 24.2684C37.3617 25.6878 36.8382 27.0432 35.9743 28.1759C35.1103 29.3086 33.9415 30.1717 32.6047 30.6641C32.6047 30.5947 32.6047 30.4733 32.6047 30.3889V21.188C32.6066 20.9586 32.5474 20.7328 32.4332 20.5338C32.319 20.3348 32.154 20.1698 31.955 20.0556ZM35.3055 15.0128C35.2464 14.9765 35.1431 14.9142 35.069 14.8717L27.1045 10.2712C26.906 10.1554 26.6803 10.0943 26.4504 10.0943C26.2206 10.0943 25.9948 10.1554 25.7963 10.2712L16.0726 15.8858V11.9982C16.0715 11.9783 16.0753 11.9585 16.0837 11.9405C16.0921 11.9225 16.1048 11.9068 16.1207 11.8949L24.1719 7.25025C25.4053 6.53903 26.8158 6.19376 28.2383 6.25482C29.6608 6.31589 31.0364 6.78077 32.2044 7.59508C33.3723 8.40939 34.2842 9.53945 34.8334 10.8531C35.3826 12.1667 35.5464 13.6095 35.3055 15.0128ZM14.2424 21.9419L10.8752 19.9981C10.8576 19.9893 10.8423 19.9763 10.8309 19.9602C10.8195 19.9441 10.8122 19.9254 10.8098 19.9058V10.6071C10.8107 9.18295 11.2173 7.78848 11.9819 6.58696C12.7466 5.38544 13.8377 4.42659 15.1275 3.82264C16.4173 3.21869 17.8524 2.99464 19.2649 3.1767C20.6775 3.35876 22.0089 3.93941 23.1034 4.85067C23.0427 4.88379 22.937 4.94215 22.8668 4.98473L14.9024 9.58517C14.7025 9.69878 14.5366 9.86356 14.4215 10.0626C14.3065 10.2616 14.2466 10.4877 14.2479 10.7175L14.2424 21.9419ZM16.071 17.9991L20.4018 15.4978L24.7325 17.9975V22.9985L20.4018 25.4983L16.071 22.9985V17.9991Z" fill="currentColor"></path></svg>
+                    <!-- <svg width="41" height="41" viewBox="0 0 41 41" fill="none" xmlns="http://www.w3.org/2000/svg" stroke-width="1.5" class="h-2/3 w-2/3 text-black dark:text-white"><path d="M37.5324 16.8707C37.9808 15.5241 38.1363 14.0974 37.9886 12.6859C37.8409 11.2744 37.3934 9.91076 36.676 8.68622C35.6126 6.83404 33.9882 5.3676 32.0373 4.4985C30.0864 3.62941 27.9098 3.40259 25.8215 3.85078C24.8796 2.7893 23.7219 1.94125 22.4257 1.36341C21.1295 0.785575 19.7249 0.491269 18.3058 0.500197C16.1708 0.495044 14.0893 1.16803 12.3614 2.42214C10.6335 3.67624 9.34853 5.44666 8.6917 7.47815C7.30085 7.76286 5.98686 8.3414 4.8377 9.17505C3.68854 10.0087 2.73073 11.0782 2.02839 12.312C0.956464 14.1591 0.498905 16.2988 0.721698 18.4228C0.944492 20.5467 1.83612 22.5449 3.268 24.1293C2.81966 25.4759 2.66413 26.9026 2.81182 28.3141C2.95951 29.7256 3.40701 31.0892 4.12437 32.3138C5.18791 34.1659 6.8123 35.6322 8.76321 36.5013C10.7141 37.3704 12.8907 37.5973 14.9789 37.1492C15.9208 38.2107 17.0786 39.0587 18.3747 39.6366C19.6709 40.2144 21.0755 40.5087 22.4946 40.4998C24.6307 40.5054 26.7133 39.8321 28.4418 38.5772C30.1704 37.3223 31.4556 35.5506 32.1119 33.5179C33.5027 33.2332 34.8167 32.6547 35.9659 31.821C37.115 30.9874 38.0728 29.9178 38.7752 28.684C39.8458 26.8371 40.3023 24.6979 40.0789 22.5748C39.8556 20.4517 38.9639 18.4544 37.5324 16.8707ZM22.4978 37.8849C20.7443 37.8874 19.0459 37.2733 17.6994 36.1501C17.7601 36.117 17.8666 36.0586 17.936 36.0161L25.9004 31.4156C26.1003 31.3019 26.2663 31.137 26.3813 30.9378C26.4964 30.7386 26.5563 30.5124 26.5549 30.2825V19.0542L29.9213 20.998C29.9389 21.0068 29.9541 21.0198 29.9656 21.0359C29.977 21.052 29.9842 21.0707 29.9867 21.0902V30.3889C29.9842 32.375 29.1946 34.2791 27.7909 35.6841C26.3872 37.0892 24.4838 37.8806 22.4978 37.8849ZM6.39227 31.0064C5.51397 29.4888 5.19742 27.7107 5.49804 25.9832C5.55718 26.0187 5.66048 26.0818 5.73461 26.1244L13.699 30.7248C13.8975 30.8408 14.1233 30.902 14.3532 30.902C14.583 30.902 14.8088 30.8408 15.0073 30.7248L24.731 25.1103V28.9979C24.7321 29.0177 24.7283 29.0376 24.7199 29.0556C24.7115 29.0736 24.6988 29.0893 24.6829 29.1012L16.6317 33.7497C14.9096 34.7416 12.8643 35.0097 10.9447 34.4954C9.02506 33.9811 7.38785 32.7263 6.39227 31.0064ZM4.29707 13.6194C5.17156 12.0998 6.55279 10.9364 8.19885 10.3327C8.19885 10.4013 8.19491 10.5228 8.19491 10.6071V19.808C8.19351 20.0378 8.25334 20.2638 8.36823 20.4629C8.48312 20.6619 8.64893 20.8267 8.84863 20.9404L18.5723 26.5542L15.206 28.4979C15.1894 28.5089 15.1703 28.5155 15.1505 28.5173C15.1307 28.5191 15.1107 28.516 15.0924 28.5082L7.04046 23.8557C5.32135 22.8601 4.06716 21.2235 3.55289 19.3046C3.03862 17.3858 3.30624 15.3413 4.29707 13.6194ZM31.955 20.0556L22.2312 14.4411L25.5976 12.4981C25.6142 12.4872 25.6333 12.4805 25.6531 12.4787C25.6729 12.4769 25.6928 12.4801 25.7111 12.4879L33.7631 17.1364C34.9967 17.849 36.0017 18.8982 36.6606 20.1613C37.3194 21.4244 37.6047 22.849 37.4832 24.2684C37.3617 25.6878 36.8382 27.0432 35.9743 28.1759C35.1103 29.3086 33.9415 30.1717 32.6047 30.6641C32.6047 30.5947 32.6047 30.4733 32.6047 30.3889V21.188C32.6066 20.9586 32.5474 20.7328 32.4332 20.5338C32.319 20.3348 32.154 20.1698 31.955 20.0556ZM35.3055 15.0128C35.2464 14.9765 35.1431 14.9142 35.069 14.8717L27.1045 10.2712C26.906 10.1554 26.6803 10.0943 26.4504 10.0943C26.2206 10.0943 25.9948 10.1554 25.7963 10.2712L16.0726 15.8858V11.9982C16.0715 11.9783 16.0753 11.9585 16.0837 11.9405C16.0921 11.9225 16.1048 11.9068 16.1207 11.8949L24.1719 7.25025C25.4053 6.53903 26.8158 6.19376 28.2383 6.25482C29.6608 6.31589 31.0364 6.78077 32.2044 7.59508C33.3723 8.40939 34.2842 9.53945 34.8334 10.8531C35.3826 12.1667 35.5464 13.6095 35.3055 15.0128ZM14.2424 21.9419L10.8752 19.9981C10.8576 19.9893 10.8423 19.9763 10.8309 19.9602C10.8195 19.9441 10.8122 19.9254 10.8098 19.9058V10.6071C10.8107 9.18295 11.2173 7.78848 11.9819 6.58696C12.7466 5.38544 13.8377 4.42659 15.1275 3.82264C16.4173 3.21869 17.8524 2.99464 19.2649 3.1767C20.6775 3.35876 22.0089 3.93941 23.1034 4.85067C23.0427 4.88379 22.937 4.94215 22.8668 4.98473L14.9024 9.58517C14.7025 9.69878 14.5366 9.86356 14.4215 10.0626C14.3065 10.2616 14.2466 10.4877 14.2479 10.7175L14.2424 21.9419ZM16.071 17.9991L20.4018 15.4978L24.7325 17.9975V22.9985L20.4018 25.4983L16.071 22.9985V17.9991Z" fill="currentColor"></path></svg> -->
                 </el-avatar>
             </div>
             <div class="icon-item">
@@ -21,12 +20,13 @@
                 <el-icon><Setting /></el-icon>
             </div>
            
-            <div class="icon-item" style="background-color: grey; border-radius: 100%; height: 20px; width: 20px;">
+         
+            <div class="icon-item" style = "background-color: grey; border-radius: 100%;height: 20px;width: 20px;">
                 <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="20" height="20" viewBox="0 0 30 30">
-                    <path d="M15,3C8.373,3,3,8.373,3,15c0,5.623,3.872,10.328,9.092,11.63C12.036,26.468,12,26.28,12,26.047v-2.051 c-0.487,0-1.303,0-1.508,0c-0.821,0-1.551-0.353-1.905-1.009c-0.393-0.729-0.461-1.844-1.435-2.526 c-0.289-0.227-0.069-0.486,0.264-0.451c0.615,0.174,1.125,0.596,1.605,1.222c0.478,0.627,0.703,0.769,1.596,0.769 c0.433,0,1.081-0.025,1.691-0.121c0.328-0.833,0.895-1.6,1.588-1.962c-3.996-0.411-5.903-2.399-5.903-5.098 c0-1.162,0.495-2.286,1.336-3.233C9.053,10.647,8.706,8.73,9.435,8c1.798,0,2.885,1.166,3.146,1.481C13.477,9.174,14.461,9,15.495,9 c1.036,0,2.024,0.174,2.922,0.483C18.675,9.17,19.763,8,21.565,8c0.732,0.731,0.381,2.656,0.102,3.594 c0.836,0.945,1.328,2.066,1.328,3.226c0,2.697-1.904,4.684-5.894,5.097C18.199,20.49,19,22.1,19,23.313v2.734 c0,0.104-0.023,0.179-0.035,0.268C23.641,24.676,27,20.236,27,15C27,8.373,21.627,3,15,3z"></path>
-                </svg>
-            </div>
-           
+    <path d="M15,3C8.373,3,3,8.373,3,15c0,5.623,3.872,10.328,9.092,11.63C12.036,26.468,12,26.28,12,26.047v-2.051 c-0.487,0-1.303,0-1.508,0c-0.821,0-1.551-0.353-1.905-1.009c-0.393-0.729-0.461-1.844-1.435-2.526 c-0.289-0.227-0.069-0.486,0.264-0.451c0.615,0.174,1.125,0.596,1.605,1.222c0.478,0.627,0.703,0.769,1.596,0.769 c0.433,0,1.081-0.025,1.691-0.121c0.328-0.833,0.895-1.6,1.588-1.962c-3.996-0.411-5.903-2.399-5.903-5.098 c0-1.162,0.495-2.286,1.336-3.233C9.053,10.647,8.706,8.73,9.435,8c1.798,0,2.885,1.166,3.146,1.481C13.477,9.174,14.461,9,15.495,9 c1.036,0,2.024,0.174,2.922,0.483C18.675,9.17,19.763,8,21.565,8c0.732,0.731,0.381,2.656,0.102,3.594 c0.836,0.945,1.328,2.066,1.328,3.226c0,2.697-1.904,4.684-5.894,5.097C18.199,20.49,19,22.1,19,23.313v2.734 c0,0.104-0.023,0.179-0.035,0.268C23.641,24.676,27,20.236,27,15C27,8.373,21.627,3,15,3z"></path>
+                    </svg>
+                </div>
+               
             <!-- 添加收起/展开侧边栏的按钮 -->
             <div class="icon-item" @click="toggleSidebar">
                 <el-icon>
@@ -72,6 +72,16 @@
                         <el-icon><Edit /></el-icon>
                     </el-button>
                 </div>
+                
+                <!-- 移动端专用功能按钮区域 -->
+                <div class="mobile-actions" v-if="isMobileView">
+                    <el-button class="mobile-action-btn theme-btn" @click="toggleDarkMode" title="Toggle Dark Mode">
+                        <el-icon><Moon v-if="settingsStore.isDarkMode" /><Sunny v-else /></el-icon>
+                    </el-button>
+                    <el-button class="mobile-action-btn settings-btn" @click="toggleSettings" title="Settings">
+                        <el-icon><Setting /></el-icon>
+                    </el-button>
+                </div>
             </div>
             
             <!-- 收藏的聊天 -->
@@ -98,35 +108,60 @@
                 
                 <!-- 当前会话 -->
                 <div class="chat-item" 
-                     :class="{ 'active': activeHistoryId === 'current' }" 
+                     :class="{ 'active': historyStore.activeId === 'current' }" 
                      @click="handleChatItemClick('current')">
                     <div class="chat-icon" style="background-color: #06b6d4;">
                         <el-icon><ChatRound /></el-icon>
                     </div>
-                    <span class="chat-title">{{ currentChatTitle }}</span>
-                    <el-button class="more-btn" type="text">
+                    <span class="chat-title">{{ currentSessionTitle }}</span>
+                    <el-dropdown trigger="click" @command="(cmd) => handleCurrentChatAction(cmd)">
+                        <el-button class="more-btn" type="text" @click.stop>
                         <el-icon><MoreFilled /></el-icon>
                     </el-button>
+                        <template #dropdown>
+                            <el-dropdown-menu>
+                                <el-dropdown-item command="export">
+                                    <el-icon><Download /></el-icon>导出对话
+                                </el-dropdown-item>
+                                <el-dropdown-item command="clear" divided>
+                                    <el-icon><Delete /></el-icon>清空对话
+                                </el-dropdown-item>
+                            </el-dropdown-menu>
+                        </template>
+                    </el-dropdown>
                 </div>
                 
                 <!-- 历史会话 - 过滤掉当前活跃的会话 -->
-                <template v-if="chatHistory.length > 0">
-                    <div v-for="chat in chatHistory.filter(c => c.id !== activeHistoryId)" 
+                <template v-if="historyStore.getAllRecords.length > 0">
+                    <div v-for="chat in historyStore.getAllRecords" 
                         :key="chat.id" 
                         class="chat-item"
-                        :class="{ 'active': activeHistoryId === chat.id }"
+                        :class="{ 'active': historyStore.activeId === chat.id }"
                         @click="handleChatItemClick(chat.id)"
                     >
                         <div class="chat-icon" :style="{ backgroundColor: getRandomColor(chat.id) }">
                             {{ chat.title.charAt(0) }}
                         </div>
                         <span class="chat-title">{{ chat.title }}</span>
-                        <HistoryMenu 
-                            :chat-id="chat.id" 
-                            @rename="handleRenameChat" 
-                            @export="handleExportChat" 
-                            @delete="handleDeleteChat"
-                        />
+                        <el-dropdown trigger="click" @command="(cmd) => handleHistoryAction(cmd, chat)">
+                        <el-button 
+                            class="more-btn" 
+                            type="text"
+                            @click.stop
+                        >
+                            <el-icon><MoreFilled /></el-icon>
+                        </el-button>
+                            <template #dropdown>
+                                <el-dropdown-menu>
+                                    <el-dropdown-item command="export">
+                                        <el-icon><Download /></el-icon>导出对话
+                                    </el-dropdown-item>
+                                    <el-dropdown-item command="delete" divided>
+                                        <el-icon><Delete /></el-icon>删除对话
+                                    </el-dropdown-item>
+                                </el-dropdown-menu>
+                            </template>
+                        </el-dropdown>
                     </div>
                 </template>
                 <div v-else class="empty-history">
@@ -144,299 +179,71 @@
             <div class="chat-header">
                 <!-- 移动端左侧按钮组 -->
                 <div class="header-left-actions" v-if="isMobileView">
-                    <!-- 移动端汉堡按钮 -->
-                    <el-button class="mobile-menu-button" @click="toggleMobileSidebar" :icon="Menu" text circle></el-button>
-                    
-                    <!-- 暗黑模式切换按钮 - 只在移动端显示 -->
-                    <el-button 
-                        class="action-btn theme-btn" 
-                        type="default" 
-                        @click="toggleDarkMode" 
-                        title="Toggle Dark Mode"
-                    >
-                        <el-icon><Moon v-if="settingsStore.isDarkMode" /><Sunny v-else /></el-icon>
-                    </el-button>
+                    <!-- 移动端汉堡按钮，使用新图标 -->
+                    <button class="mobile-menu-button" @click="toggleMobileSidebar">
+                    <svg style = "width: 20px ;height:auto;"data-v-a497a79e="" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024"><path fill="currentColor" d="M896 192H128v128h768zm0 256H384v128h512zm0 256H128v128h768zM320 384 128 512l192 128z"></path></svg>
+                    </button>
                 </div>
                 
-                <!-- 左侧区域
-                .header-left {
-                    display: flex;
-                    align-items: center;
-                    gap: 12px;
-                    
-                    // 移动端居中样式
-                    &.mobile-centered {
-                        position: absolute;
-                        left: 50%;
-                        transform: translateX(-50%);
-                        z-index: 1;
-                    }
-                    
-                    .model-status {
-                        display: flex;
-                        align-items: center;
-                        gap: 6px;
-                        font-size: 12px;
-                        color: #666;
-                        
-                        [data-theme="dark"] & {
-                            color: #aaa;
-                        }
-                    }
-                    
-                    // Removing duplicate model-tag styles as they're now properly defined inside model-info
-                }
+                <!-- 左侧模型信息和状态区域 - 桌面端显示在左侧，移动端居中 -->
+                <div class="header-left" :class="{'mobile-centered': isMobileView}">
+                    <!-- 模型信息和设置 -->
+                    <el-dropdown trigger="click" @command="handleModelChange">
+                        <div class="model-info" style="cursor: pointer;">
+                            <span class="model-name">{{ getModelDisplayName() }}</span>
+                            <el-tag type="success" size="small" effect="dark" class="model-tag">
+                                <div class="tag-content">
+                                    <div class="status-indicator online"></div>
+                                    <span>Online</span>
+                                </div>
+                            </el-tag>
+                            <el-icon class="model-dropdown-icon"><ArrowDown /></el-icon>
+                        </div>
+                        <template #dropdown>
+                            <el-dropdown-menu>
+                                <el-dropdown-item 
+                                    v-for="model in modelOptions" 
+                                    :key="model.value" 
+                                    :command="model.value"
+                                    :class="{ 'is-active': settingsStore.model === model.value }"
+                                >
+                                    {{ model.label }}
+                                    <el-icon v-if="settingsStore.model === model.value"><Check /></el-icon>
+                                </el-dropdown-item>
+                            </el-dropdown-menu>
+                        </template>
+                    </el-dropdown>
+                </div>
                 
-                // 中间标题区域
-                .header-center {
-                    position: absolute;
-                    left: 50%;
-                    transform: translateX(-50%);
-                    max-width: 40%;
-                    text-align: center;
-                    
-                    .conversation-info {
-                        display: flex;
-                        flex-direction: column;
-                        align-items: center;
-                        
-                        .conversation-title {
-                            font-size: 16px;
-                            font-weight: 600;
-                            color: #333;
-                            margin-bottom: 2px;
-                            white-space: nowrap;
-                            overflow: hidden;
-                            text-overflow: ellipsis;
-                            max-width: 100%;
-                            
-                            [data-theme="dark"] & {
-                                color: #e0e0e0;
-                            }
-                        }
-                        
-                        .conversation-stats {
-                            display: flex;
-                            align-items: center;
-                            gap: 8px;
-                            font-size: 12px;
-                            color: #666;
-                            
-                            [data-theme="dark"] & {
-                                color: #aaa;
-                            }
-                            
-                            .stats-item {
-                                display: flex;
-                                align-items: center;
-                                gap: 4px;
-                                
-                                .el-icon {
-                                    font-size: 12px;
-                                }
-                            }
-                            
-                            .stats-divider {
-                                color: #d1d5db;
-                                
-                                [data-theme="dark"] & {
-                                    color: #555;
-                                }
-                                margin-top: -2px;
-                            }
-                        }
-                    }
-                }
+                <!-- 中间标题区域 - 只在PC显示 -->
+                <div class="header-center" v-if="!isMobileView">
+                    <div class="conversation-info">
+                        <span class="conversation-title">{{ currentChatTitle || 'New Chat' }}</span>
+                        <div class="conversation-stats">
+                            <span class="stats-item">
+                                <el-icon><ChatDotRound /></el-icon>
+                                {{ totalMessages }} messages
+                            </span>
+                        </div>
+                    </div>
+                </div>
                 
-                .model-info {
-                    display: flex;
-                    align-items: center;
-                    padding: 6px 10px;
-                    border-radius: 6px;
-                    transition: background-color 0.2s;
-                    background-color: #f9f9f9;
+                <!-- 右侧功能按钮 -->
+                <div class="header-actions" :class="{'mobile-right-actions': isMobileView}">
                     
-                    [data-theme="dark"] & {
-                        background-color: #2d2d33;
-                    }
                     
-                    &:hover {
-                        background-color: #f0f2f5;
-                        
-                        [data-theme="dark"] & {
-                            background-color: #383842;
-                        }
-                    }
+                    <el-button class="share-btn" type="default" @click="handleShare">
+                        <span class="button-text">Share</span>
+                        <img style="width: 20px; height: 20px;" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAYAAABw4pVUAAAACXBIWXMAAAsTAAALEwEAmpwYAAADQklEQVR4nO3cS4hOYRzH8e8Ycg255LYhFmo2kktJWFi6LOSSyG6QhYUFCyGLWVA0lBI1LpmkFBtWNCImt42NZGNlIxau4zJHp85keuuc9/X2PM/7P8/5ferZPj3n+fa+58w58x4QERERERERERERCWwMcAC4DpwE5oVegPwzGngOJMPGZ2CxNqk19tXEGBr3W7SeyruUE+RLZDvTBqwENgBzMOxGTpB0xGI60D/suH4ChzCqCkGu5RxfegFjTuxBRmRfv0lZosQehOyqMSlLlCoEuVgniKkoVQgyEXhZlihVCJKaDDxtIMopWqwqQYaiPLMepUpBShGlTEGmZffY1gIbgc1Njj3AV6vnFKtBRgKrgGNAH/ChgQ30MbqqHqQj+7p436IAtWMQWF3FIEuBW9kGJMZGd5WCTMkO+I+Bjc8bp6lIkE3ARwMbXjQGs3NZ1EFGAWcNbHYjI/qT+njgbhMb8xroBY4CncB2Xfa6uaf05D8i9GePmGfjzlTr97VCfUJGA/caDHEHWIF75mOEDNLbwEa8A9bj72rOfIxQQfY2sBG3s03zYVJZYoQI0gF8r7MR3dmjVl8ulyWG7yBtwIM6G3ECv9LQ38oSw3eQHXU24koWzad2YKAsMXwGaQfeFMz9ChhHGDfLEsNnkG0F8/4CFhHOzJqT+m/gCEb5CvKozkk8tPRcsgbYAszFMB9BFhTcRk+vuGY5XH90fAQ5XDDnOYdrj5KPIH0Fcy5xuPYouQ4yFviRM99bx2uPkusgywrmO+947VFyHWRnwXy7HK89Sq6DHC+Yb7njtUfJdZCiR7MzHK89Sq6D5P1mMQl4q6TUXAcpmq/N8dqjFDKINEBBjFEQYxTEGAUxRkGMURBjFMQYBTFGQYxREGMUxBgFMUZBjFEQYxQk8iAXcub65Hjd0XIdZF3OXD2O1x0tH0/4umr+t/exx5+rRcfXI9f5wNbs5cV6lm4giDRJQYxREGMUxBgFMUZBShSkymMg+/vJx0twFITmw6Svk12oIJgaZ0IG6TFwwInxkb4JIpjdBg44MT4OhgySvpDyoYGDToyOF8CEkEGGonRmX1/pVZcGXAX261dfIiIiIiIiIiIiQmh/AenAVRtFBnygAAAAAElFTkSuQmCC" alt="share-3">
+                    </el-button>
+                    <el-button class="config-btn" type="default" @click="toggleSettings" style="background-color: black;" v-if="!isMobileView">
+                        <span style="color: white" class="button-text">Settings</span>
+                        <el-icon style="color: white" ><Setting /></el-icon>
+                    </el-button>
                     
-                    // 移动端样式
-                    @media (max-width: 768px) {
-                        padding: 4px 8px;
-                        min-width: 0;
-                        background-color: transparent;
-                        
-                        &:hover {
-                            background-color: transparent;
-                        }
-                    }
-                    
-                    .model-name {
-                        font-size: 15px;
-                        font-weight: 500;
-                        color: #333;
-                        
-                        [data-theme="dark"] & {
-                            color: #e0e0e0;
-                        }
-                        
-                        // 移动端样式 - 限制宽度防止超长
-                        @media (max-width: 768px) {
-                            font-size: 13px;
-                            max-width: 130px;
-                            white-space: nowrap;
-                            overflow: hidden;
-                            text-overflow: ellipsis;
-                        }
-                    }
-                    .el-tag.el-tag--success.el-tag--small.el-tag--dark.model-tag {
-        background: transparent;
-        color: black;
-        border: none;
-    }
-                    .model-tag {
-                        margin-left: 8px;
-                        height: auto;
-                        padding: 2px 8px;
-                        font-size: 11px;
-                        
-                        @media (max-width: 768px) {
-                            padding: 2px 6px;
-                            font-size: 10px;
-                        }
-                        
-                        .tag-content {
-                            display: flex;
-                            align-items: center;
-                            gap: 4px;
-                            
-                            .status-indicator {
-                                width: 8px;
-                                height: 8px;
-                                border-radius: 50%;
-                                
-                                &.online {
-                                    background-color: #10b981;
-                                    box-shadow: 0 0 0 rgba(16, 185, 129, 0.4);
-                                    animation: pulse 2s infinite;
-                                }
-                            }
-                        }
-                    }
-                    
-                    .model-dropdown-icon {
-                        margin-left: 6px;
-                        font-size: 12px;
-                        color: #909399;
-                        
-                        [data-theme="dark"] & {
-                            color: #aaa;
-                        }
-                        
-                        @media (max-width: 768px) {
-                            font-size: 10px;
-                            margin-left: 2px;
-                        }
-                    }
-                }
-                
-                .header-actions {
-                    display: flex;
-                    gap: 8px;
-                    
-                    &.mobile-right-actions {
-                        flex: 0 0 auto;
-                        z-index: 2; // 确保按钮在模型信息上方可点击
-                    }
-                    
-                    .config-btn, .share-btn, .action-btn {
-                        border-radius: 8px;
-                        display: flex;
-                        align-items: center;
-                        gap: 6px;
-                        background-color: #f9fafb;
-                        border: 1px solid #e5e7eb;
-                        color: #333;
-                        margin-left: 0px;
-                        
-                        [data-theme="dark"] & {
-                            background-color: #2d2d33;
-                            border-color: #444;
-                            color: #e0e0e0;
-                        }
-                        
-                        &:hover {
-                            background-color: #f0f2f5;
-                            
-                            [data-theme="dark"] & {
-                                background-color: #383842;
-                            }
-                        }
-                        
-                        .el-icon {
-                            font-size: 14px;
-                        }
-                    }
-
-                    .theme-btn {
-                        padding: 8px 8px;
-                        transition: transform 0.3s;
-                        
-                        &:hover {
-                            transform: rotate(15deg);
-                        }
-                        
-                        [data-theme="dark"] & .el-icon {
-                            color: #FFD43B;
-                        }
-                    }
-                    
-                    .action-btn[type="primary"] {
-                        background-color: #4284f5;
-                        border-color: #4284f5;
-                        color: white;
-                        
-                        &:hover {
-                            background-color: #3472dc;
-                            border-color: #3472dc;
-                        }
-                        
-                        [data-theme="dark"] & {
-                            background-color: #4284f5;
-                            border-color: #3470db;
-                        }
-                    }
-                    
-                    @media (max-width: 768px) {
-                        gap: 4px; // 减小按钮间距
-                        
-                        .config-btn, .share-btn, .action-btn {
-                            padding: 8px !important; // 减小内边距
-                            min-width: 36px !important; // 确保按钮不会太小
-                            margin-left: 0px;
-                            
-                            // 移动端隐藏按钮文字，只显示图标
-                            .button-text {
-                                display: none;
-                            }
-                            
-                            // 调整图标大小
-                            .el-icon {
-                                font-size: 16px;
-                                margin: 0;
-                            }
-                        }
-                    }
-                }
-            }
+                    <!-- 移除New下拉按钮，只在PC端显示 -->
+                </div>
+            </div>
             
             <!-- 添加滚动到底部按钮 -->
             <div 
@@ -466,7 +273,9 @@
                 <div v-else class="empty-state">
                     <div class="welcome-container">
                         <el-avatar :size="60" class="blue-avatar"style = "background:transparent">
-                    <svg width="60" color = "black"  height="60" viewBox="0 0 41 41" fill="none" xmlns="http://www.w3.org/2000/svg" stroke-width="1.5" class="h-2/3 w-2/3 text-black dark:text-white"><path d="M37.5324 16.8707C37.9808 15.5241 38.1363 14.0974 37.9886 12.6859C37.8409 11.2744 37.3934 9.91076 36.676 8.68622C35.6126 6.83404 33.9882 5.3676 32.0373 4.4985C30.0864 3.62941 27.9098 3.40259 25.8215 3.85078C24.8796 2.7893 23.7219 1.94125 22.4257 1.36341C21.1295 0.785575 19.7249 0.491269 18.3058 0.500197C16.1708 0.495044 14.0893 1.16803 12.3614 2.42214C10.6335 3.67624 9.34853 5.44666 8.6917 7.47815C7.30085 7.76286 5.98686 8.3414 4.8377 9.17505C3.68854 10.0087 2.73073 11.0782 2.02839 12.312C0.956464 14.1591 0.498905 16.2988 0.721698 18.4228C0.944492 20.5467 1.83612 22.5449 3.268 24.1293C2.81966 25.4759 2.66413 26.9026 2.81182 28.3141C2.95951 29.7256 3.40701 31.0892 4.12437 32.3138C5.18791 34.1659 6.8123 35.6322 8.76321 36.5013C10.7141 37.3704 12.8907 37.5973 14.9789 37.1492C15.9208 38.2107 17.0786 39.0587 18.3747 39.6366C19.6709 40.2144 21.0755 40.5087 22.4946 40.4998C24.6307 40.5054 26.7133 39.8321 28.4418 38.5772C30.1704 37.3223 31.4556 35.5506 32.1119 33.5179C33.5027 33.2332 34.8167 32.6547 35.9659 31.821C37.115 30.9874 38.0728 29.9178 38.7752 28.684C39.8458 26.8371 40.3023 24.6979 40.0789 22.5748C39.8556 20.4517 38.9639 18.4544 37.5324 16.8707ZM22.4978 37.8849C20.7443 37.8874 19.0459 37.2733 17.6994 36.1501C17.7601 36.117 17.8666 36.0586 17.936 36.0161L25.9004 31.4156C26.1003 31.3019 26.2663 31.137 26.3813 30.9378C26.4964 30.7386 26.5563 30.5124 26.5549 30.2825V19.0542L29.9213 20.998C29.9389 21.0068 29.9541 21.0198 29.9656 21.0359C29.977 21.052 29.9842 21.0707 29.9867 21.0902V30.3889C29.9842 32.375 29.1946 34.2791 27.7909 35.6841C26.3872 37.0892 24.4838 37.8806 22.4978 37.8849ZM6.39227 31.0064C5.51397 29.4888 5.19742 27.7107 5.49804 25.9832C5.55718 26.0187 5.66048 26.0818 5.73461 26.1244L13.699 30.7248C13.8975 30.8408 14.1233 30.902 14.3532 30.902C14.583 30.902 14.8088 30.8408 15.0073 30.7248L24.731 25.1103V28.9979C24.7321 29.0177 24.7283 29.0376 24.7199 29.0556C24.7115 29.0736 24.6988 29.0893 24.6829 29.1012L16.6317 33.7497C14.9096 34.7416 12.8643 35.0097 10.9447 34.4954C9.02506 33.9811 7.38785 32.7263 6.39227 31.0064ZM4.29707 13.6194C5.17156 12.0998 6.55279 10.9364 8.19885 10.3327C8.19885 10.4013 8.19491 10.5228 8.19491 10.6071V19.808C8.19351 20.0378 8.25334 20.2638 8.36823 20.4629C8.48312 20.6619 8.64893 20.8267 8.84863 20.9404L18.5723 26.5542L15.206 28.4979C15.1894 28.5089 15.1703 28.5155 15.1505 28.5173C15.1307 28.5191 15.1107 28.516 15.0924 28.5082L7.04046 23.8557C5.32135 22.8601 4.06716 21.2235 3.55289 19.3046C3.03862 17.3858 3.30624 15.3413 4.29707 13.6194ZM31.955 20.0556L22.2312 14.4411L25.5976 12.4981C25.6142 12.4872 25.6333 12.4805 25.6531 12.4787C25.6729 12.4769 25.6928 12.4801 25.7111 12.4879L33.7631 17.1364C34.9967 17.849 36.0017 18.8982 36.6606 20.1613C37.3194 21.4244 37.6047 22.849 37.4832 24.2684C37.3617 25.6878 36.8382 27.0432 35.9743 28.1759C35.1103 29.3086 33.9415 30.1717 32.6047 30.6641C32.6047 30.5947 32.6047 30.4733 32.6047 30.3889V21.188C32.6066 20.9586 32.5474 20.7328 32.4332 20.5338C32.319 20.3348 32.154 20.1698 31.955 20.0556ZM35.3055 15.0128C35.2464 14.9765 35.1431 14.9142 35.069 14.8717L27.1045 10.2712C26.906 10.1554 26.6803 10.0943 26.4504 10.0943C26.2206 10.0943 25.9948 10.1554 25.7963 10.2712L16.0726 15.8858V11.9982C16.0715 11.9783 16.0753 11.9585 16.0837 11.9405C16.0921 11.9225 16.1048 11.9068 16.1207 11.8949L24.1719 7.25025C25.4053 6.53903 26.8158 6.19376 28.2383 6.25482C29.6608 6.31589 31.0364 6.78077 32.2044 7.59508C33.3723 8.40939 34.2842 9.53945 34.8334 10.8531C35.3826 12.1667 35.5464 13.6095 35.3055 15.0128ZM14.2424 21.9419L10.8752 19.9981C10.8576 19.9893 10.8423 19.9763 10.8309 19.9602C10.8195 19.9441 10.8122 19.9254 10.8098 19.9058V10.6071C10.8107 9.18295 11.2173 7.78848 11.9819 6.58696C12.7466 5.38544 13.8377 4.42659 15.1275 3.82264C16.4173 3.21869 17.8524 2.99464 19.2649 3.1767C20.6775 3.35876 22.0089 3.93941 23.1034 4.85067C23.0427 4.88379 22.937 4.94215 22.8668 4.98473L14.9024 9.58517C14.7025 9.69878 14.5366 9.86356 14.4215 10.0626C14.3065 10.2616 14.2466 10.4877 14.2479 10.7175L14.2424 21.9419ZM16.071 17.9991L20.4018 15.4978L24.7325 17.9975V22.9985L20.4018 25.4983L16.071 22.9985V17.9991Z" fill="currentColor"></path></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="50" height="50" viewBox="0 0 50 50">
+<path fill="black" d="M 25 1 A 2.5 2.5 0 0 0 22.509766 3.2851562 L 7.2539062 12.119141 A 2.5 2.5 0 0 0 6.5 12 A 2.5 2.5 0 0 0 5 16.498047 L 5 33.503906 A 2.5 2.5 0 0 0 6.5 38 A 2.5 2.5 0 0 0 7.2558594 37.882812 L 22.513672 46.716797 A 2.5 2.5 0 0 0 25 49 A 2.5 2.5 0 0 0 27.490234 46.714844 L 42.746094 37.880859 A 2.5 2.5 0 0 0 43.5 38 A 2.5 2.5 0 0 0 45 33.501953 L 45 16.496094 A 2.5 2.5 0 0 0 43.5 12 A 2.5 2.5 0 0 0 42.744141 12.117188 L 27.486328 3.2832031 A 2.5 2.5 0 0 0 25 1 z M 22.265625 5.7402344 L 15.130859 18.128906 L 8.9960938 14.578125 A 2.5 2.5 0 0 0 8.8027344 13.533203 L 22.265625 5.7402344 z M 27.734375 5.7402344 L 41.197266 13.533203 A 2.5 2.5 0 0 0 41.001953 14.580078 L 34.869141 18.128906 L 27.734375 5.7402344 z M 8.1347656 16.390625 L 14.134766 19.865234 L 15.136719 18.134766 L 23.519531 22.990234 C 23.939531 22.690234 24.45 22.5 25 22.5 C 25.55 22.5 26.060469 22.690234 26.480469 22.990234 L 34.863281 18.134766 L 35.865234 19.865234 L 41.867188 16.390625 A 2.5 2.5 0 0 0 43 16.947266 L 43 32.253906 L 35.869141 19.869141 L 27.470703 24.720703 C 27.480703 24.820703 27.5 24.91 27.5 25 C 27.5 26.02 26.88 26.899062 26 27.289062 L 26 37 L 40.275391 37 L 26.822266 44.789062 A 2.5 2.5 0 0 0 26 44.210938 L 26 37 L 24 37 L 24 44.210938 A 2.5 2.5 0 0 0 23.177734 44.789062 L 9.7246094 37 L 24 37 L 24 27.289062 C 23.12 26.899062 22.5 26.02 22.5 25 C 22.5 24.91 22.519297 24.820703 22.529297 24.720703 L 14.130859 19.869141 L 7 32.253906 L 7 16.949219 A 2.5 2.5 0 0 0 8.1347656 16.390625 z"></path>
+</svg>
                 </el-avatar>
                         <h1 class="welcome-title">Hi, there 👋</h1>
                         <p class="welcome-subtitle">Tell us what you need, and we'll handle the rest.</p>
@@ -561,7 +370,7 @@
         <el-dialog
             v-model="showSettings"
             title="Settings"
-            width="420px"
+            width="400px"
             :close-on-click-modal="false"
             :show-close="true"
             destroy-on-close
@@ -588,17 +397,7 @@
                         />
                     </el-select>
                 </el-form-item>
-                <el-form-item label="System Prompt">
-                    <el-input
-                        v-model="settingsForm.systemPrompt"
-                        type="textarea"
-                        :rows="3"
-                        placeholder="设置默认的系统提示词（可选）"
-                    />
-                    <div class="form-item-tip">
-                        系统提示词将作为指令发送给AI，不会显示在对话中
-                    </div>
-                </el-form-item>
+                <!-- 移除系统提示词设置，该功能将整合到角色设定功能中 -->
                 <el-form-item label="Temperature">
                     <el-slider
                         v-model="settingsForm.temperature"
@@ -711,33 +510,23 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onBeforeUnmount, watch, nextTick } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, computed, onMounted, onBeforeUnmount, watch, nextTick, h } from 'vue'
 import { useChatStore } from '../stores/chat'
 import { useSettingsStore } from '../stores/settings'
+import { useHistoryStore } from '../stores/history'
 import { ElMessageBox, ElMessage } from 'element-plus'
 import ChatMessage from '../components/ChatMessage.vue'
 import ChatInput from '../components/ChatInput.vue'
-import { ArrowDown, Menu, Check, ArrowLeft, Setting, Plus, Edit, Star, Search, MoreFilled, ChatRound, Share, User, Fold, Expand, Refresh, ChatDotRound, Clock, Moon, Sunny } from '@element-plus/icons-vue'
+import { ArrowDown, Menu, Check, ArrowLeft, Setting, Plus, Edit, Star, Search, MoreFilled, ChatRound, Share, User, Fold, Expand, Refresh, ChatDotRound, Clock, Moon, Sunny, Download, Delete } from '@element-plus/icons-vue'
 import { v4 as uuidv4 } from 'uuid'
 // 导入 messageHandler 用于处理消息
 import { messageHandler } from '../utils/messageHandler'
 import { fetchModelList } from '../stores/settings'
-import HistoryMenu from '../components/HistoryMenu.vue'
-import { 
-    getHistoryIndex, 
-    getHistoryItem, 
-    saveHistoryIndex, 
-    saveHistoryItem, 
-    deleteHistoryItem, 
-    saveCurrentChatToHistory, 
-    migrateOldHistory 
-} from '../utils/historyManager'
-import { exportConversation } from '../../format.js'
 
 // 状态管理
 const chatStore = useChatStore()
 const settingsStore = useSettingsStore()
+const historyStore = useHistoryStore()
 
 // 移动端检测 - 改进检测方法
 const isMobileView = ref(window.innerWidth <= 768)
@@ -766,15 +555,44 @@ const toggleMobileSidebar = () => {
 
 // 添加窗口大小变化监听
 onMounted(() => {
-    window.addEventListener('resize', handleResize)
-    // 初始检测
-    handleResize()
+    // 窗口大小事件监听
+    window.addEventListener('resize', handleResize);
+    handleResize();
     
-    // 尝试迁移旧的历史记录
-    const hasMigrated = migrateOldHistory();
-    if (hasMigrated) {
-        console.log('已成功迁移旧的历史记录');
+    // Migrate old chat history to new format if needed
+    migrateOldChatHistory();
+    
+    // Load current chat
+    const savedCurrentChat = localStorage.getItem('currentChat');
+    if (savedCurrentChat) {
+        try {
+            const savedMessages = JSON.parse(savedCurrentChat);
+            if (savedMessages.length > 0) {
+                // Load messages to the chat store if we're in current session
+                if (historyStore.isCurrentSession) {
+                    chatStore.setMessages(savedMessages);
+                }
+                
+                // Update the current session title
+                updateCurrentSessionTitle(savedMessages);
+            }
+        } catch (e) {
+            console.error('加载当前聊天失败:', e);
+            currentSessionTitle.value = '新对话';
+            currentChatTitle.value = '新对话';
+        }
+    } else {
+        currentSessionTitle.value = '新对话';
+        currentChatTitle.value = '新对话';
     }
+    
+    // 初始化滚动状态
+    nextTick(() => {
+        if (messagesContainer.value) {
+            scrollToBottom();
+            handleScroll();
+        }
+    });
 })
 
 // 移除监听
@@ -833,8 +651,8 @@ const initSettingsForm = () => {
         maxTokens: settingsStore.maxTokens,
         topP: settingsStore.topP,
         topK: settingsStore.topK,
-        streamResponse: settingsStore.streamResponse,
-        systemPrompt: settingsStore.systemPrompt
+        streamResponse: settingsStore.streamResponse
+        // 已移除 systemPrompt 字段
     }
 }
 
@@ -851,22 +669,16 @@ const currentChatTitle = ref('新对话')
 // 追踪当前活跃的历史记录ID
 const activeHistoryId = ref('current')
 
+// Dedicated state for the "current, unsaved" session
+const currentSessionMessages = ref([]); 
+const currentSessionTitle = ref('新对话'); // For SIDEBAR "Current Chat" ITEM's title
+
 // 用于中断请求的控制器 - 确保它在全局作用域中定义
 const activeController = ref(null);
 
 // 保存聊天历史到localStorage
 const saveChatHistory = () => {
-  // 获取当前的历史索引
-  const historyIndex = chatHistory.value.map(chat => ({
-    id: chat.id,
-    title: chat.title,
-    timestamp: chat.timestamp,
-    lastUpdated: chat.lastUpdated || new Date().toISOString(),
-    messageCount: chat.messageCount || (chat.messages ? chat.messages.length : 0)
-  }));
-  
-  // 保存索引到历史管理器
-  saveHistoryIndex(historyIndex);
+  localStorage.setItem('chatHistory', JSON.stringify(chatHistory.value))
 }
 
 // 发送消息方法
@@ -1037,83 +849,144 @@ const handleSend = async (content) => {
 // 处理会话项点击
 const handleChatItemClick = (chatId) => {
   console.log(`Clicked on chat: ${chatId}`);
-  if (chatId === 'current') {
-    // 当前对话，什么都不做
+  
+  // If already the active chat, do nothing
+  if (chatId === historyStore.activeId) {
     return;
   }
   
-  // 保存当前对话到历史记录，如果有意义的内容
-  if (chatStore.messages.length > 1) {
-    // 检查当前对话是否已经在历史记录中
-    const currentChatStr = JSON.stringify(chatStore.messages);
-    const existingChatIndex = chatHistory.value.findIndex(
-      chat => JSON.stringify(chat.messages) === currentChatStr
-    );
+  // If clicking on current session
+  if (chatId === 'current') {
+    // Switch to current session
+    historyStore.setActiveRecord('current');
     
-    // 如果当前对话不在历史记录中，则保存它
-    if (existingChatIndex === -1) {
-      saveChatToLocalHistory();
+    // Update UI
+    currentChatTitle.value = currentSessionTitle.value;
+  } else {
+    // Switch to history record
+    historyStore.setActiveRecord(chatId);
+    
+    // Update UI with the history record's title
+    const record = historyStore.getRecordById(chatId);
+    if (record) {
+      currentChatTitle.value = record.title;
     }
   }
+};
+
+// 处理新建对话
+const handleNewChat = () => {
+  // If we're already in a fresh current session, do nothing
+  if (historyStore.isCurrentSession && chatStore.messages.length === 0) {
+    return;
+  }
   
-  // 加载选择的历史对话
-  loadChatHistory(chatId);
+  // Switch to current session (this will save the current messages if needed)
+  historyStore.setActiveRecord('current');
+  
+  // Clear all messages in the current session
+  chatStore.clearMessages();
+  
+  // Update UI
+  currentChatTitle.value = '新对话';
+  currentSessionTitle.value = '新对话';
+  
+  ElMessage.success('已新建对话');
 }
 
-// 新增：将当前聊天保存到历史记录中
-const saveChatToLocalHistory = () => {
-  if (chatStore.messages.length === 0) return;
-  
-  // 生成ID，如果是当前活跃的聊天，尝试使用已有ID
-  const chatId = activeHistoryId.value !== 'current' ? activeHistoryId.value : uuidv4();
-  
-  // 为聊天生成标题
-  let title = currentChatTitle.value;
-  if (title === '新对话' && chatStore.messages.length > 0) {
-    // 使用第一条用户消息的前20个字符作为标题
-    const firstUserMessage = chatStore.messages.find(msg => msg.role === 'user');
-    if (firstUserMessage) {
-      const content = firstUserMessage.content.trim();
-      title = content.length > 20 ? content.substring(0, 20) + '...' : content;
-    }
+// 处理历史记录操作
+const handleHistoryAction = (command, chat) => {
+  switch (command) {
+    case 'export':
+      exportChat(chat.messages);
+      break;
+    case 'delete':
+      ElMessageBox.confirm(
+        `确定要删除对话"${chat.title}"吗？`,
+        '删除确认',
+        {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning',
+        }
+      ).then(() => {
+        historyStore.deleteRecord(chat.id);
+      }).catch(() => {
+        // Cancel delete
+      });
+      break;
   }
-  
-  // 创建聊天记录对象
-  const chatData = {
-    id: chatId,
-    title: title,
-      messages: JSON.parse(JSON.stringify(chatStore.messages)),
-    timestamp: new Date().toISOString(),
-    systemPrompt: settingsStore.currentRole?.prompt || settingsStore.systemPrompt || ''
-  };
-  
-  // 使用历史记录管理器保存
-  const savedId = saveCurrentChatToHistory(chatData);
-  
-  // 更新本地状态
-  const existingIndex = chatHistory.value.findIndex(c => c.id === chatId);
-  if (existingIndex !== -1) {
-    // 更新现有记录
-    chatHistory.value[existingIndex] = {
-      ...chatHistory.value[existingIndex],
-      title: title,
-      timestamp: chatData.timestamp,
-      lastUpdated: new Date().toISOString(),
-      messageCount: chatStore.messages.length
-    };
+};
+
+// 处理当前会话操作
+const handleCurrentChatAction = (command) => {
+  switch (command) {
+    case 'export':
+      exportChat(chatStore.messages);
+      break;
+    case 'clear':
+      ElMessageBox.confirm(
+        '确定要清空当前对话吗？',
+        '清空确认',
+        {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning',
+        }
+      ).then(() => {
+        chatStore.clearMessages();
+        currentSessionTitle.value = '新对话';
+        currentChatTitle.value = '新对话';
+        // Save empty current chat
+        localStorage.setItem('currentChat', JSON.stringify([]));
+      }).catch(() => {
+        // Cancel clear
+      });
+      break;
+    case 'save':
+      if (chatStore.messages.length === 0) {
+        ElMessage.warning('当前对话为空，无法保存');
+        return;
+      }
+      
+      ElMessageBox.prompt(
+        '请输入对话标题',
+        '保存对话',
+        {
+          confirmButtonText: '保存',
+          cancelButtonText: '取消',
+          inputValue: currentSessionTitle.value,
+        }
+      ).then(({ value }) => {
+        // Save current session as history record
+        const newId = historyStore.saveCurrentAsHistory(value);
+        if (newId) {
+          ElMessage.success(`对话已保存: ${value}`);
+        }
+      }).catch(() => {
+        // Cancel save
+      });
+      break;
+  }
+};
+
+// 保存消息 - 更新为使用新的历史记录系统
+const saveMessages = () => {
+  // Only save messages if we're in the current session
+  if (historyStore.isCurrentSession) {
+    // Save to localStorage for current session persistence
+    localStorage.setItem('currentChat', JSON.stringify(chatStore.messages));
+    
+    // Update current session title
+    updateCurrentSessionTitle(chatStore.messages);
   } else {
-    // 添加新记录
-    chatHistory.value.unshift({
-      id: chatId,
-      title: title,
-      timestamp: chatData.timestamp,
-      lastUpdated: new Date().toISOString(),
-      messageCount: chatStore.messages.length
+    // If we're viewing a history record, update it with any changes
+    historyStore.updateRecord(historyStore.activeId, {
+      messages: JSON.parse(JSON.stringify(chatStore.messages)),
+      tokenCount: { ...chatStore.tokenCount }
     });
   }
-  
-  return chatId;
-}
+};
 
 // 新增：处理刷新按钮点击
 const handleRefresh = () => {
@@ -1195,7 +1068,10 @@ const handleRoleSelected = (role) => {
     prompt: role.prompt
   };
   // 不需要重新发送消息，只需要更新系统状态
-  ElMessage.success(`已设置角色: ${role.name}`);
+  ElMessage.success({
+    message: `已设置角色: ${role.name}`,
+    description: '该角色提示词将作为系统指令发送给AI，取代系统提示词设置'
+  });
 }
 
 // 准备发送给API的消息
@@ -1205,16 +1081,10 @@ const prepareMessagesForAPI = () => {
   
   // 添加系统提示词（如果有）
   if (settingsStore.currentRole?.prompt) {
-    // 优先使用当前角色的提示词
+    // 使用当前角色的提示词作为系统提示
     apiMessages.push({
       role: 'system',
       content: settingsStore.currentRole.prompt
-    });
-  } else if (settingsStore.systemPrompt) {
-    // 如果没有角色提示词，但有系统提示词设置，使用系统提示词
-    apiMessages.push({
-      role: 'system',
-      content: settingsStore.systemPrompt
     });
   }
   
@@ -1238,14 +1108,9 @@ const clearCurrentRole = () => {
   ElMessage.success('已清除当前角色设置');
 }
 
-// 自动保存消息到localStorage
-const saveMessages = () => {
-  localStorage.setItem('currentChat', JSON.stringify(chatStore.messages));
-}
-
-// 修改自动保存当前聊天记录方法，使用统一的saveCurrentChatToHistory
+// 修改自动保存当前聊天记录方法，使用saveMessages函数
 const autoSaveCurrentChat = () => {
-  saveChatToLocalHistory();
+  saveMessages();
 }
 
 // 新建聊天
@@ -1258,85 +1123,82 @@ const handleNewChat = () => {
     );
     
     if (existingChatIndex === -1) {
-      saveChatToLocalHistory();
+      // Save current chat to history - using historyStore instead of the undefined function
+      const title = currentSessionTitle.value || '新对话';
+      historyStore.saveCurrentAsHistory(title);
     }
   }
   
   // 清空当前消息
   chatStore.clearMessages();
+  
+  // 确保currentSessionMessages和currentSessionTitle同步
+  currentSessionMessages.value = [];
+  currentSessionTitle.value = '新对话';
   currentChatTitle.value = '新对话';
-  activeHistoryId.value = 'current'; // 重置活跃ID为当前
+  
+  // 重置活跃ID为当前
+  activeHistoryId.value = 'current'; 
+  
   ElMessage.success('已新建对话');
 }
 
 // 加载历史对话
 const loadChatHistory = (chatId) => {
-  // 从历史管理器获取完整记录
-  const historyItem = getHistoryItem(chatId);
+  // 如果请求加载当前活跃的历史记录，则不执行任何操作
+  if (chatId === activeHistoryId.value) {
+    return;
+  }
   
-  if (historyItem && historyItem.messages) {
-    // 更新状态
-    chatStore.setMessages(JSON.parse(JSON.stringify(historyItem.messages)));
-    currentChatTitle.value = historyItem.title || '未命名对话';
-    activeHistoryId.value = chatId; // 设置当前活跃的历史记录ID
-    
-    // 如果有角色设定，恢复它
-    if (historyItem.systemPrompt) {
-      settingsStore.currentRole = {
-        name: '已恢复的角色',
-        prompt: historyItem.systemPrompt
-      };
-    }
-    
-    ElMessage.success(`已加载对话: ${historyItem.title}`);
-    
-    // 滚动到顶部
-    nextTick(() => {
-      if (messagesContainer.value) {
-        messagesContainer.value.scrollTop = 0;
+  // 如果是加载普通历史记录项
+  if (chatId !== 'current') {
+    const chat = chatHistory.value.find(c => c.id === chatId);
+    if (chat) {
+      // 设置活跃的历史记录ID
+      activeHistoryId.value = chatId;
+      
+      // 加载消息到聊天区域
+      chatStore.setMessages(JSON.parse(JSON.stringify(chat.messages)));
+      
+      // 更新主聊天标题为历史记录的标题，但不更新当前会话标题
+      currentChatTitle.value = chat.title;
+      
+      // 如果有角色数据，恢复角色设置
+      if (chat.roleData) {
+        settingsStore.currentRole = {
+          name: chat.roleData.name,
+          prompt: chat.roleData.prompt
+        };
+      } else {
+        // 如果没有角色数据，清除当前角色设置
+        settingsStore.currentRole = null;
       }
-    });
+      
+      ElMessage.success(`已加载对话: ${chat.title}`);
+    }
   } else {
-    ElMessage.error('无法加载对话，可能已被删除');
+    // 这里不应该到达，因为current由handleChatItemClick直接处理
+    console.warn('loadChatHistory被调用加载current，但这应该由handleChatItemClick处理');
   }
 }
 
 // 删除历史对话
 const handleDeleteChat = (chatId) => {
-  // 使用 Element Plus 确认对话框
-  ElMessageBox.confirm(
-    '确定要删除这个对话吗？此操作不可恢复。', 
-    '删除确认', 
-    {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
-      type: 'warning'
-    }
-  ).then(() => {
-    // 用户确认删除
-    const indexToDelete = chatHistory.value.findIndex(chat => chat.id === chatId);
+  const indexToDelete = chatHistory.value.findIndex(chat => chat.id === chatId)
   if (indexToDelete !== -1) {
-      const chatToDelete = chatHistory.value[indexToDelete];
-      
-      // 从历史管理器中删除
-      deleteHistoryItem(chatId);
-      
-      // 从本地状态中删除
-      chatHistory.value.splice(indexToDelete, 1);
+    const chatToDelete = chatHistory.value[indexToDelete]
+    ElMessage.success(`已删除对话: ${chatToDelete.title}`)
+    chatHistory.value.splice(indexToDelete, 1)
     
     // 如果删除的是当前活跃的历史记录，则重置为current
     if (activeHistoryId.value === chatId) {
-        activeHistoryId.value = 'current';
-        chatStore.clearMessages();
-        currentChatTitle.value = '新对话';
-      }
-      
-      ElMessage.success(`已删除对话: ${chatToDelete.title}`);
+      activeHistoryId.value = 'current'
+      chatStore.clearMessages()
+      currentChatTitle.value = '新对话'
     }
-  }).catch(() => {
-    // 用户取消删除
-    ElMessage.info('已取消删除');
-  });
+    
+    saveChatHistory()
+  }
 }
 
 // 切换侧边栏函数
@@ -1378,7 +1240,7 @@ const saveSettings = () => {
   settingsStore.topP = settingsForm.value.topP;
   settingsStore.topK = settingsForm.value.topK;
   settingsStore.streamResponse = settingsForm.value.streamResponse;
-  settingsStore.systemPrompt = settingsForm.value.systemPrompt;
+  // 已移除 systemPrompt 的保存
   
   // 强制刷新模型选择器显示
   modelOptionsLastUpdated.value = Date.now();
@@ -1423,6 +1285,9 @@ watch(messages, () => {
 
 // 在组件挂载时加载保存的消息
 onMounted(() => {
+  window.addEventListener('resize', handleResize);
+  handleResize();
+  
   // 加载保存的聊天历史
   const savedHistory = localStorage.getItem('chatHistory');
   if (savedHistory) {
@@ -1441,21 +1306,99 @@ onMounted(() => {
       const savedMessages = JSON.parse(savedCurrentChat);
       if (savedMessages.length > 0) {
         chatStore.setMessages(savedMessages);
+        
+        // 初始化当前会话状态
+        currentSessionMessages.value = JSON.parse(JSON.stringify(savedMessages));
+        
+        // 设置当前会话标题
+        updateCurrentSessionTitle(savedMessages);
       }
     } catch (e) {
       console.error('加载当前聊天失败:', e);
+      
+      // 初始化默认状态
+      currentSessionMessages.value = [];
+      currentSessionTitle.value = '新对话';
+      currentChatTitle.value = '新对话';
     }
+  } else {
+    // 如果没有保存的当前聊天，初始化默认状态
+    currentSessionMessages.value = [];
+    currentSessionTitle.value = '新对话';
+    currentChatTitle.value = '新对话';
   }
   
   // 初始化滚动状态
   nextTick(() => {
     if (messagesContainer.value) {
       scrollToBottom();
-      // 初始时检查滚动位置
       handleScroll();
     }
   });
 });
+
+// Watch for changes in chatStore.messages to update currentSessionTitle and currentSessionMessages
+// ONLY when the current chat is active.
+watch(() => chatStore.messages, (newMessages) => {
+  // 总是保存消息到localStorage
+  localStorage.setItem('currentChat', JSON.stringify(newMessages));
+  
+  // 当激活的是当前会话时，更新当前会话状态
+  if (activeHistoryId.value === 'current') {
+    // 保持currentSessionMessages和chatStore.messages同步
+    currentSessionMessages.value = JSON.parse(JSON.stringify(newMessages));
+    
+    // 更新当前会话标题
+    updateCurrentSessionTitle(newMessages);
+  }
+  
+  // 处理滚动
+  nextTick(() => {
+    if (messagesContainer.value) {
+      if (isScrolledToBottom()) {
+        scrollToBottom();
+      } else {
+        showScrollButton.value = true;
+      }
+    }
+  });
+}, { deep: true });
+
+// 更新当前会话标题的函数
+const updateCurrentSessionTitle = (messages) => {
+  if (!messages || messages.length === 0) {
+    currentSessionTitle.value = '新对话';
+    if (activeHistoryId.value === 'current') {
+      currentChatTitle.value = '新对话';
+    }
+    return;
+  }
+  
+  // 使用第一条用户消息作为标题
+  const firstUserMsg = messages.find(m => m.role === 'user');
+  if (!firstUserMsg) {
+    currentSessionTitle.value = '新对话';
+    if (activeHistoryId.value === 'current') {
+      currentChatTitle.value = '新对话';
+    }
+    return;
+  }
+  
+  // 创建标题
+  const newTitle = firstUserMsg.content.length > 20 
+    ? firstUserMsg.content.substring(0, 20) + '...' 
+    : firstUserMsg.content;
+    
+  // 更新标题
+  currentSessionTitle.value = newTitle;
+  
+  // 如果当前会话是激活的，同时也更新主聊天区域的标题
+  if (activeHistoryId.value === 'current') {
+    currentChatTitle.value = newTitle;
+  }
+  
+  console.log('更新当前会话标题:', newTitle);
+}
 
 // 移除保存按钮相关的函数，改为自动保存
 // 保存当前对话 - 这个方法不再需要，但保留以便手动触发
@@ -1598,10 +1541,10 @@ const handleScroll = () => {
 };
 
 // 处理消息更新
-const handleMessageUpdate = (message, updatedContent) => {
-  const index = chatStore.messages.findIndex(m => m.id === message.id);
+const handleMessageUpdate = (updatedMessage) => {
+  const index = chatStore.messages.findIndex(m => m.id === updatedMessage.id);
   if (index !== -1) {
-    chatStore.messages[index].content = updatedContent;
+    chatStore.messages[index].content = updatedMessage.content;
     saveMessages();
   }
 };
@@ -1814,73 +1757,533 @@ const isLatestAIMessage = (message) => {
   return message.id === lastAssistantMessage.id;
 }
 
-// 处理重命名聊天
-const handleRenameChat = (chatId) => {
-    const index = chatHistory.value.findIndex(chat => chat.id === chatId);
-    if (index === -1) return;
+// 处理历史记录操作
+const handleHistoryAction = (command, chat) => {
+  switch (command) {
+    case 'export':
+      // 实现导出对话功能
+      exportChat(chat);
+      break;
+    case 'delete':
+      // 实现删除对话功能
+      handleDeleteChat(chat.id);
+      break;
+    default:
+      console.log('Unknown command:', command);
+  }
+}
 
-    const currentTitle = chatHistory.value[index].title;
-    
-    ElMessageBox.prompt('请输入新的聊天标题', '重命名聊天', {
-        confirmButtonText: '确认',
-        cancelButtonText: '取消',
-        inputValue: currentTitle,
-        inputValidator: (value) => {
-            if (!value || value.trim() === '') {
-                return '标题不能为空';
-            }
-            return true;
-        }
-    }).then(({ value }) => {
-        // 更新标题
-        const newTitle = value.trim();
-        
-        // 更新本地状态
-        chatHistory.value[index].title = newTitle;
-        
-        // 获取完整历史记录并更新
-        const historyItem = getHistoryItem(chatId);
-        if (historyItem) {
-            historyItem.title = newTitle;
-            saveHistoryItem(chatId, historyItem);
-            
-            // 更新索引
-            const historyIndex = getHistoryIndex();
-            const indexItem = historyIndex.find(item => item.id === chatId);
-            if (indexItem) {
-                indexItem.title = newTitle;
-                saveHistoryIndex(historyIndex);
-            }
-            
-            ElMessage({
-                type: 'success',
-                message: '聊天已重命名'
-            });
-        }
-    }).catch(() => {
-        // 用户取消操作
-    });
-};
+// 导出聊天记录功能
+const exportChat = (chat) => {
+  if (!chat || !chat.messages || chat.messages.length === 0) {
+    ElMessage.warning('没有可导出的对话内容');
+    return;
+  }
 
-// 处理导出聊天记录
-const handleExportChat = (chatId) => {
-    // 获取完整历史记录
-    const historyItem = getHistoryItem(chatId);
-    if (!historyItem || !historyItem.messages || historyItem.messages.length === 0) {
-        ElMessage({
-            type: 'warning',
-            message: '没有可导出的聊天记录'
-        });
-        return;
+  // 提供格式选择 - 使用更友好的选择框
+  ElMessageBox({
+    title: '📄导出对话',
+    message: h('div', { class: 'export-format-selector' }, [
+      h('p', { class: 'format-title' }, '选择导出格式:'),
+      h('div', { class: 'format-options' }, [
+        h('div', { 
+          class: 'format-option', 
+          onClick: () => selectExportFormat(chat, '1'),
+        }, [
+          h('div', { class: 'format-icon txt-icon' }, 'TXT'),
+          h('div', { class: 'format-label' }, '纯文本'),
+          h('div', { class: 'format-desc' }, '简单文本格式，适合任何设备查看')
+        ]),
+        h('div', { 
+          class: 'format-option', 
+          onClick: () => selectExportFormat(chat, '2'),
+        }, [
+          h('div', { class: 'format-icon html-icon' }, 'HTML'),
+          h('div', { class: 'format-label' }, '网页样式'),
+          h('div', { class: 'format-desc' }, '美观的网页格式，适合分享和打印')
+        ]),
+        h('div', { 
+          class: 'format-option', 
+          onClick: () => selectExportFormat(chat, '3'),
+        }, [
+          h('div', { class: 'format-icon md-icon' }, 'MD'),
+          h('div', { class: 'format-label' }, 'Markdown'),
+          h('div', { class: 'format-desc' }, '标记语言格式，适合编辑和转换')
+        ]),
+        h('div', { 
+          class: 'format-option', 
+          onClick: () => selectExportFormat(chat, '4'),
+        }, [
+          h('div', { class: 'format-icon json-icon' }, 'JSON'),
+          h('div', { class: 'format-label' }, 'JSON数据'),
+          h('div', { class: 'format-desc' }, '完整数据格式，适合开发和导入')
+        ])
+      ])
+    ]),
+    showCancelButton: true,
+    confirmButtonText: '取消',
+    cancelButtonText: '关闭',
+    showConfirmButton: false,
+    customClass: 'export-format-dialog'
+  }).catch(() => {
+    // 用户取消导出
+  });
+}
+
+// 根据选择的格式处理导出
+const selectExportFormat = (chat, format) => {
+  let exportContent = '';
+  const dateStr = new Date().toLocaleString();
+  const messages = chat.messages;
+  const rolePrompt = chat.roleData?.prompt || '';
+
+  switch(format) {
+    case '1': // TXT 格式
+      exportContent = `╭───────────────────────────────╮\n│      AI 助手对话记录         │\n│ 导出时间: ${dateStr.padEnd(19)} │\n╰───────────────────────────────╯\n\n`;
+      
+      // 添加角色设置
+      if (rolePrompt) {
+        exportContent += `╭── 💡 角色设置 ──\n│\n│ ${rolePrompt.split('\n').join('\n│ ')}\n╰────────────────────────────────\n\n`;
+      }
+      
+      // 添加消息内容
+      messages.forEach(msg => {
+        const role = msg.role === 'user' ? '👤 用户' : '🤖 AI';
+        const time = msg.timestamp ? new Date(msg.timestamp).toLocaleString() : '未知时间';
+
+        exportContent += `\n╭── ${role} · ${time} ──\n│\n`;
+
+        // 优先显示思考内容
+        if (msg.thinkingContent) {
+          exportContent += `│ 💭 思考过程:\n│ ${msg.thinkingContent.split('\n').join('\n│ ')}\n│\n`;
+        }
+
+        exportContent += `│ 📝 内容:\n│ ${msg.content.split('\n').join('\n│ ')}\n╰────────────────────────────────\n`;
+      });
+      break;
+
+    case '2': // HTML 格式
+      exportContent = `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI 对话记录 - ${dateStr}</title>
+  <style>
+    :root {
+      --primary-color: #4284f5;
+      --primary-gradient: linear-gradient(135deg, #4284f5, #42a5f5);
+      --secondary-color: #f5f7fa;
+      --reasoning-color: #f39c12;
+      --user-gradient: linear-gradient(135deg, #e74c3c, #f39c12, #2c7a65);
+      --ai-gradient: linear-gradient(135deg, #4284f5, #0097a7);
+      --card-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+      --border-radius: 12px;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      line-height: 1.8;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 2rem;
+      background: var(--secondary-color);
+      color: #333;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 3rem;
+      padding: 2.5rem;
+      background: var(--primary-gradient);
+      color: white;
+      border-radius: var(--border-radius);
+      box-shadow: var(--card-shadow);
+      position: relative;
+      overflow: hidden;
     }
     
-    // 使用导出函数
-    exportConversation(historyItem.messages, (message) => {
-        ElMessage({
-            type: 'warning',
-            message: message
-        });
+    .header::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 70%);
+      transform: rotate(30deg);
+      z-index: 1;
+    }
+    
+    .header h1 {
+      position: relative;
+      z-index: 2;
+      margin-bottom: 1rem;
+      font-size: 2.5rem;
+    }
+    
+    .header p {
+      position: relative;
+      z-index: 2;
+      opacity: 0.9;
+    }
+
+    .role-section {
+      margin-bottom: 2.5rem;
+      padding: 1.8rem;
+      background: rgba(66, 132, 245, 0.1);
+      border-radius: var(--border-radius);
+      border-left: 5px solid var(--primary-color);
+      box-shadow: 0 4px 15px rgba(66, 132, 245, 0.1);
+    }
+    
+    .role-section h2 {
+      margin-top: 0;
+      color: var(--primary-color);
+      font-size: 1.5rem;
+      border-bottom: 1px solid rgba(66, 132, 245, 0.2);
+      padding-bottom: 10px;
+    }
+
+    .messages-container {
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    .message {
+      margin-bottom: 1rem;
+      border-radius: var(--border-radius);
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      transition: transform 0.3s ease;
+    }
+    
+    .message:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 6px 25px rgba(0, 0, 0, 0.12);
+    }
+
+    .user-message .message-header {
+      background: var(--user-gradient);
+    }
+    
+    .ai-message .message-header {
+      background: var(--ai-gradient);
+    }
+
+    .message-header {
+      padding: 1rem 1.5rem;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 500;
+    }
+
+    .reasoning-section {
+      padding: 1.2rem 1.5rem;
+      background: rgba(243, 156, 18, 0.1);
+      border-left: 4px solid var(--reasoning-color);
+      margin: 1rem 1.5rem;
+      border-radius: 8px;
+    }
+    
+    .reasoning-section h3 {
+      margin-top: 0;
+      color: var(--reasoning-color);
+      font-size: 1.1rem;
+    }
+
+    .content-section {
+      padding: 1.5rem;
+      background: white;
+    }
+    
+    .content-section h3 {
+      margin-top: 0;
+      color: #444;
+      font-size: 1.1rem;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 8px;
+    }
+
+    .timestamp {
+      font-size: 0.9em;
+      opacity: 0.8;
+    }
+
+    pre {
+      background: #f8f9fa;
+      padding: 1rem;
+      border-radius: 8px;
+      overflow-x: auto;
+      margin: 1rem 0;
+      border-left: 3px solid #ddd;
+    }
+
+    code {
+      font-family: 'Fira Code', 'Consolas', monospace;
+      font-size: 0.9em;
+    }
+    
+    p code {
+      background: rgba(0,0,0,0.05);
+      padding: 0.2em 0.4em;
+      border-radius: 3px;
+      font-size: 0.9em;
+    }
+    
+    .footer {
+      text-align: center;
+      margin-top: 3rem;
+      padding: 1rem;
+      color: #888;
+      font-size: 0.9rem;
+      border-top: 1px solid #eee;
+    }
+    
+    @media (max-width: 768px) {
+      body {
+        padding: 1rem;
+      }
+      
+      .header {
+        padding: 1.5rem;
+      }
+      
+      .message-header, .content-section, .reasoning-section {
+        padding: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>AI 对话记录</h1>
+    <p>导出时间: ${dateStr}</p>
+  </div>`;
+
+      // 添加角色设置
+      if (rolePrompt) {
+        exportContent += `
+  <div class="role-section">
+    <h2>💡 角色设置</h2>
+    <div>${rolePrompt.replace(/\n/g, '<br>')}</div>
+  </div>`;
+      }
+
+      exportContent += `
+  <div class="messages-container">`;
+
+      // 添加消息内容
+      messages.forEach(msg => {
+        const role = msg.role === 'user' ? '用户' : 'AI助手';
+        const messageClass = msg.role === 'user' ? 'user-message' : 'ai-message';
+        const time = msg.timestamp ? new Date(msg.timestamp).toLocaleString() : '未知时间';
+
+        exportContent += `
+    <div class="message ${messageClass}">
+      <div class="message-header">
+        <span>${role}</span>
+        <span class="timestamp">${time}</span>
+      </div>`;
+
+        if (msg.thinkingContent) {
+          exportContent += `
+      <div class="reasoning-section">
+        <h3>💭 思考过程</h3>
+        <div>${msg.thinkingContent.replace(/\n/g, '<br>')}</div>
+      </div>`;
+        }
+
+        exportContent += `
+      <div class="content-section">
+        <h3>📝 内容</h3>
+        <div>${msg.content.replace(/\n/g, '<br>')
+          .replace(/```([a-z]*)([\s\S]*?)```/g, '<pre><code>$2</code></pre>')
+          .replace(/`([^`]+)`/g, '<code>$1</code>')}</div>
+      </div>
+    </div>`;
+      });
+
+      exportContent += `
+  </div>
+  
+  <div class="footer">
+    由 MyChat AI 助手生成 - ${new Date().getFullYear()}
+  </div>
+</body>
+</html>`;
+      break;
+
+    case '3': // Markdown 格式
+      exportContent = `# AI 对话记录 📝
+
+**📅 导出时间**: ${dateStr}
+
+`;
+      
+      // 添加角色设置
+      if (rolePrompt) {
+        exportContent += `## 💡 角色设置
+
+${rolePrompt}
+
+---
+
+`;
+      }
+      
+      // 添加消息内容
+      messages.forEach(msg => {
+        const role = msg.role === 'user' ? '👤 **用户**' : '🤖 **AI助手**';
+        const time = msg.timestamp ? new Date(msg.timestamp).toLocaleString() : '未知时间';
+        const emoji = msg.role === 'user' ? '💬' : '🔍';
+
+        exportContent += `## ${emoji} ${role} · *${time}*\n\n`;
+
+        if (msg.thinkingContent) {
+          exportContent += `### 💭 思考过程\n\`\`\`\n${msg.thinkingContent}\n\`\`\`\n\n`;
+        }
+
+        exportContent += `### 📝 内容\n${msg.content}\n\n---\n\n`;
+      });
+      
+      // Add footer
+      exportContent += `\n\n*由 MyChat AI 助手生成 - ${new Date().getFullYear()}*`;
+      break;
+
+    case '4': // JSON 格式
+      // 构建JSON格式的导出内容，包括角色设置
+      const exportData = {
+        meta: {
+          title: "AI 对话记录",
+          exportDate: dateStr,
+          version: "2.0"
+        },
+        settings: {
+          role: chat.roleData || null
+        },
+        messages: messages.map(msg => ({
+          id: msg.id,
+          role: msg.role,
+          content: msg.content,
+          thinkingContent: msg.thinkingContent || "",
+          timestamp: msg.timestamp,
+          hasThinking: !!msg.thinkingContent
+        }))
+      };
+      
+      exportContent = JSON.stringify(exportData, null, 2);
+      break;
+
+    default:
+      ElMessage.warning('无效的选择');
+      return;
+  }
+
+  // 确定文件扩展名
+  const ext =
+    format === '1' ? 'txt' :
+    format === '2' ? 'html' :
+    format === '3' ? 'md' : 'json';
+
+  // 创建下载链接
+  const blob = new Blob([exportContent], {
+    type: format === '2' ? 'text/html' :
+          format === '4' ? 'application/json' : 'text/plain;charset=utf-8'
+  });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `AI对话记录_${new Date().toISOString().slice(0, 10)}.${ext}`;
+  document.body.appendChild(a);
+  a.click();
+
+  // 清理
+  setTimeout(() => {
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }, 100);
+  
+  ElMessage.success('对话已导出');
+}
+
+// 处理当前聊天操作
+const handleCurrentChatAction = (command) => {
+  switch (command) {
+    case 'export':
+      // 导出当前对话
+      // 如果当前对话ID是'current'，则需要创建一个临时对象
+      if (activeHistoryId.value === 'current') {
+        const currentChat = {
+          id: 'current',
+          title: currentChatTitle.value,
+          messages: JSON.parse(JSON.stringify(chatStore.messages)),
+          roleData: settingsStore.currentRole ? {
+            name: settingsStore.currentRole.name,
+            prompt: settingsStore.currentRole.prompt
+          } : null
+        };
+        exportChat(currentChat);
+      } else {
+        // 如果当前显示的是历史对话，则从历史记录中找
+        const historyChat = chatHistory.value.find(c => c.id === activeHistoryId.value);
+        if (historyChat) {
+          exportChat(historyChat);
+        } else {
+          ElMessage.warning('无法找到当前对话');
+        }
+      }
+      break;
+    case 'clear':
+      // 实现清空对话功能
+      handleClear();
+      break;
+    default:
+      console.log('Unknown command:', command);
+  }
+}
+
+// Migration function to convert old chat history format to new format
+const migrateOldChatHistory = () => {
+  // Check if there's old chat history data to migrate
+  const savedHistory = localStorage.getItem('chatHistory');
+  if (!savedHistory) return;
+  
+  try {
+    const oldChatHistory = JSON.parse(savedHistory);
+    if (!Array.isArray(oldChatHistory) || oldChatHistory.length === 0) return;
+    
+    console.log(`Migrating ${oldChatHistory.length} old chat history records to new format...`);
+    
+    // Migrate each old chat history to the new format
+    oldChatHistory.forEach(oldChat => {
+      if (!oldChat.id || !oldChat.messages) return;
+      
+      // Create a new history record in the new format
+      const record = {
+        id: oldChat.id,
+        title: oldChat.title || 'Untitled Chat',
+        messages: JSON.parse(JSON.stringify(oldChat.messages)),
+        timestamp: oldChat.createdAt || new Date().toISOString(),
+        tokenCount: { prompt: 0, completion: 0, total: 0 } // Default token count
+      };
+      
+      // Add the record if it doesn't already exist
+      if (!historyStore.hasRecord(record.id)) {
+        historyStore.addRecord(record);
+      }
     });
+    
+    console.log('Migration complete. Removing old chat history data.');
+    
+    // Remove old data after successful migration
+    localStorage.removeItem('chatHistory');
+  } catch (error) {
+    console.error('Error migrating old chat history:', error);
+  }
 };
 </script>
 
@@ -2048,7 +2451,7 @@ const handleExportChat = (chatId) => {
         width: 1px;
         height: 1px;
     }
-    scrollbar-width: thin;
+    scrollbar-width: auto;
     
     &::-webkit-scrollbar-thumb {
         background-color: rgba(0, 0, 0, 0.2);
@@ -2277,6 +2680,61 @@ const handleExportChat = (chatId) => {
                 }
             }
         }
+        
+        /* 移动端功能按钮样式 */
+        .mobile-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 16px;
+            padding: 8px 0;
+            border-top: 1px solid #f0f0f0;
+            border-bottom: 1px solid #f0f0f0;
+            
+            [data-theme="dark"] & {
+                border-color: #333;
+            }
+            
+            .mobile-action-btn {
+                flex: 1;
+                padding: 8px;
+                margin: 0 4px;
+                border-radius: 8px;
+                background-color: #f5f5f5;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border: none;
+                
+                [data-theme="dark"] & {
+                    background-color: #2d2d33;
+                }
+                
+                &:hover {
+                    background-color: #e8e8e8;
+                    
+                    [data-theme="dark"] & {
+                        background-color: #383842;
+                    }
+                }
+                
+                .el-icon {
+                    font-size: 16px;
+                    color: #333;
+                    
+                    [data-theme="dark"] & {
+                        color: #ddd;
+                    }
+                }
+                
+                &.theme-btn .el-icon {
+                    color: #ffa500;
+                }
+                
+                &.settings-btn .el-icon {
+                    color: #4284f5;
+                }
+            }
+        }
     }
 
     /* 侧边栏分组 */
@@ -2410,12 +2868,34 @@ const handleExportChat = (chatId) => {
     
     .mobile-menu-button {
         display: none; // 默认隐藏
-        background-color: black;
-        border-color: #dedfe0;
+        background-color: transparent;
+        border: none;
         border-radius: 5px;
-        color: white;
+        cursor: pointer;
+        padding: 8px;
+        transition: background-color 0.2s ease;
+        
         @media (max-width: 768px) {
-            display: inline-flex; // 移动端显示
+            display: flex; // 移动端显示
+            align-items: center;
+            justify-content: center;
+        }
+        
+        &:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+            
+            [data-theme="dark"] & {
+                background-color: rgba(255, 255, 255, 0.1);
+            }
+        }
+        
+        img {
+            width: 24px;
+            height: 24px;
+            
+            [data-theme="dark"] & {
+                filter: invert(1); // 暗色模式下反转颜色
+            }
         }
     }
     
@@ -2623,8 +3103,8 @@ const handleExportChat = (chatId) => {
             display: flex;
             align-items: center;
             gap: 6px;
-            background-color: #f9fafb;
-            border: 1px solid #e5e7eb;
+            background-color: transparent;
+            border: 1px solid #0000003b;
             color: #333;
             margin-left: 0px;
             
@@ -2683,6 +3163,7 @@ const handleExportChat = (chatId) => {
                 padding: 8px !important; // 减小内边距
                 min-width: 36px !important; // 确保按钮不会太小
                 margin-left: 0px;
+                border: none;
                 
                 // 移动端隐藏按钮文字，只显示图标
                 .button-text {
@@ -3053,7 +3534,7 @@ const handleExportChat = (chatId) => {
         &::-webkit-scrollbar {
             width: 1px;
         }
-        scrollbar-width: thin;
+        scrollbar-width: auto;
         
         &::-webkit-scrollbar-track {
             background: transparent;
@@ -3114,6 +3595,7 @@ const handleExportChat = (chatId) => {
                 line-height: 1.5;
                 max-height: 100px;
                 overflow-y: auto;
+                scrollbar-width: none;
             }
         }
     }
@@ -3285,7 +3767,7 @@ const handleExportChat = (chatId) => {
     }
     
     .modern-chat-input {
-        background-color: #2d2d33;
+        background-color: transparent;
     }
     
     .disclaimer {
@@ -3411,6 +3893,12 @@ const handleExportChat = (chatId) => {
   }
 }
 </style>
+<!-- <script>
+document.querySelector('.toggle-thinking-btn').addEventListener('click', function() {
+    var thinkingHeader = document.getElementById('thinking-header');
+    thinkingHeader.style.backgroundColor = 'lightblue';  // 修改颜色
+  });
+</script>    -->
 <!-- <script>
 document.querySelector('.toggle-thinking-btn').addEventListener('click', function() {
     var thinkingHeader = document.getElementById('thinking-header');
