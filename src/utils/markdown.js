@@ -5,7 +5,7 @@ import katex from 'katex'
 import 'katex/dist/katex.min.css'
 import mermaidPlugin from './mermaid-plugin'
 import taskLists from 'markdown-it-task-lists'
-import { registerAllExtensions } from './markdownExtensions'
+import { registerAllExtensions } from './markdownExtensions.js'
 
 // 创建 markdown-it 实例
 const md = new MarkdownIt({

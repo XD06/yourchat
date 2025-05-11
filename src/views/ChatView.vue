@@ -545,7 +545,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onBeforeUnmount, watch, nextTick, h } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount, onUnmounted, watch, nextTick, h } from 'vue'
 import { useChatStore } from '../stores/chat'
 import { useSettingsStore } from '../stores/settings'
 import { useHistoryStore } from '../stores/history'
@@ -727,16 +727,23 @@ const handleSend = async (content) => {
   }
 
   // If already loading, prevent sending another message
-//   if (chatStore.isLoading) {
-//       ElMessage.warning('已有消息正在处理中，请稍后再试');
-//       return;
-//   }
+  if (chatStore.isLoading && !isStreamPaused.value) {
+      ElMessage.warning('已有消息正在处理中，请稍后再试');
+      return;
+  }
 
   // If there's an active controller, abort it first
   if (activeController.value) {
     console.log('[ChatView] Aborting existing request before sending new message');
     activeController.value.abort();
     activeController.value = null;
+    
+    // 清除之前消息的状态
+    const lastMessage = chatStore.messages[chatStore.messages.length - 1];
+    if (lastMessage && lastMessage.role === 'assistant' && !lastMessage.completed) {
+      lastMessage.loading = false; 
+      lastMessage.completed = true;
+    }
   }
   
   let result = null; // Initialize result
@@ -758,6 +765,7 @@ const handleSend = async (content) => {
       id: Date.now(),
       role: 'assistant',
       content: '',
+      thinkingContent: '', // Ensure this property is initialized
       timestamp: new Date().toISOString(),
       completed: false,
       loading: true // 添加loading状态
@@ -813,7 +821,12 @@ const handleSend = async (content) => {
                 lastMessage.content = updatedContent.content;
               }
               if (updatedContent.thinkingContent !== undefined) {
+                // Ensure thinkingContent property exists and is updated
+                if (!lastMessage.thinkingContent) {
+                  lastMessage.thinkingContent = '';
+                }
                 lastMessage.thinkingContent = updatedContent.thinkingContent;
+                console.log('[ChatView] Updated thinking content:', updatedContent.thinkingContent.substring(0, 50));
               }
             } else if (updatedContent && updatedContent.length > 0) {
               lastMessage.content = updatedContent;
@@ -1048,17 +1061,48 @@ const handleShare = () => {
     }
 }
 
+// 添加isStreamPaused的定义
+const isStreamPaused = ref(false);
+
 // 处理暂停消息生成
 const handlePauseGeneration = () => {
     console.log('[ChatView] handlePauseGeneration called');
+  
+    // 设置暂停状态
+    isStreamPaused.value = true;
+  
+    // 取消进行中的请求
   if (activeController.value) {
         console.log('[ChatView] Aborting active request...');
     activeController.value.abort();
     activeController.value = null;
-    chatStore.isLoading = false;
-        isStreamPaused.value = true;
         console.log('[ChatView] Request aborted');
     }
+    
+    // 立即清除加载状态
+    chatStore.isLoading = false;
+    
+    // 清除任何正在生成中的消息状态
+    const lastMessage = chatStore.messages[chatStore.messages.length - 1];
+    if (lastMessage && lastMessage.role === 'assistant' && !lastMessage.completed) {
+        // 将未完成的消息标记为已完成，以停止加载动画
+        lastMessage.loading = false;
+        lastMessage.completed = true;
+        console.log('[ChatView] Marked last message as completed');
+    }
+    
+    // 显示通知
+    ElMessage({
+        message: '已暂停生成',
+        type: 'info',
+        duration: 2000
+    });
+    
+    // 清除暂停状态，以便下次请求可以正常进行
+    setTimeout(() => {
+        isStreamPaused.value = false;
+        console.log('[ChatView] Stream pause state reset');
+    }, 500);
 }
 
 // 滚动到底部的辅助函数
@@ -1531,12 +1575,12 @@ const handleRegenerate = async (messageToRegenerate) => {
   }
   const messageIdToRegenerate = messageToRegenerate.id;
   console.log(`[ChatView] Attempting to regenerate AI message ID: ${messageIdToRegenerate}`);
-
+  
   if (chatStore.isLoading) {
     ElMessage.warning('已有消息正在处理中，请稍后再试');
     return;
   }
-
+  
   let result = null; // Initialize result here to be accessible in finally block
 
   // 2. Take a snapshot of messages for historical context
@@ -1544,7 +1588,7 @@ const handleRegenerate = async (messageToRegenerate) => {
 
   // 3. Find the original AI message and preceding user message in the SNAPSHOT
   const aiMessageOriginalIndexInSnapshot = messagesSnapshotForContext.findIndex(m => m.id === messageIdToRegenerate && m.role === 'assistant');
-
+  
   if (aiMessageOriginalIndexInSnapshot === -1) {
     console.error('[ChatView] Could not find the AI message to regenerate in the snapshot. Message ID:', messageIdToRegenerate);
     ElMessage.warning('错误：在消息记录快照中找不到要重新生成的AI消息。');
@@ -1559,7 +1603,7 @@ const handleRegenerate = async (messageToRegenerate) => {
       break;
     }
   }
-
+  
   if (userMessageIndexInSnapshot === -1) {
     // Fallback: find the latest user message in the snapshot if no direct preceding one
     const userMessagesInSnapshot = messagesSnapshotForContext.slice(0, aiMessageOriginalIndexInSnapshot).filter(m => m.role === 'user');
@@ -1575,9 +1619,9 @@ const handleRegenerate = async (messageToRegenerate) => {
   }
   const userMessageFromSnapshot = messagesSnapshotForContext[userMessageIndexInSnapshot];
   console.log('[ChatView] Found user message in snapshot:', userMessageFromSnapshot);
-
+  
   try {
-    chatStore.isLoading = true;
+  chatStore.isLoading = true;
     // result is already declared above
 
     // 4. Re-find the AI message in the LIVE chatStore.messages array by ID before modification
@@ -1593,12 +1637,13 @@ const handleRegenerate = async (messageToRegenerate) => {
 
     // 5. Splice the found AI message from the LIVE store
     chatStore.messages.splice(liveAiMessageIndex, 1);
-
+    
     // 6. Add a new placeholder AI message to the LIVE store
     const newAssistantMessage = {
       id: Date.now(), // New ID for the new message
       role: 'assistant',
       content: '',
+      thinkingContent: '', // Add thinkingContent to the regenerated message
       timestamp: new Date().toISOString(),
       completed: false,
       loading: true
@@ -1645,7 +1690,7 @@ const handleRegenerate = async (messageToRegenerate) => {
       ElMessage.error('无法重新生成，因为没有有效的用户消息作为上下文。');
       throw new Error('No valid user messages for regeneration context.');
     }
-
+    
     result = await messageHandler.sendMessage(
       apiMessages,
       settingsStore.actualApiKey,
@@ -1663,15 +1708,25 @@ const handleRegenerate = async (messageToRegenerate) => {
           if (lastMessage.loading) {
             lastMessage.loading = false;
           }
-          if (typeof updatedContent === 'object' && updatedContent.content !== undefined) {
-            lastMessage.content = updatedContent.content;
+          if (typeof updatedContent === 'object') {
+            if (updatedContent.content !== undefined) {
+              lastMessage.content = updatedContent.content;
+            }
+            // Handle thinking content update
+            if (updatedContent.thinkingContent !== undefined) {
+              // Ensure thinkingContent property exists
+              if (!lastMessage.thinkingContent) {
+                lastMessage.thinkingContent = '';
+              }
+              lastMessage.thinkingContent = updatedContent.thinkingContent;
+            }
           } else if (typeof updatedContent === 'string') {
             lastMessage.content = updatedContent;
           }
           if (isScrolledToBottom()) {
             nextTick(() => scrollToBottom(true));
-          }
-          if (done) {
+        }
+        if (done) {
             lastMessage.completed = true;
             saveMessages(); // Save messages when regeneration is done
           }
@@ -1679,11 +1734,11 @@ const handleRegenerate = async (messageToRegenerate) => {
       },
       true // isRegeneration = true
     );
-
+    
     if (result?.controller) {
-      activeController.value = result.controller;
+        activeController.value = result.controller;
     }
-
+    
     if (result && !result.success && !result.aborted) {
       ElMessage.error('重新生成失败，请稍后重试');
       const lastMessage = chatStore.messages[chatStore.messages.length - 1];
@@ -1691,7 +1746,7 @@ const handleRegenerate = async (messageToRegenerate) => {
         chatStore.messages.pop(); // Clean up placeholder
       }
     }
-
+    
   } catch (error) {
     console.error('[ChatView Regenerate] Error:', error);
     if (error.message !== 'API Key not configured' && error.message !== 'No valid user messages for regeneration context.') {
@@ -1700,16 +1755,16 @@ const handleRegenerate = async (messageToRegenerate) => {
     // Clean up placeholder on any error during API call
     const lastMessage = chatStore.messages[chatStore.messages.length - 1];
     if (lastMessage && lastMessage.role === 'assistant' && lastMessage.content === '' && lastMessage.loading) {
-        chatStore.messages.pop();
+      chatStore.messages.pop();
     }
   } finally {
     chatStore.isLoading = false;
     if (activeController.value && (!result || !result.aborted)) {
-      activeController.value = null;
+         activeController.value = null;
     }
-    if (result?.aborted) {
-        activeController.value = null;
-    }
+     if (result?.aborted) {
+         activeController.value = null; 
+     }
   }
 };
 
@@ -2603,6 +2658,30 @@ const removeCustomModel = (index) => {
 
 // Add CSS for the custom model input section
 // Inside <style> section, add:
+
+// 在组件初始化时重置状态
+onMounted(() => {
+  // 初始化状态
+  isStreamPaused.value = false;
+  activeController.value = null;
+  chatStore.isLoading = false;
+  
+  // 无需手动加载消息，historyStore会自动加载
+  console.log('[ChatView] Component mounted, states reset');
+});
+
+// 在组件卸载时清理状态
+onUnmounted(() => {
+  // 如果有活跃的请求，中止它
+  if (activeController.value) {
+    activeController.value.abort();
+    activeController.value = null;
+  }
+  
+  // 重置状态
+  isStreamPaused.value = false;
+  chatStore.isLoading = false;
+});
 
 </script>
 
@@ -4282,7 +4361,7 @@ const removeCustomModel = (index) => {
     .custom-model-tag {
         margin-bottom: 4px;
     }
-      svg {
+  svg {
     width: 24px;
     height: 24px;
   }

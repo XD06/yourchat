@@ -39,7 +39,7 @@
           </div>
           <div class="thinking-title">
             <!-- 根据消息状态显示不同的标题 -->
-            <span v-if="!message.completed">思考中...<span class="thinking-dots">...</span></span>
+            <span v-if="!message.completed">思考中<span class="thinking-dots"></span></span>
             <span v-else>已深度思考☁️</span>
           </div>
           <el-button 
@@ -808,6 +808,10 @@ onUnmounted(() => {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   transition: all 0.3s ease;
   
+  &.thinking-active {
+    animation: pulseThinking 1.5s infinite alternate;
+  }
+  
   &:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
@@ -891,6 +895,7 @@ onUnmounted(() => {
     line-height: 1.6;
     scrollbar-width: thin;
     color: #555;
+    transition: all 0.1s ease;
     
     &::-webkit-scrollbar {
       width: 4px;
@@ -1079,53 +1084,67 @@ onUnmounted(() => {
 .message-loading {
     display: flex;
     align-items: center;
-  padding: 1rem 0;
+    padding: 1rem 0;
   
-  .loading-circle {
-    margin-right: 10px;
-    width: 20px;
-    height: 20px;
-    
-    .spinner-svg {
+    .loading-circle {
+      position: relative;
       width: 20px;
       height: 20px;
-      animation: rotate 1.5s linear infinite!important;
+      margin-right: 10px;
+      flex-shrink: 0; /* Prevent shrinking */
+      display: flex;
+      align-items: center;
+      justify-content: center; /* Center the spinner perfectly */
       
-      .path {
-        stroke: #000000;
-        stroke-linecap: round;
-        animation: dash 1s cubic-bezier(0.4, 0, 0.2, 1) infinite!important;
+      .spinner-svg {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 20px;
+        height: 20px;
+        transform-origin: center center; /* Ensure rotation happens from center */
+        animation: rotate 1.5s linear infinite!important;
+        
+        .path {
+          stroke: #000000;
+          stroke-linecap: round;
+          stroke-width: 2.5;
+          fill: none;
+          animation: dash 1.5s ease-in-out infinite!important;
+        }
       }
     }
-  }
   
-  [data-theme="dark"] & {
-    .loading-circle .spinner-svg .path {
-      stroke: #ffffff;
+    [data-theme="dark"] & {
+      .loading-circle .spinner-svg .path {
+        stroke: #ffffff;
+      }
+      .loading-text {
+        color: #bbb;
+      }
     }
-    .loading-text {
-       color: #bbb;
-    }
-  }
 
-  .loading-text {
-    font-size: 0.95rem;
-    color: #555;
-    font-weight: 500;
-    position: relative;
-    
-    &::after {
-      content: "";
-      width: 12px;
-      display: inline-block;
-      text-align: left;
-      animation: loading-dots 1.4s infinite;
-      vertical-align: bottom;
+    .loading-text {
+      font-size: 0.95rem;
+      color: #555;
+      font-weight: 500;
+      position: relative;
+      
+      &::after {
+        content: "";
+        width: 12px;
+        display: inline-block;
+        text-align: left;
+        animation: loading-dots 1.4s infinite steps(4, end);
+        vertical-align: bottom;
+      }
     }
-  }
 }
 
 @keyframes rotate {
+  0% {
+    transform: rotate(0deg);
+  }
   100% {
     transform: rotate(360deg);
   }
@@ -1133,16 +1152,16 @@ onUnmounted(() => {
 
 @keyframes dash {
   0% {
-    stroke-dasharray: 1, 200;
+    stroke-dasharray: 1, 150;
     stroke-dashoffset: 0;
   }
   50% {
-    stroke-dasharray: 89, 200;
-    stroke-dashoffset: -35px;
+    stroke-dasharray: 90, 150;
+    stroke-dashoffset: -35;
   }
   100% {
-    stroke-dasharray: 89, 200;
-    stroke-dashoffset: -124px;
+    stroke-dasharray: 90, 150;
+    stroke-dashoffset: -124;
   }
 }
 
@@ -1150,6 +1169,17 @@ onUnmounted(() => {
   0%, 20% { content: "."; }
   40%, 60% { content: ".."; }
   80%, 100% { content: "..."; }
+}
+
+.thinking-dots {
+  display: inline-block;
+  width: 20px;
+  overflow: hidden;
+  &::after {
+    content: "...";
+    display: inline-block;
+    animation: loading-dots 1.5s infinite;
+  }
 }
 
 .message-editing {
@@ -1624,13 +1654,13 @@ onUnmounted(() => {
 }
 
 @keyframes pulseThinking {
-  0% { 
-    transform: scale(1);
-    opacity: 0.7;
+  0% {
+    box-shadow: 0 2px 8px rgba(66, 133, 244, 0.1);
+    border-color: rgba(66, 133, 244, 0.1);
   }
-  100% { 
-    transform: scale(1.1);
-    opacity: 1;
+  100% {
+    box-shadow: 0 2px 12px rgba(66, 133, 244, 0.3);
+    border-color: rgba(66, 133, 244, 0.3);
   }
 }
 
@@ -1776,6 +1806,378 @@ onUnmounted(() => {
   100% {
     stroke-dasharray: 90, 150;
     stroke-dashoffset: -124;
+  }
+}
+
+/* 添加优化的引用块样式和新增的Markdown增强样式 */
+:deep(blockquote) {
+  padding: 12px 16px 12px 20px;
+  margin: 1rem 0;
+  border-left: 3px solid #4285f4;
+  background-color: rgba(66, 133, 244, 0.05);
+  border-radius: 0 8px 8px 0;
+  color: #555;
+  font-size: 0.95em;
+  position: relative;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  }
+  
+  [data-theme="dark"] & {
+    background-color: rgba(92, 157, 255, 0.08);
+    border-left-color: #5c9dff;
+    color: #bbb;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    
+    &:hover {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+  }
+  
+  /* 特殊引用块样式 */
+  &.info {
+    border-left-color: #34a853;
+    background-color: rgba(52, 168, 83, 0.05);
+    
+    &::before {
+      content: "ℹ️";
+      position: absolute;
+      left: -12px;
+      top: 8px;
+      background: #34a853;
+      color: white;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 14px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    [data-theme="dark"] & {
+      background-color: rgba(76, 175, 80, 0.08);
+      border-left-color: #4caf50;
+    }
+  }
+  
+  &.warning {
+    border-left-color: #fbbc05;
+    background-color: rgba(251, 188, 5, 0.05);
+    
+    &::before {
+      content: "⚠️";
+      position: absolute;
+      left: -12px;
+      top: 8px;
+      background: #fbbc05;
+      color: white;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 14px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    [data-theme="dark"] & {
+      background-color: rgba(255, 193, 7, 0.08);
+      border-left-color: #ffc107;
+    }
+  }
+  
+  &.error {
+    border-left-color: #ea4335;
+    background-color: rgba(234, 67, 53, 0.05);
+    
+    &::before {
+      content: "❌";
+      position: absolute;
+      left: -12px;
+      top: 8px;
+      background: #ea4335;
+      color: white;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 14px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    [data-theme="dark"] & {
+      background-color: rgba(244, 67, 54, 0.08);
+      border-left-color: #f44336;
+    }
+  }
+  
+  /* 引用中的内容样式 */
+  p:last-child {
+    margin-bottom: 0;
+  }
+}
+
+/* 添加新的键盘快捷键样式 */
+:deep(kbd) {
+  background-color: #f8f9fa;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  box-shadow: 0 1px 1px rgba(0,0,0,.12), 0 2px 0 0 rgba(255,255,255,.7) inset;
+  color: #333;
+  display: inline-block;
+  font-family: 'Roboto Mono', monospace;
+  font-size: 0.85em;
+  font-weight: 600;
+  line-height: 1;
+  padding: 2px 5px;
+  margin: 0 2px;
+  white-space: nowrap;
+  letter-spacing: 0.1px;
+  
+  [data-theme="dark"] & {
+    background-color: #2d2d33;
+    border-color: #444;
+    color: #e0e0e0;
+    box-shadow: 0 1px 1px rgba(0,0,0,.3), 0 2px 0 0 rgba(255,255,255,.1) inset;
+  }
+}
+
+/* 添加新的高亮文本样式 */
+:deep(mark) {
+  background: linear-gradient(120deg, rgba(243, 156, 18, 0.2), rgba(44, 122, 101, 0.2));
+  padding: 2px 5px;
+  border-radius: 3px;
+  color: inherit;
+  
+  [data-theme="dark"] & {
+    background: linear-gradient(120deg, rgba(211, 84, 0, 0.2), rgba(30, 132, 73, 0.2));
+  }
+}
+
+/* 添加定义列表样式 */
+:deep(dl) {
+  margin: 1rem 0;
+  padding: 0;
+  
+  dt {
+    font-weight: 700;
+    color: #4285f4;
+    margin-top: 0.8rem;
+    font-size: 1em;
+    
+    [data-theme="dark"] & {
+      color: #5c9dff;
+    }
+  }
+  
+  dd {
+    margin-left: 1rem;
+    padding-left: 0.8rem;
+    border-left: 2px solid rgba(66, 133, 244, 0.2);
+    padding-bottom: 0.5rem;
+    
+    [data-theme="dark"] & {
+      border-left-color: rgba(92, 157, 255, 0.2);
+    }
+  }
+}
+
+/* 缩略引用块 (折叠/展开) */
+:deep(.details-wrapper) {
+  margin: 1rem 0;
+  border: 1px solid rgba(66, 133, 244, 0.2);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  
+  &:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  }
+  
+  [data-theme="dark"] & {
+    border-color: rgba(92, 157, 255, 0.2);
+    
+    &:hover {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+  }
+  
+  .details-summary {
+    padding: 12px 16px;
+    background-color: rgba(66, 133, 244, 0.05);
+    cursor: pointer;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    transition: background-color 0.2s;
+    
+    &:hover {
+      background-color: rgba(66, 133, 244, 0.1);
+    }
+    
+    &::before {
+      content: "▶";
+      display: inline-block;
+      font-size: 0.8em;
+      margin-right: 8px;
+      transform: rotate(0);
+      transition: transform 0.3s;
+    }
+    
+    &.open::before {
+      transform: rotate(90deg);
+    }
+    
+    [data-theme="dark"] & {
+      background-color: rgba(92, 157, 255, 0.08);
+      
+      &:hover {
+        background-color: rgba(92, 157, 255, 0.12);
+      }
+    }
+  }
+  
+  .details-content {
+    padding: 0 16px;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.5s, padding 0.5s;
+    
+    &.open {
+      max-height: 1000px;
+      padding: 16px;
+    }
+  }
+}
+
+/* 美化角标样式 */
+:deep(sup), :deep(sub) {
+  font-size: 0.75em;
+  line-height: 0;
+  position: relative;
+  vertical-align: baseline;
+}
+
+:deep(sup) {
+  top: -0.5em;
+  
+  a {
+    color: #4285f4;
+    text-decoration: none;
+    padding: 0 2px;
+    border-radius: 3px;
+    
+    &:hover {
+      background-color: rgba(66, 133, 244, 0.1);
+    }
+    
+    [data-theme="dark"] & {
+      color: #5c9dff;
+      
+      &:hover {
+        background-color: rgba(92, 157, 255, 0.15);
+      }
+    }
+  }
+}
+
+:deep(sub) {
+  bottom: -0.25em;
+}
+
+/* 新增自定义水平分割线样式 */
+:deep(hr) {
+  border: 0;
+  height: 1px;
+  background-image: linear-gradient(to right, rgba(66, 133, 244, 0), rgba(66, 133, 244, 0.75), rgba(66, 133, 244, 0));
+  margin: 1.5rem 0;
+  
+  [data-theme="dark"] & {
+    background-image: linear-gradient(to right, rgba(92, 157, 255, 0), rgba(92, 157, 255, 0.75), rgba(92, 157, 255, 0));
+  }
+}
+
+/* 添加文件树样式 */
+:deep(.file-tree) {
+  font-family: 'Roboto Mono', monospace;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin: 1rem 0;
+  padding: 10px;
+  background-color: rgba(66, 133, 244, 0.03);
+  border-radius: 6px;
+  border: 1px solid rgba(66, 133, 244, 0.1);
+  overflow-x: auto;
+  
+  [data-theme="dark"] & {
+    background-color: rgba(92, 157, 255, 0.05);
+    border-color: rgba(92, 157, 255, 0.2);
+  }
+  
+  .tree-item {
+    position: relative;
+    padding-left: 20px;
+    white-space: nowrap;
+    
+    &::before {
+      content: '';
+      position: absolute;
+      left: 8px;
+      top: 0;
+      border-left: 1px dotted rgba(66, 133, 244, 0.5);
+      height: 100%;
+      
+      [data-theme="dark"] & {
+        border-left-color: rgba(92, 157, 255, 0.5);
+      }
+    }
+    
+    &:last-child::before {
+      height: 50%;
+    }
+    
+    .tree-label::before {
+      content: '';
+      position: absolute;
+      left: 8px;
+      top: 50%;
+      width: 12px;
+      border-bottom: 1px dotted rgba(66, 133, 244, 0.5);
+      
+      [data-theme="dark"] & {
+        border-bottom-color: rgba(92, 157, 255, 0.5);
+      }
+    }
+    
+    &.folder .tree-label {
+      font-weight: 600;
+      color: #fbbc05;
+      
+      [data-theme="dark"] & {
+        color: #ffc107;
+      }
+    }
+    
+    &.file .tree-label {
+      color: #34a853;
+      
+      [data-theme="dark"] & {
+        color: #4caf50;
+      }
+    }
   }
 }
 </style>

@@ -389,7 +389,18 @@ export const messageHandler = {
                         let contentUpdated = false;
                         
                         if (jsData.choices[0].delta.reasoning_content) {
-                            full_reasonResponse += jsData.choices[0].delta.reasoning_content;
+                            // 修改：将思考内容也添加到字符缓冲区，实现逐字显示
+                            const newThinkingContent = jsData.choices[0].delta.reasoning_content;
+                            
+                            // 将新的思考内容添加到全局变量，用于最终更新
+                            full_reasonResponse += newThinkingContent;
+                            
+                            // 同样每次更新UI，实现逐字显示
+                            updateMessage({
+                                content: full_content,
+                                thinkingContent: full_reasonResponse
+                            });
+                            
                             contentUpdated = true;
                         }
                         
@@ -621,29 +632,29 @@ export const messageHandler = {
         };
 
         // SiliconFlow API可能需要特定的模型格式
-        if (apiEndpoint.includes('siliconflow.cn')) {
-            // 确保模型名称是SiliconFlow支持的
-            if (!model.includes('GLM') && !model.includes('THUDM') && !model.includes('Qwen')) {
-                console.warn('模型可能不被SiliconFlow支持, 原始值:', model);
-                // 使用安全的默认值
-                payload.model = 'THUDM/GLM-4-9B-0414';
-            } else {
-                // SiliconFlow可能需要不同的模型格式，例如THUDM/GLM-4-9B-0414而不是GLM-4-9B-0414
-                // 或者可能需要去掉THUDM/前缀
-                if (model.includes('THUDM/')) {
-                    // 尝试移除THUDM/前缀
-                    const modelWithoutPrefix = model.replace('THUDM/', '');
-                    console.log('尝试使用不带前缀的模型名:', modelWithoutPrefix);
-                    payload.model = modelWithoutPrefix;
-                }
-            }
+        // if (apiEndpoint.includes('siliconflow.cn')) {
+        //     // 确保模型名称是SiliconFlow支持的
+        //     if (!model.includes('GLM') && !model.includes('THUDM') && !model.includes('Qwen')) {
+        //         console.warn('模型可能不被SiliconFlow支持, 原始值:', model);
+        //         // 使用安全的默认值
+        //         payload.model = 'THUDM/GLM-4-9B-0414';
+        //     } else {
+        //         // SiliconFlow可能需要不同的模型格式，例如THUDM/GLM-4-9B-0414而不是GLM-4-9B-0414
+        //         // 或者可能需要去掉THUDM/前缀
+        //         if (model.includes('THUDM/')) {
+        //             // 尝试移除THUDM/前缀
+        //             const modelWithoutPrefix = model.replace('THUDM/', '');
+        //             console.log('尝试使用不带前缀的模型名:', modelWithoutPrefix);
+        //             payload.model = modelWithoutPrefix;
+        //         }
+        //     }
             
-            // 调整其他参数
-            delete payload.stream_options; // 移除可能导致问题的参数
-            payload.stream = true; // 确保stream为true
+        //     // 调整其他参数
+        //     delete payload.stream_options; // 移除可能导致问题的参数
+        //     payload.stream = true; // 确保stream为true
             
-            console.log('已针对SiliconFlow API调整payload:', payload);
-        }
+        //     console.log('已针对SiliconFlow API调整payload:', payload);
+        // }
 
         // 删除可能导致错误的null值
         Object.keys(payload).forEach(key => {
