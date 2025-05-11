@@ -1083,25 +1083,23 @@ onUnmounted(() => {
       height: 20px;
       margin-right: 10px;
       flex-shrink: 0; /* Prevent shrinking */
-      display: flex;
-      align-items: center;
-      justify-content: center; /* Center the spinner perfectly */
+      display: block;
+      overflow: visible;
       
       .spinner-svg {
-        position: absolute;
-        top: 0;
-        left: 0;
+        position: relative;
         width: 20px;
         height: 20px;
-        transform-origin: center center; /* Ensure rotation happens from center */
-        animation: rotate 1.5s linear infinite!important;
+        transform-origin: 50% 50%; /* 确保从中心点旋转 */
+        animation: rotate 1.5s linear infinite;
         
         .path {
           stroke: #000000;
           stroke-linecap: round;
           stroke-width: 2.5;
           fill: none;
-          animation: dash 1.5s ease-in-out infinite!important;
+          animation: dash 1.5s ease-in-out infinite;
+          transform-origin: 50% 50%;
         }
       }
     }
@@ -1120,6 +1118,9 @@ onUnmounted(() => {
       color: #555;
       font-weight: 500;
       position: relative;
+      display: inline-flex;
+      align-items: center;
+      height: 20px;
       
       &::after {
         content: "";
@@ -1127,7 +1128,7 @@ onUnmounted(() => {
         display: inline-block;
         text-align: left;
         animation: loading-dots 1.4s infinite steps(4, end);
-        vertical-align: bottom;
+        vertical-align: middle;
       }
     }
 }
