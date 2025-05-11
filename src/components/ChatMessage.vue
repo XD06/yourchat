@@ -377,7 +377,7 @@ watch(() => props.message.completed, (newVal, oldVal) => {
   }
 }, { immediate: false }); // immediate: false to only react to changes
 
-// 修改updateContentDisplay函数，增加消息完成的判断逻辑
+// 修改updateContentDisplay函数，移除动画效果
 const updateContentDisplay = (content) => {
   if (!content) return;
   
@@ -399,9 +399,9 @@ const updateContentDisplay = (content) => {
   const hasMermaidBlocks = content.includes("```mermaid") && 
                            content.match(/```mermaid[\s\S]*?```/g);
   
-  // 直接渲染新接收到的内容
+  // 直接渲染新接收到的内容，禁用平滑输出选项
   messageContent.value = renderMarkdown(content, { 
-    smoothOutput: true // 启用平滑输出选项
+    smoothOutput: false // 禁用平滑输出选项，避免动画效果
   });
   
   // 设置代码块交互
@@ -411,22 +411,13 @@ const updateContentDisplay = (content) => {
   
   // 如果消息完成或包含完整代码块，处理代码块渲染
   if ((isComplete || hasCompleteCodeBlocks) && !messageCompleted.value) {
-    console.log("处理代码块，消息完成状态:", isComplete, "包含完整代码块:", hasCompleteCodeBlocks);
+    // 直接处理代码块，不使用延迟
+    processPendingCodeBlocks();
     
-    // 延迟处理代码块，给字符输出留出空间
-    setTimeout(() => {
-      // 处理等待中的代码块
-      processPendingCodeBlocks();
-      
-      // 如果包含Mermaid图表和消息已完成，再触发图表渲染
-      if (hasMermaidBlocks && isComplete) {
-        console.log("处理Mermaid图表");
-        // 延迟触发Mermaid图表渲染
-        setTimeout(() => {
-          renderMermaidDiagrams();
-        }, 300);
-      }
-    }, 150);
+    // 如果包含Mermaid图表和消息已完成，直接触发图表渲染
+    if (hasMermaidBlocks && isComplete) {
+      renderMermaidDiagrams();
+    }
     
     // 只有完全完成的消息才标记为已完成
     if (isComplete) {
@@ -1355,11 +1346,8 @@ onUnmounted(() => {
   background-color: var(--code-bg-color);
   border: 1px solid var(--border-color);
   position: relative;
-  contain: content; // 提升渲染性能
-  will-change: transform; // 针对GPU加速
-  transform: translateZ(0); // 强制硬件加速
-  backface-visibility: hidden; // 防止背面闪烁
-  
+  // 移除可能导致渲染抖动的属性
+   
   .code-header {
     display: flex;
     justify-content: space-between;
@@ -1548,11 +1536,11 @@ onUnmounted(() => {
 }
 
 :deep(.code-block-animate) {
-  animation: fadeInUp 0.6s ease-out 0.2s both;
+  // 移除动画效果
 }
 
 :deep(.table-animate) {
-  animation: fadeInUp 0.6s ease-out 0.3s both;
+  // 移除动画效果
 }
 
 @keyframes fadeInUp {
@@ -1683,8 +1671,7 @@ onUnmounted(() => {
 
 // 添加针对平滑渲染的样式
 :deep(.pre-sized) {
-  opacity: 0.5;
-  transition: opacity 0.3s ease;
+  opacity: 1; // 始终显示，不使用过渡效果
   
   &.code-visible {
     opacity: 1;

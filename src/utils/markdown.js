@@ -311,7 +311,7 @@ export const renderMarkdown = (content, options = {}) => {
     let html = renderer.render(content);
   
     // 处理数学公式
-  html = renderMathFormulas(html);
+    html = renderMathFormulas(html);
   
     // 标记代码块，添加初始隐藏状态以避免布局变化
     if (smoothOutput) {
@@ -322,7 +322,7 @@ export const renderMarkdown = (content, options = {}) => {
       });
     }
   
-  return html;
+    return html;
   } catch (error) {
     console.error('Markdown rendering error:', error);
     return `<div class="markdown-error">Error rendering content: ${error.message}</div>`;
@@ -336,22 +336,10 @@ export const processPendingCodeBlocks = () => {
   
   if (pendingBlocks.length === 0) return;
   
-  // 使用RAF和批处理来平滑处理
-  requestAnimationFrame(() => {
-    // 每次处理一小批代码块，减少性能影响
-    const batchSize = Math.min(5, pendingBlocks.length);
-    for (let i = 0; i < batchSize; i++) {
-      if (pendingBlocks[i]) {
-        pendingBlocks[i].removeAttribute('data-render');
-        // 添加可见性类，可以通过CSS添加平滑过渡
-        pendingBlocks[i].classList.add('code-visible');
-      }
-    }
-    
-    // 如果还有剩余的代码块，稍后继续处理
-    if (pendingBlocks.length > batchSize) {
-      setTimeout(processPendingCodeBlocks, 50);
-    }
+  // 立即处理所有代码块，不使用动画或批处理
+  pendingBlocks.forEach(block => {
+    block.removeAttribute('data-render');
+    block.classList.add('code-visible');
   });
 };
 
