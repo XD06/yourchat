@@ -788,19 +788,17 @@ const handleSend = async (content) => {
       throw new Error('Prepared API messages are empty'); 
     }
 
-    // Check API Key
-    if (!settingsStore.actualApiKey) {
-      ElMessage.error('请在设置中配置有效的API Key');
-      showSettings.value = true;
-      // No need to return, finally block handles isLoading
-      throw new Error('API Key not configured');
-    }
+    // Check API Key - 不再需要检查 API Key，因为现在由后端处理
+    // if (!settingsStore.actualApiKey) {
+    //   ElMessage.error('请在设置中配置有效的API Key');
+    //   showSettings.value = true;
+    //   // No need to return, finally block handles isLoading
+    //   throw new Error('API Key not configured');
+    // }
 
-    // Call API
-    result = await messageHandler.sendMessage(
+    // Call API - 使用新的后端 API 方法
+    result = await messageHandler.sendMessageViaBackend(
         apiMessages,
-        settingsStore.actualApiKey,
-        settingsStore.actualApiEndpoint || 'https://api.openai.com/v1/chat/completions',
         {
           model: settingsStore.model,
           temperature: settingsStore.temperature,

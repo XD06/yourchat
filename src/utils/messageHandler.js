@@ -161,7 +161,7 @@ export const messageHandler = {
      */
     async processStreamResponse(response, { updateMessage, updateTokenCount, onError, onComplete, isRegeneration = false }) {
         // 使用更短的输出间隔确保平滑体验，调整到更平衡的值
-        const CHAR_OUTPUT_INTERVAL = 1; // 增加到10ms，保持更稳定的节奏
+        const CHAR_OUTPUT_INTERVAL = 1; // 减少到1ms，加快初始输出速度
         const MAX_RETRIES = 3;
         const TIMEOUT_DURATION = 5000;
         
@@ -277,13 +277,25 @@ export const messageHandler = {
                     return;
                 }
                 
-                // 取出缓冲区中的一个字符
-                const char = charBuffer.shift();
-                full_content += char;
-                totalCharsOutput++;
+                // 一次处理多个字符，根据缓冲区大小动态调整
+                const batchSize = Math.min(
+                    // 如果缓冲区很大，一次处理更多字符
+                    charBuffer.length > 500 ? 10 : 
+                    charBuffer.length > 200 ? 5 : 
+                    charBuffer.length > 50 ? 3 : 1,
+                    charBuffer.length // 确保不超过缓冲区大小
+                );
                 
-                // 检查特殊内容
-                checkForSpecialContent(char);
+                let batchContent = '';
+                for (let i = 0; i < batchSize; i++) {
+                    const char = charBuffer.shift();
+                    batchContent += char;
+                    // 检查特殊内容
+                    checkForSpecialContent(char);
+                }
+                
+                full_content += batchContent;
+                totalCharsOutput += batchContent.length;
                 
                 // 将当前内容更新到UI
                 updateMessage({
@@ -295,10 +307,10 @@ export const messageHandler = {
                 if (full_content.length === lastOutputLength) {
                     outputStallCount++;
                     
-                    // 如果检测到输出停滞，自动释放一批字符（但最多10个）
-                    if (outputStallCount > 5 && charBuffer.length > 0) {
-                        console.log(`检测到输出停滞，释放一批字符 (${Math.min(10, charBuffer.length)}个)`);
-                        const batchSize = Math.min(10, charBuffer.length);
+                    // 如果检测到输出停滞，自动释放一批字符（更积极地释放）
+                    if (outputStallCount > 3 && charBuffer.length > 0) {
+                        console.log(`检测到输出停滞，释放一批字符 (${Math.min(20, charBuffer.length)}个)`);
+                        const batchSize = Math.min(20, charBuffer.length);
                         const batch = charBuffer.splice(0, batchSize).join('');
                         
                         // 在释放批次字符前，检查它们是否含有代码块或图表的开始/结束标记
@@ -311,7 +323,7 @@ export const messageHandler = {
                         full_content = tempContent;
                         totalCharsOutput += batch.length;
                         
-            updateMessage({
+                        updateMessage({
                             content: full_content,
                             thinkingContent: full_reasonResponse
                         });
@@ -326,16 +338,16 @@ export const messageHandler = {
                 // 记录状态
                 logStatus();
                 
-            }, CHAR_OUTPUT_INTERVAL); // 使用10ms的间隔确保平滑输出
+            }, CHAR_OUTPUT_INTERVAL); // 使用更短的间隔加快输出速度
         };
 
         // 添加刷新缓冲区的函数，确保缓冲区不会太大
         const flushBufferIfNeeded = () => {
             // 如果缓冲区超过特定大小，强制开始输出
-            if (charBuffer.length > 1000 && !isOutputtingChars) {
-                console.log(`缓冲区过大(${charBuffer.length}个字符)，开始输出`);
+            if (charBuffer.length > 100 && !isOutputtingChars) {
+                console.log(`缓冲区达到阈值(${charBuffer.length}个字符)，开始输出`);
                 outputBufferedChars();
-            } else if (charBuffer.length > 5000) {
+            } else if (charBuffer.length > 1000) {
                 // 如果缓冲区非常大，释放一半以避免内存问题
                 console.log(`缓冲区极大(${charBuffer.length}个字符)，释放一半`);
                 const releaseCount = Math.floor(charBuffer.length / 2);
@@ -631,30 +643,7 @@ export const messageHandler = {
            // presence_penalty: 0
         };
 
-        // SiliconFlow API可能需要特定的模型格式
-        // if (apiEndpoint.includes('siliconflow.cn')) {
-        //     // 确保模型名称是SiliconFlow支持的
-        //     if (!model.includes('GLM') && !model.includes('THUDM') && !model.includes('Qwen')) {
-        //         console.warn('模型可能不被SiliconFlow支持, 原始值:', model);
-        //         // 使用安全的默认值
-        //         payload.model = 'THUDM/GLM-4-9B-0414';
-        //     } else {
-        //         // SiliconFlow可能需要不同的模型格式，例如THUDM/GLM-4-9B-0414而不是GLM-4-9B-0414
-        //         // 或者可能需要去掉THUDM/前缀
-        //         if (model.includes('THUDM/')) {
-        //             // 尝试移除THUDM/前缀
-        //             const modelWithoutPrefix = model.replace('THUDM/', '');
-        //             console.log('尝试使用不带前缀的模型名:', modelWithoutPrefix);
-        //             payload.model = modelWithoutPrefix;
-        //         }
-        //     }
-            
-        //     // 调整其他参数
-        //     delete payload.stream_options; // 移除可能导致问题的参数
-        //     payload.stream = true; // 确保stream为true
-            
-        //     console.log('已针对SiliconFlow API调整payload:', payload);
-        // }
+
 
         // 删除可能导致错误的null值
         Object.keys(payload).forEach(key => {
@@ -822,6 +811,115 @@ export const messageHandler = {
             };
         } catch (error) {
             console.error('提示词优化失败:', error);
+            throw error;
+        }
+    },
+
+    // 添加一个新方法，使用后端 API 发送消息
+    async sendMessageViaBackend(messages, apiOptions, onUpdate, isRegeneration = false) {
+        const controller = new AbortController();
+        const signal = controller.signal;
+        
+        const {
+            model = 'gpt-3.5-turbo',
+            temperature = 0.7,
+            max_tokens = 1000,
+            stream = true
+        } = apiOptions;
+        
+        // 构建基本payload
+        const payload = {
+            model,
+            messages: messages.map(msg => ({
+                role: msg.role,
+                content: msg.content || ''
+            })),
+            temperature,
+            max_tokens
+        };
+        
+        // 删除可能导致错误的null值
+        Object.keys(payload).forEach(key => {
+            if (payload[key] === null) {
+                delete payload[key];
+            }
+        });
+        
+        try {
+            // 获取当前环境的 API 基础 URL
+            const apiBaseUrl = window.location.hostname.includes('netlify.app') 
+                ? '/.netlify/functions/chat'
+                : '/api/chat';
+            
+            console.log('准备发送后端 API 请求:', { 
+                endpoint: apiBaseUrl,
+                model: model,
+                messagesCount: messages.length
+            });
+
+            const headers = {
+                'Content-Type': 'application/json'
+            };
+            
+            console.log('请求体:', payload);
+
+            const response = await fetch(apiBaseUrl, {
+                method: 'POST',
+                headers: headers,
+                body: JSON.stringify(payload),
+                signal // 添加信号用于中断
+            });
+
+            console.log('收到API响应:', {
+                status: response.status,
+                statusText: response.statusText,
+                ok: response.ok
+            });
+
+            if (!response.ok) {
+                let errorText = '';
+                let errorJson = null;
+                
+                try {
+                    // 尝试解析为JSON
+                    const errorContent = await response.text();
+                    console.error('API错误原始内容:', errorContent);
+                    
+                    try {
+                        errorJson = JSON.parse(errorContent);
+                        console.error('API错误JSON解析:', errorJson);
+                        errorText = errorContent;
+                    } catch (e) {
+                        console.error('错误内容不是有效的JSON:', e);
+                        errorText = errorContent;
+                    }
+                } catch (e) {
+                    console.error('无法读取错误响应内容:', e);
+                    errorText = `Status: ${response.status}, StatusText: ${response.statusText}`;
+                }
+                
+                throw new Error(`API请求失败: ${response.status} ${response.statusText} - ${errorText}`);
+            }
+
+            // 处理 API 响应
+            const data = await response.json();
+            
+            // 提取 AI 回复内容
+            const aiReply = data.choices && data.choices[0] && data.choices[0].message 
+                ? data.choices[0].message.content 
+                : '无法获取回复内容';
+            
+            // 调用回调函数更新消息
+            onUpdate(aiReply, true);
+            
+            return { success: true, controller };
+        } catch (error) {
+            // 如果是中断错误，不需要抛出异常
+            if (error.name === 'AbortError') {
+                console.log('请求被用户中断');
+                return { success: false, aborted: true };
+            }
+            console.error('API请求失败:', error);
             throw error;
         }
     },

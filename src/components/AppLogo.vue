@@ -43,10 +43,11 @@ const props = defineProps({
   height: v-bind(size);
   display: block;
   transform: translateZ(0);
+  color: black;
 }
 
 /* Dark mode support */
 [data-theme="dark"] .app-logo {
-  color: #40a9ff;
+  color: white;
 }
 </style> 

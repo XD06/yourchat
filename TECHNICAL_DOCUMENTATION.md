@@ -12,6 +12,7 @@
 6. [数据存储和持久化](#数据存储和持久化)
 7. [性能优化](#性能优化)
 8. [移动端适配](#移动端适配)
+9. [访问密码保护](#访问密码保护)
 
 ## 项目架构
 
@@ -442,6 +443,119 @@ const toggleMobileSidebar = () => {
     }
 }
 ```
+
+## 访问密码保护
+
+应用程序实现了密码保护功能，要求用户在加载完成后输入正确的密码才能访问主界面。
+
+### 实现方式
+
+#### 1. 环境变量配置
+
+密码通过`VITE_WEBSITE_CODE`环境变量设置：
+
+```
+VITE_WEBSITE_CODE=your_access_password_here
+```
+
+如果未设置此环境变量，则应用不会要求密码验证。
+
+#### 2. 状态管理
+
+在`settings.js`中，我们添加了密码相关的状态和方法：
+
+```javascript
+// 从环境变量获取网站访问密码
+const websiteCode = import.meta.env.VITE_WEBSITE_CODE || '';
+
+// 在store状态中
+state: () => ({
+  // ...其他状态
+  // 网站访问密码验证状态
+  isAuthenticated: websiteCode === '',
+}),
+
+// 在getters中
+getters: {
+  // ...其他getters
+  // 获取网站访问密码
+  websiteCode: () => websiteCode
+},
+
+// 在actions中
+actions: {
+  // ...其他actions
+  // 验证网站访问密码
+  verifyWebsiteCode(code) {
+    if (code === websiteCode) {
+      this.isAuthenticated = true;
+      return true;
+    }
+    return false;
+  },
+}
+```
+
+#### 3. 密码验证组件
+
+`PasswordScreen.vue`组件处理密码输入和验证：
+
+```html
+<template>
+  <div class="password-screen">
+    <div class="password-container">
+      <h2>请输入访问密码</h2>
+      <div class="input-group">
+        <input 
+          type="password" 
+          v-model="password" 
+          placeholder="请输入密码"
+          @keyup.enter="verifyPassword"
+        />
+        <button @click="verifyPassword">确认</button>
+      </div>
+      <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
+    </div>
+  </div>
+</template>
+```
+
+```javascript
+const verifyPassword = async () => {
+  if (!password.value) {
+    errorMessage.value = '请输入密码';
+    return;
+  }
+  
+  const isValid = settingsStore.verifyWebsiteCode(password.value);
+  
+  if (!isValid) {
+    errorMessage.value = '密码错误，请重试';
+    password.value = '';
+  }
+};
+```
+
+#### 4. 应用流程集成
+
+在`App.vue`中，我们根据认证状态决定显示密码屏幕还是主应用：
+
+```html
+<!-- Password Screen - Shown after loading but before authentication -->
+<PasswordScreen v-if="isAppLoaded && resourcesLoaded && !settingsStore.isAuthenticated" />
+
+<!-- Main App Content - Only shown when both app and resources are loaded and authenticated -->
+<router-view v-if="isAppLoaded && resourcesLoaded && settingsStore.isAuthenticated" />
+```
+
+这种实现确保了：
+1. 首先显示加载屏幕
+2. 资源加载完成后显示密码屏幕（如果设置了密码）
+3. 密码验证成功后才显示主应用界面
+
+### 安全考虑
+
+需要注意的是，此密码保护是基于前端实现的，主要用于简单的访问控制，不适用于高安全性要求的场景。对于需要更高安全性的应用，应考虑服务器端认证和HTTPS协议。
 
 ## 总结
 

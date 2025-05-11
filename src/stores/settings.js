@@ -17,9 +17,15 @@ function parseEnvModels(modelsStr) {
 // 从环境变量获取默认模型
 const defaultModel = import.meta.env.VITE_DEFAULT_MODEL || 'THUDM/GLM-4-9B-0414';
 
-// 以下变量不会暴露在界面上，只在内部使用
-const ENV_API_KEY = import.meta.env.VITE_API_KEY || '';
-const ENV_API_URL = import.meta.env.VITE_API_URL || 'https://api.openai.com/v1/chat/completions';
+// 从环境变量获取默认最大tokens
+const defaultMaxTokens = parseInt(import.meta.env.VITE_DEFAULT_MAX_TOKENS) || 1000;
+
+// 从环境变量获取网站访问密码
+const websiteCode = import.meta.env.WEBSITE_CODE || '';
+
+// 以下变量不再从环境变量中读取，而是通过后端 API 安全处理
+// 不再需要: const ENV_API_KEY = import.meta.env.VITE_API_KEY || '';
+// 不再需要: const ENV_API_URL = import.meta.env.VITE_API_URL || 'https://api.openai.com/v1/chat/completions';
 
 // 定义一个名为 'settings' 的 store
 export const useSettingsStore = defineStore('settings', {
@@ -29,8 +35,8 @@ export const useSettingsStore = defineStore('settings', {
         isDarkMode: false,
         // 温度参数，控制生成文本的随机性，默认值为 0.7
         temperature: 0.7,
-        // 最大 token 数量，默认值为 1000
-        maxTokens: 1000,
+        // 最大 token 数量，从环境变量读取默认值
+        maxTokens: defaultMaxTokens,
         // 使用的模型名称 - 从环境变量读取默认值
         model: defaultModel,
         // 用户在界面上输入的API Key，初始为空
@@ -50,6 +56,8 @@ export const useSettingsStore = defineStore('settings', {
         currentRole: null,
         // 用户自定义角色列表
         customRoles: [],
+        // 网站访问密码验证状态 - 默认为未验证
+        isAuthenticated: false,
         // 可用模型选项列表 - 从环境变量读取默认值或使用预设值
         modelOptions: import.meta.env.VITE_MODELS 
             ? parseEnvModels(import.meta.env.VITE_MODELS)
@@ -64,50 +72,53 @@ export const useSettingsStore = defineStore('settings', {
 
     // 计算属性 - 获取实际使用的值
     getters: {
-        // 获取实际使用的API Key - 如果用户自定义过则优先使用用户输入值，否则使用环境变量值
+        // 获取实际使用的API Key - 现在通过后端 API 处理，不再直接使用
         actualApiKey: (state) => {
-            // 如果用户选择了自定义API，优先使用用户设置的值
+            // 如果用户选择了自定义API，返回用户设置的值
             if (state.userCustomizedAPI) {
                 return state.apiKey;
             }
-            // 否则使用环境变量中的API Key
-            return ENV_API_KEY;
+            // 否则返回空字符串，实际的 API Key 由后端处理
+            return '';
         },
         
-        // 获取实际使用的API端点 - 如果用户自定义过则优先使用用户输入值，否则使用环境变量值
+        // 获取实际使用的API端点 - 现在通过后端 API 处理，不再直接使用
         actualApiEndpoint: (state) => {
-            // 如果用户选择了自定义API，优先使用用户设置的值
+            // 如果用户选择了自定义API，返回用户设置的值
             if (state.userCustomizedAPI) {
-                return state.apiEndpoint || ENV_API_URL;
+                return state.apiEndpoint || '';
             }
-            // 否则使用环境变量中的API端点
-            return ENV_API_URL;
+            // 否则返回默认端点
+            return 'https://api.openai.com/v1/chat/completions';
         },
         
-        // 获取显示在UI上的API Key值 - 用户自定义的显示实际值，环境变量的显示占位符
+        // 获取显示在UI上的API Key值
         displayApiKey: (state) => {
             // 如果用户选择了自定义API，返回用户设置的值
             if (state.userCustomizedAPI) {
                 return state.apiKey;
             }
-            // 否则返回空字符串，避免暴露环境变量中的API Key
+            // 否则返回空字符串
             return '';
         },
         
-        // 获取显示在UI上的API端点值 - 用户自定义的显示实际值，环境变量的显示占位符
+        // 获取显示在UI上的API端点值
         displayApiEndpoint: (state) => {
             // 如果用户选择了自定义API，返回用户设置的值
             if (state.userCustomizedAPI) {
                 return state.apiEndpoint;
             }
-            // 否则返回空字符串，避免暴露环境变量中的API端点
+            // 否则返回空字符串
             return '';
         },
         
         // 判断是否有可用的API Key
         hasApiKey: (state) => {
-            return !!state.actualApiKey || (state.userCustomizedAPI && !!state.apiKey);
-        }
+            return (state.userCustomizedAPI && !!state.apiKey) || !state.userCustomizedAPI;
+        },
+        
+        // 获取网站访问密码
+        websiteCode: () => websiteCode
     },
 
     // 定义 store 的动作
@@ -123,6 +134,13 @@ export const useSettingsStore = defineStore('settings', {
         updateSettings(settings) {
             // 使用 Object.assign 方法将传入的设置对象合并到当前 store 的状态中
             Object.assign(this.$state, settings)
+        },
+        
+        // 验证网站访问密码 - 现在通过后端 API 处理，这个方法只作为兼容性保留
+        verifyWebsiteCode(code) {
+            // 此方法不再直接验证密码，而是通过后端 API 处理
+            // 保留此方法仅为兼容性，实际验证逻辑已移至 PasswordScreen 组件
+            return false;
         },
         
         // 添加自定义角色
@@ -234,7 +252,7 @@ export const useSettingsStore = defineStore('settings', {
                 // 存储方式，这里使用的是 localStorage
                 storage: localStorage,
                 // 排除敏感信息，只持久化非敏感设置
-                paths: ['isDarkMode', 'temperature', 'maxTokens', 'model', 'streamResponse', 'topP', 'topK', 'currentRole', 'customRoles', 'modelOptions', 'userCustomizedAPI', 'apiKey', 'apiEndpoint']
+                paths: ['isDarkMode', 'temperature', 'maxTokens', 'model', 'streamResponse', 'topP', 'topK', 'currentRole', 'customRoles', 'modelOptions', 'userCustomizedAPI', 'apiKey', 'apiEndpoint', 'isAuthenticated']
             },
         ],
     },

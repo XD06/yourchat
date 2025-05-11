@@ -14,11 +14,14 @@
       </div>
     </div>
 
-    <!-- Main App Content - Only shown when both app and resources are loaded -->
-    <router-view v-if="isAppLoaded && resourcesLoaded" />
+    <!-- Password Screen - Shown after loading but before authentication -->
+    <PasswordScreen v-if="isAppLoaded && resourcesLoaded && !settingsStore.isAuthenticated" />
+
+    <!-- Main App Content - Only shown when both app and resources are loaded and authenticated -->
+    <router-view v-if="isAppLoaded && resourcesLoaded && settingsStore.isAuthenticated" />
     
     <!-- Migration Helper - Will show if old history format is detected -->
-    <MigrationHelper v-if="isAppLoaded && resourcesLoaded" />
+    <MigrationHelper v-if="isAppLoaded && resourcesLoaded && settingsStore.isAuthenticated" />
     
     <!-- 滚动到底部按钮 - 更新为箭头图标 -->
     <!-- <div 
@@ -43,6 +46,7 @@ import { ref, onMounted, onBeforeMount, nextTick, watch } from 'vue'
 import { useSettingsStore } from './stores/settings'
 import AppLogo from './components/AppLogo.vue'
 import MigrationHelper from './components/MigrationHelper.vue'
+import PasswordScreen from './components/PasswordScreen.vue'
 import './assets/mobileFixStyles.css' // Import mobile fixes CSS
 
 const settingsStore = useSettingsStore()

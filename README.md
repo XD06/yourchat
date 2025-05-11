@@ -60,9 +60,15 @@ npm install
 
 3. 配置环境变量
 ```bash
-cp .env.example .env
-# 编辑.env文件，添加你的API密钥
+# 查看环境变量配置示例
+cat ENV-EXAMPLE.md
+
+# 创建本地环境变量文件
+touch .env.local
+# 编辑.env.local文件，添加你的API密钥和其他配置
 ```
+
+> **重要安全说明**：敏感信息（如API密钥和访问密码）不应使用 `VITE_` 前缀，以防止它们被打包到前端代码中。详细说明请参阅 `ENV-EXAMPLE.md` 文件。
 
 4. 启动开发服务器
 ```bash

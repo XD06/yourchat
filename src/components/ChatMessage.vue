@@ -39,7 +39,13 @@
           </div>
           <div class="thinking-title">
             <!-- 根据消息状态显示不同的标题 -->
-            <span v-if="!message.completed">思考中<span class="thinking-dots"></span></span>
+            <span v-if="!message.completed">思考中
+              <span class="thinking-dots">
+                <span class="dot dot-1">.</span>
+                <span class="dot dot-2">.</span>
+                <span class="dot dot-3">.</span>
+              </span>
+            </span>
             <span v-else>已深度思考☁️</span>
           </div>
           <el-button 
@@ -62,12 +68,14 @@
       <!-- 消息气泡 -->
       <div class="message-bubble">
         <div v-if="message.loading" class="message-loading">
-          <div class="loading-circle">
-            <svg class="spinner-svg" viewBox="0 0 24 24">
-              <circle class="path" cx="12" cy="12" r="10" fill="none" stroke-width="2.5"></circle>
-            </svg>
-          </div>
-          <span class="loading-text">AI思考中</span>
+          <div class="loading-circle"></div>
+          <span class="loading-text">AI思考中
+            <span class="thinking-dots">
+              <span class="dot dot-1">.</span>
+              <span class="dot dot-2">.</span>
+              <span class="dot dot-3">.</span>
+            </span>
+          </span>
         </div>
         <div v-else class="message-text" ref="messageText">
           <div
@@ -210,11 +218,10 @@ const mdOptions = {
         // Use simpler highlighting that doesn't cause layout shifts
         const highlighted = hljs.highlight(str, { language: lang, ignoreIllegals: true }).value;
         
-        // Static height calculation based on line count to prevent layout shifts
+        // 计算行数，但不设置固定高度，让代码块自适应内容
         const lineCount = str.split('\n').length;
-        const approxHeight = Math.max(50, lineCount * 22); // ~22px per line
         
-        return `<pre class="code-block" data-lang="${lang}" style="min-height:${approxHeight}px">
+        return `<pre class="code-block" data-lang="${lang}" data-line-count="${lineCount}">
           <div class="code-header">
             <span class="code-lang">${lang}</span>
             <div class="code-actions">
@@ -241,11 +248,10 @@ const mdOptions = {
       }
     }
     
-    // For unknown languages, use similar height estimation
+    // For unknown languages
     const lineCount = str.split('\n').length;
-    const approxHeight = Math.max(50, lineCount * 22);
     
-    return `<pre class="code-block" data-lang="plaintext" style="min-height:${approxHeight}px">
+    return `<pre class="code-block" data-lang="plaintext" data-line-count="${lineCount}">
       <div class="code-header">
         <span class="code-lang">plaintext</span>
         <div class="code-actions">
@@ -934,11 +940,11 @@ onUnmounted(() => {
       max-width: 100%;
       background-color: #f8f9fa;
       border: 1px solid #e3e3e3;
-      transition: box-shadow 0.3s, transform 0.2s;
+      transition: box-shadow 0.3s;
+      height: auto; /* 确保高度自适应内容 */
       
       &:hover {
         box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
-        transform: translateY(-1px);
       }
 
       [data-theme="dark"] & {
@@ -956,7 +962,6 @@ onUnmounted(() => {
       }
         
         .code-header {
-        margin-top: -20px;
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -1020,9 +1025,10 @@ onUnmounted(() => {
         line-height: 1.6;
         scrollbar-width: none;
         font-weight: 500;
+        white-space: pre; /* 保持代码格式 */
         
         [data-theme="dark"] & {
-          color: #96419c;
+          color: #e0e0e0;
         }
       }
     }
@@ -1073,76 +1079,48 @@ onUnmounted(() => {
   }
   
 .message-loading {
-    display: flex;
-    align-items: center;
-    padding: 1rem 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.8rem 0;
+  min-height: 40px; /* 确保最小高度 */
   
-    .loading-circle {
-      position: relative;
-      width: 20px;
-      height: 20px;
-      margin-right: 10px;
-      flex-shrink: 0; /* Prevent shrinking */
-      display: block;
-      overflow: visible;
-      
-      .spinner-svg {
-        position: relative;
-        width: 20px;
-        height: 20px;
-        transform-origin: 50% 50%; /* 确保从中心点旋转 */
-        animation: rotate 1.5s linear infinite;
-        
-        .path {
-          stroke: #000000;
-          stroke-linecap: round;
-          stroke-width: 2.5;
-          fill: none;
-          animation: dash 1.5s ease-in-out infinite;
-          transform-origin: 50% 50%;
-        }
-      }
-    }
-  
+  .loading-circle {
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+    border: 3px solid rgba(0, 0, 0, 0.1);
+    border-top: 3px solid #333;
+    border-radius: 50%;
+    animation: circle-spin 1s linear infinite!important;
+    
     [data-theme="dark"] & {
-      .loading-circle .spinner-svg .path {
-        stroke: #ffffff;
-      }
-      .loading-text {
-        color: #bbb;
-      }
+      border-color: rgba(255, 255, 255, 0.1);
+      border-top-color: #fff;
     }
-
-    .loading-text {
-      font-size: 0.95rem;
-      color: #555;
-      font-weight: 500;
-      position: relative;
-      display: inline-flex;
-      align-items: center;
-      height: 20px;
-      
-      &::after {
-        content: "";
-        width: 12px;
-        display: inline-block;
-        text-align: left;
-        animation: loading-dots 1.4s infinite steps(4, end);
-        vertical-align: middle;
-      }
-    }
-}
-
-@keyframes rotate {
-  0% {
-    transform: rotate(0deg);
   }
-  100% {
-    transform: rotate(360deg);
+  
+  .loading-text {
+    font-size: 0.9rem;
+    color: #555;
+    display: flex; /* 使用flex布局 */
+    align-items: center; /* 垂直居中 */
+    height: 20px; /* 固定高度 */
+    line-height: 20px; /* 行高与高度一致 */
+    white-space: nowrap; /* 防止换行 */
+    
+    [data-theme="dark"] & {
+      color: #bbb;
+    }
   }
 }
 
-@keyframes dash {
+@keyframes circle-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes spinner-dash {
   0% {
     stroke-dasharray: 1, 150;
     stroke-dashoffset: 0;
@@ -1163,16 +1141,41 @@ onUnmounted(() => {
   80%, 100% { content: "..."; }
 }
 
+/* 删除旧的thinking-dots样式，使用新的实现 */
 .thinking-dots {
-  display: inline-block;
-  width: 20px;
-  overflow: hidden;
-  &::after {
-    content: "...";
-    display: inline-block;
-    animation: loading-dots 1.5s infinite;
+  display: inline-flex;
+  width: 20px; /* 固定宽度 */
+  justify-content: center;
+  
+  .dot {
+    opacity: 0;
+    animation: dot-fade 1.5s infinite;
+    width: 5px;
+    text-align: center;
+  }
+  
+  .dot-1 {
+    animation-delay: 0s;
+  }
+  
+  .dot-2 {
+    animation-delay: 0.3s;
+  }
+  
+  .dot-3 {
+    animation-delay: 0.6s;
   }
 }
+
+@keyframes dot-fade {
+  0%, 20% { opacity: 0; }
+  40% { opacity: 0.4; }
+  60% { opacity: 0.7; }
+  80%, 100% { opacity: 1; }
+}
+
+/* 删除旧的thinking-dots动画 */
+// ... existing code ...
 
 .message-editing {
   .editing-actions {
@@ -1356,6 +1359,7 @@ onUnmounted(() => {
     padding: 0.5rem 1rem;
     background-color: rgba(0,0,0,0.1);
     border-bottom: 1px solid var(--border-color);
+    margin-top: -20px;
     
     .code-lang {
       font-size: 0.8rem;
@@ -1604,18 +1608,17 @@ onUnmounted(() => {
   justify-content: center;
   
   .spinner {
-    animation: rotate 1.5s linear infinite;
-    width: 28px;
-    height: 28px;
+    animation: rotate 2s linear infinite;
+    width: 20px;
+    height: 20px;
     
     .path {
-      stroke: #4284f5;
-      stroke-width: 3;
+      stroke: #333;
       stroke-linecap: round;
-      animation: dash 1.4s ease-in-out infinite;
+      animation: dash 1.5s ease-in-out infinite;
       
       [data-theme="dark"] & {
-        stroke: #5a9cf7;
+        stroke: #fff;
       }
     }
   }

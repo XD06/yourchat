@@ -21,13 +21,12 @@ const md = new MarkdownIt({
     if (lang && hljs.getLanguage(lang)) {
       try {
         // 使用预处理机制，避免代码块突然出现导致的卡顿
-        // 统计代码行数，提前计算高度
+        // 统计代码行数，但不设置固定高度
         const lines = str.split('\n');
         const lineCount = lines.length;
-        const minHeight = lineCount * 21 + 20; // 估算高度：每行21px + 边距
-
-        // 使用内联样式预设高度，避免布局抖动
-        const preClass = `code-block pre-sized`;
+        
+        // 移除内联样式预设高度，让代码块自适应内容
+        const preClass = `code-block`;
         
         // 延迟高亮处理，先显示原始代码
         const highlighted = hljs.highlight(str, { 
@@ -61,8 +60,8 @@ const md = new MarkdownIt({
             </button>
           </div>`;
         
-        // 添加 data-line-count 属性，用于进一步优化渲染
-        return `<pre class="${preClass}" data-lang="${lang}" data-line-count="${lineCount}" style="min-height:${minHeight}px">
+        // 添加 data-line-count 属性，用于进一步优化渲染，但不设置min-height
+        return `<pre class="${preClass}" data-lang="${lang}" data-line-count="${lineCount}">
           <div class="code-header">
             ${headerContent}
           </div>
@@ -74,9 +73,8 @@ const md = new MarkdownIt({
     // 无法识别语言时，使用相同的结构以保持一致性
     const lines = str.split('\n');
     const lineCount = lines.length;
-    const minHeight = lineCount * 21 + 20; // 估算高度：每行21px + 边距
     
-    return `<pre class="code-block pre-sized" data-lang="plaintext" data-line-count="${lineCount}" style="min-height:${minHeight}px">
+    return `<pre class="code-block" data-lang="plaintext" data-line-count="${lineCount}">
       <div class="code-header">
         <span class="code-lang">plaintext</span>
         <div class="code-actions">
