@@ -5,6 +5,7 @@ import katex from 'katex'
 import 'katex/dist/katex.min.css'
 import mermaidPlugin from './mermaid-plugin'
 import taskLists from 'markdown-it-task-lists'
+import { registerAllExtensions } from './markdownExtensions'
 
 // 创建 markdown-it 实例
 const md = new MarkdownIt({
@@ -102,6 +103,9 @@ md.use(taskLists, {
 // 添加Mermaid支持
 md.use(mermaidPlugin)
 
+// 注册所有自定义扩展
+registerAllExtensions(md)
+
 // 自定义引用块渲染器来支持不同类型的提示
 const defaultRender = md.renderer.rules.blockquote_open || function(tokens, idx, options, env, self) {
   return self.renderToken(tokens, idx, options);
@@ -115,15 +119,27 @@ md.renderer.rules.blockquote_open = function (tokens, idx, options, env, self) {
   if (nextToken && nextToken.type === 'paragraph_open' && tokens[idx + 2] && tokens[idx + 2].type === 'inline') {
     const content = tokens[idx + 2].content;
     
-    if (content.startsWith('!info')) {
-      tokens[idx + 2].content = content.replace(/^!info\s+/, '');
-      token.attrJoin('class', 'info');
-    } else if (content.startsWith('!warning')) {
-      tokens[idx + 2].content = content.replace(/^!warning\s+/, '');
-      token.attrJoin('class', 'warning');
-    } else if (content.startsWith('!error')) {
-      tokens[idx + 2].content = content.replace(/^!error\s+/, '');
-      token.attrJoin('class', 'error');
+    // 先清理内容，去除前后空格
+    const trimmedContent = content.trim();
+    
+    // 增强的正则表达式，更灵活地匹配各种格式
+    // 1. 可选的感叹号前缀
+    // 2. 类型标识符 (info|warning|error)
+    // 3. 可选的冒号（中英文都支持）
+    // 4. 剩余所有内容作为实际内容
+    const match = trimmedContent.match(/^\s*!?\s*(info|warning|error)\s*[:：]?\s*([\s\S]*)/i);
+    
+    if (match) {
+      const type = match[1].toLowerCase();
+      // 确保内容不为空
+      const actualContent = match[2] ? match[2].trim() : '';
+      
+      // 调试信息，可在生产环境移除
+      console.log('提示框类型:', type, '原始内容:', JSON.stringify(trimmedContent), '处理后:', JSON.stringify(actualContent));
+      
+      // 更新内容
+      tokens[idx + 2].content = actualContent;
+      token.attrJoin('class', type);
     }
   }
   
