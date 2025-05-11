@@ -383,8 +383,8 @@ const updateContentDisplay = (content) => {
   
   // 检查消息角色
   if (props.message.role !== 'assistant') {
-    // 用户消息直接渲染
-    messageContent.value = renderMarkdown(content);
+    // 用户消息不需要Markdown渲染，直接显示纯文本
+    messageContent.value = `<div class="user-message-text">${content.replace(/\n/g, '<br>')}</div>`;
     messageCompleted.value = true;
     return;
   }
@@ -2179,6 +2179,24 @@ onUnmounted(() => {
       }
     }
   }
+}
+
+.message-bubble {
+  // ... existing code ...
+  
+  .message-text {
+    // ... existing code ...
+    
+    // 添加用户消息文本样式
+    .user-message-text {
+      white-space: pre-wrap;
+      word-break: break-word;
+      line-height: 1.5;
+      font-family: var(--font-family);
+    }
+  }
+  
+  // ... existing code ...
 }
 </style>
 

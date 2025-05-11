@@ -1115,9 +1115,17 @@ const scrollToBottom = (forceScroll = false) => {
     const isUserNearBottom = scrollHeight - scrollTop - clientHeight < SCROLL_THRESHOLD;
 
     if (forceScroll || isUserNearBottom) {
-      messagesContainer.value.scrollTo({
-        top: messagesContainer.value.scrollHeight,
-        behavior: 'smooth'
+      // 使用requestAnimationFrame优化滚动性能，防止频繁滚动导致卡顿
+      if (window._scrollAnimationFrame) {
+        cancelAnimationFrame(window._scrollAnimationFrame);
+      }
+      
+      window._scrollAnimationFrame = requestAnimationFrame(() => {
+        messagesContainer.value.scrollTo({
+          top: messagesContainer.value.scrollHeight,
+          // 对于AI流式输出，使用auto而不是smooth，减少动画开销
+          behavior: forceScroll ? 'smooth' : 'auto'
+        });
       });
       // console.log('已滚动到底部。强制:', forceScroll, '用户接近底部:', isUserNearBottom);
     } else {
