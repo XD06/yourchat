@@ -1,11 +1,12 @@
 // 获取可用模型列表的 Netlify 函数
-import https from 'https';
+const https = require('https');
 
 // 使用原生 https 模块创建请求，避免使用 node-fetch
 const makeRequest = (url, options) => {
   return new Promise((resolve, reject) => {
     const req = https.request(url, options, (res) => {
       let data = '';
+      res.setEncoding('utf-8');
       res.on('data', (chunk) => {
         data += chunk;
       });
@@ -30,7 +31,8 @@ const makeRequest = (url, options) => {
   });
 };
 
-export const handler = async function(event, context) {
+// 使用 CommonJS 导出
+exports.handler = async function(event, context) {
   // 只接受 GET 请求
   if (event.httpMethod !== 'GET') {
     return { 

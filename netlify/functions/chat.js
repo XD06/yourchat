@@ -1,5 +1,5 @@
 // 处理 AI 聊天请求的 Netlify 函数
-import https from 'https';
+const https = require('https');
 
 // 使用原生 https 模块创建请求，支持流式响应
 const makeRequest = (url, options, onChunk = null) => {
@@ -118,7 +118,8 @@ const makeRequest = (url, options, onChunk = null) => {
   });
 };
 
-export const handler = async function(event, context) {
+// 使用 CommonJS 导出
+exports.handler = async function(event, context) {
   // 检查请求路径，如果有特定的流处理路径则设置流式响应标志
   const isStreamRequest = event.rawUrl && event.rawUrl.includes('/chat-stream');
   

@@ -1,5 +1,5 @@
 // 验证访问密码的 Netlify 函数
-export const handler = async function(event, context) {
+exports.handler = async function(event, context) {
   // 只接受 POST 请求
   if (event.httpMethod !== 'POST') {
     return { 
