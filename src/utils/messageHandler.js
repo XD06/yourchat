@@ -958,7 +958,7 @@ export const messageHandler = {
                 frontendError = error;
                 
                 // 如果前端自定义 API 设置失败，我们继续尝试后端 API
-                onUpdate('前端 API 调用失败，尝试使用后端 API...', false);
+                onUpdate({ content: '前端 API 调用失败，尝试使用后端 API...' }, false);
             }
         }
         
@@ -966,7 +966,7 @@ export const messageHandler = {
         if (!result || !result.success) {
             console.log('尝试使用后端 API');
             try {
-                // 构建后端 API 请求体
+                // 构建后端 API 请求体，包含 stream 选项
                 const payload = {
                     model: apiOptions.model,
                     messages: messages.map(msg => ({
@@ -974,11 +974,33 @@ export const messageHandler = {
                         content: msg.content || ''
                     })),
                     temperature: apiOptions.temperature,
-                    max_tokens: apiOptions.max_tokens
+                    max_tokens: apiOptions.max_tokens,
+                    stream: apiOptions.stream // 添加流式输出选项
                 };
                 
+                // 基于流式选项确定合适的端点
+                const isStreamEnabled = apiOptions.stream === true;
+                let apiEndpoint;
+
                 // 确定后端 API 端点
-                const apiEndpoint = '/api/chat';
+                if (window.location.hostname.includes('netlify.app')) {
+                    // Netlify 环境
+                    apiEndpoint = isStreamEnabled 
+                        ? '/.netlify/functions/chat' // Netlify 会基于请求体中的 stream 字段处理
+                        : '/.netlify/functions/chat';
+                } else {
+                    // Vercel 或其他环境
+                    apiEndpoint = isStreamEnabled 
+                        ? '/api/chat' // 同样基于请求体中的 stream 字段
+                        : '/api/chat';
+                }
+                
+                // 创建详细的请求日志
+                console.log(`发送${isStreamEnabled ? '流式' : '非流式'}请求到后端:`, {
+                    endpoint: apiEndpoint,
+                    streamEnabled: isStreamEnabled,
+                    modelUsed: payload.model
+                });
                 
                 // 处理取消控制器
                 const controller = new AbortController();
@@ -1007,20 +1029,31 @@ export const messageHandler = {
                     throw new Error(`后端 API 错误: ${response.status} ${response.statusText}`);
                 }
                 
-                // 处理后端响应（这里假设后端返回与 OpenAI API 相同格式的响应）
-                await this.processStreamResponse(response, {
-                    updateMessage: (messageData) => {
-                        onUpdate(messageData, messageData.content !== '');
-                    },
-                    updateTokenCount: () => {}, 
-                    onError: (error) => {
-                        console.error('流处理错误:', error);
-                    },
-                    onComplete: () => {
-                        console.log('流处理完成');
-                    },
-                    isRegeneration: isRegeneration
-                });
+                // 处理后端响应
+                if (isStreamEnabled) {
+                    // 处理流式响应
+                    await this.processStreamResponse(response, {
+                        updateMessage: (messageData) => {
+                            onUpdate(messageData, messageData.content !== '');
+                        },
+                        updateTokenCount: () => {}, // 可选实现
+                        onError: (error) => {
+                            console.error('流处理错误:', error);
+                        },
+                        onComplete: () => {
+                            console.log('流处理完成');
+                        },
+                        isRegeneration: isRegeneration
+                    });
+                } else {
+                    // 处理非流式响应
+                    const data = await response.json();
+                    const aiReply = data.choices && data.choices[0] && data.choices[0].message 
+                        ? data.choices[0].message.content 
+                        : '无法获取回复内容';
+                    
+                    onUpdate({ content: aiReply }, true);
+                }
                 
                 return { success: true, controller, source: 'backend' };
             } catch (error) {
@@ -1029,10 +1062,10 @@ export const messageHandler = {
                 
                 // 如果后端失败，并且我们还没有尝试过前端 API，则尝试前端 API
                 if (!frontendError && !hasCustomApiSettings) {
-                    onUpdate('后端 API 调用失败，请配置自定义 API 密钥和端点。', true);
+                    onUpdate({ content: '后端 API 调用失败，请配置自定义 API 密钥和端点。' }, true);
                 } else {
                     // 如果两者都失败，返回组合错误
-                    onUpdate(`API 调用失败: ${error.message}`, true);
+                    onUpdate({ content: `API 调用失败: ${error.message}` }, true);
                 }
             }
         }
@@ -1047,7 +1080,6 @@ export const messageHandler = {
         };
     },
 
-    // 添加一个新方法，支持前后端故障转移的模型解析函数
     /**
      * 带故障转移的模型列表获取函数 - 先尝试直接通过前端 API 获取，如果失败则尝试通过后端 API
      * @param {Object} settings - 包含API设置的对象 (settingsStore)
@@ -1075,6 +1107,7 @@ export const messageHandler = {
                 );
                 
                 if (result && Array.isArray(result) && result.length > 0) {
+                    console.log('从前端 API 成功获取模型列表:', result.length);
                     return result;
                 } else {
                     throw new Error('未获取到有效的模型列表');
@@ -1091,31 +1124,48 @@ export const messageHandler = {
             console.log('尝试通过后端 API 获取模型列表');
             try {
                 // 确定后端 API 端点
-                const apiBaseUrl = window.location.hostname.includes('netlify.app') 
-                    ? '/.netlify/functions/models' // Netlify Functions 路径
-                    : '/api/models'; // Vercel API 路径
+                let apiBaseUrl;
+                if (window.location.hostname.includes('netlify.app')) {
+                    apiBaseUrl = '/.netlify/functions/models'; // Netlify Functions 路径
+                } else {
+                    apiBaseUrl = '/api/models'; // Vercel API 路径
+                }
+                
+                console.log('使用后端模型解析 API:', apiBaseUrl);
                 
                 // 发送请求
-                const response = await fetch(apiBaseUrl);
+                const response = await fetch(apiBaseUrl, {
+                    headers: {
+                        'Cache-Control': 'no-cache',
+                        'Pragma': 'no-cache'
+                    }
+                });
                 
                 if (!response.ok) {
                     // 尝试解析错误响应
-                    const errorData = await response.json().catch(() => ({}));
-                    console.error('后端模型 API 错误:', errorData);
-                    
-                    // 如果后端返回需要 API Key 的错误
-                    if (errorData.needsApiKey) {
-                        throw new Error('后端未配置 API_KEY');
+                    try {
+                        const errorData = await response.json();
+                        console.error('后端模型 API 错误:', errorData);
+                        
+                        // 如果后端返回需要 API Key 的错误
+                        if (errorData.needsApiKey) {
+                            throw new Error('后端未配置 API_KEY，请在设置中配置自定义 API 密钥');
+                        }
+                        
+                        throw new Error(`后端模型 API 错误: ${response.status} ${response.statusText} - ${errorData.message || '未知错误'}`);
+                    } catch (jsonError) {
+                        // 如果无法解析为 JSON，返回原始响应错误
+                        throw new Error(`后端模型 API 错误: ${response.status} ${response.statusText}`);
                     }
-                    
-                    throw new Error(`后端模型 API 错误: ${response.status} ${response.statusText}`);
                 }
                 
                 // 处理响应
                 const data = await response.json();
+                console.log('后端返回的模型数据:', data);
                 
                 // 检查返回数据格式
                 if (data && Array.isArray(data.models) && data.models.length > 0) {
+                    console.log('从后端 API 成功获取模型列表:', data.models.length);
                     return data.models;
                 } else {
                     throw new Error('后端返回的模型列表格式无效或为空');
@@ -1126,9 +1176,9 @@ export const messageHandler = {
                 
                 // 如果两种方法都失败，返回错误
                 if (frontendError) {
-                    throw new Error(`模型列表获取失败: 前端直接获取(${frontendError.message})和后端获取(${backendError.message})均失败`);
+                    throw new Error(`模型列表获取失败: 前端(${frontendError.message})和后端(${backendError.message})均失败`);
                 } else {
-                    throw new Error(`模型列表获取失败: ${error.message}`);
+                    throw new Error(`模型列表获取失败: ${error.message || '未知错误'}`);
                 }
             }
         }
