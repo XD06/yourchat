@@ -1,5 +1,5 @@
 // 验证访问密码的 Netlify 函数
-exports.handler = async function(event, context) {
+export const handler = async function(event, context) {
   // 只接受 POST 请求
   if (event.httpMethod !== 'POST') {
     return { 
@@ -29,7 +29,7 @@ exports.handler = async function(event, context) {
   } catch (error) {
     return { 
       statusCode: 500, 
-      body: JSON.stringify({ error: '服务器错误' }) 
+      body: JSON.stringify({ error: '服务器错误', message: error.message }) 
     };
   }
 }; 

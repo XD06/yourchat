@@ -924,5 +924,128 @@ export const messageHandler = {
         }
     },
 
+    /**
+     * 带故障转移的消息发送函数 - 先尝试后端 API，如果失败则使用前端自定义 API
+     * @param {Array} messages - 消息数组
+     * @param {Object} settings - 包含API设置的对象 (settingsStore)
+     * @param {Object} apiOptions - API 选项 (模型、温度等)
+     * @param {Function} onUpdate - 更新回调函数
+     * @param {Boolean} isRegeneration - 是否是重新生成
+     */
+    async sendMessageWithFailover(messages, settings, apiOptions, onUpdate, isRegeneration = false) {
+        let result = null;
+        let backendError = null;
+        let frontendError = null;
+        
+        // 检查是否有自定义 API 设置
+        const hasCustomApiSettings = settings.userCustomizedAPI && settings.apiKey;
+        
+        // 1. 如果有自定义 API 设置，优先使用前端设置（无需尝试后端）
+        if (hasCustomApiSettings) {
+            console.log('使用前端自定义 API 设置');
+            try {
+                result = await this.sendMessage(
+                    messages,
+                    settings.apiKey,
+                    settings.apiEndpoint || 'https://api.openai.com/v1/chat/completions',
+                    apiOptions,
+                    onUpdate,
+                    isRegeneration
+                );
+                return result;
+            } catch (error) {
+                console.error('前端 API 调用失败:', error);
+                frontendError = error;
+                
+                // 如果前端自定义 API 设置失败，我们继续尝试后端 API
+                onUpdate('前端 API 调用失败，尝试使用后端 API...', false);
+            }
+        }
+        
+        // 2. 尝试通过后端 API 发送消息（如果前端 API 未设置或失败）
+        if (!result || !result.success) {
+            console.log('尝试使用后端 API');
+            try {
+                // 构建后端 API 请求体
+                const payload = {
+                    model: apiOptions.model,
+                    messages: messages.map(msg => ({
+                        role: msg.role,
+                        content: msg.content || ''
+                    })),
+                    temperature: apiOptions.temperature,
+                    max_tokens: apiOptions.max_tokens
+                };
+                
+                // 确定后端 API 端点
+                const apiEndpoint = '/api/chat';
+                
+                // 处理取消控制器
+                const controller = new AbortController();
+                const signal = controller.signal;
+                
+                // 发送请求到后端 API
+                const response = await fetch(apiEndpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload),
+                    signal
+                });
+                
+                if (!response.ok) {
+                    // 尝试解析错误响应
+                    const errorData = await response.json().catch(() => ({}));
+                    console.error('后端 API 错误:', errorData);
+                    
+                    // 如果后端返回需要 API Key 的错误，标记 needsApiKey
+                    if (errorData.needsApiKey) {
+                        throw new Error('后端未配置 API_KEY');
+                    }
+                    
+                    throw new Error(`后端 API 错误: ${response.status} ${response.statusText}`);
+                }
+                
+                // 处理后端响应（这里假设后端返回与 OpenAI API 相同格式的响应）
+                await this.processStreamResponse(response, {
+                    updateMessage: (messageData) => {
+                        onUpdate(messageData, messageData.content !== '');
+                    },
+                    updateTokenCount: () => {}, 
+                    onError: (error) => {
+                        console.error('流处理错误:', error);
+                    },
+                    onComplete: () => {
+                        console.log('流处理完成');
+                    },
+                    isRegeneration: isRegeneration
+                });
+                
+                return { success: true, controller, source: 'backend' };
+            } catch (error) {
+                console.error('后端 API 调用失败:', error);
+                backendError = error;
+                
+                // 如果后端失败，并且我们还没有尝试过前端 API，则尝试前端 API
+                if (!frontendError && !hasCustomApiSettings) {
+                    onUpdate('后端 API 调用失败，请配置自定义 API 密钥和端点。', true);
+                } else {
+                    // 如果两者都失败，返回组合错误
+                    onUpdate(`API 调用失败: ${error.message}`, true);
+                }
+            }
+        }
+        
+        // 3. 如果两种方法都失败，返回错误
+        console.error('所有 API 调用方法均失败');
+        return { 
+            success: false, 
+            error: backendError || frontendError || new Error('未知错误'),
+            frontendError,
+            backendError
+        };
+    },
+
     // 集成sendMessage方法到messageHandler对象
 }; 
