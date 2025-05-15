@@ -1047,5 +1047,93 @@ export const messageHandler = {
         };
     },
 
-    // 集成sendMessage方法到messageHandler对象
+    // 添加一个新方法，支持前后端故障转移的模型解析函数
+    /**
+     * 带故障转移的模型列表获取函数 - 先尝试直接通过前端 API 获取，如果失败则尝试通过后端 API
+     * @param {Object} settings - 包含API设置的对象 (settingsStore)
+     * @returns {Promise<Array<string>>} - 返回解析到的模型列表
+     */
+    async fetchModelListWithFailover(settings) {
+        let result = null;
+        let frontendError = null;
+        let backendError = null;
+        
+        // 检查是否有自定义 API 设置
+        const hasCustomApiSettings = settings.userCustomizedAPI && settings.apiKey;
+        
+        // 1. 如果有自定义 API 设置，优先尝试直接从 API 获取模型列表
+        if (hasCustomApiSettings) {
+            console.log('使用前端自定义 API 设置获取模型列表');
+            try {
+                // 导入 fetchModelList 函数 (如果在同一模块，可以直接使用)
+                const { fetchModelList } = await import('../stores/settings');
+                
+                result = await fetchModelList(
+                    settings.apiEndpoint || 'https://api.openai.com/v1/chat/completions',
+                    settings.apiKey,
+                    5000 // 5秒超时
+                );
+                
+                if (result && Array.isArray(result) && result.length > 0) {
+                    return result;
+                } else {
+                    throw new Error('未获取到有效的模型列表');
+                }
+            } catch (error) {
+                console.error('前端直接获取模型列表失败:', error);
+                frontendError = error;
+                // 继续尝试后端 API
+            }
+        }
+        
+        // 2. 尝试从后端 API 获取模型列表
+        if (!result) {
+            console.log('尝试通过后端 API 获取模型列表');
+            try {
+                // 确定后端 API 端点
+                const apiBaseUrl = window.location.hostname.includes('netlify.app') 
+                    ? '/.netlify/functions/models' // Netlify Functions 路径
+                    : '/api/models'; // Vercel API 路径
+                
+                // 发送请求
+                const response = await fetch(apiBaseUrl);
+                
+                if (!response.ok) {
+                    // 尝试解析错误响应
+                    const errorData = await response.json().catch(() => ({}));
+                    console.error('后端模型 API 错误:', errorData);
+                    
+                    // 如果后端返回需要 API Key 的错误
+                    if (errorData.needsApiKey) {
+                        throw new Error('后端未配置 API_KEY');
+                    }
+                    
+                    throw new Error(`后端模型 API 错误: ${response.status} ${response.statusText}`);
+                }
+                
+                // 处理响应
+                const data = await response.json();
+                
+                // 检查返回数据格式
+                if (data && Array.isArray(data.models) && data.models.length > 0) {
+                    return data.models;
+                } else {
+                    throw new Error('后端返回的模型列表格式无效或为空');
+                }
+            } catch (error) {
+                console.error('后端获取模型列表失败:', error);
+                backendError = error;
+                
+                // 如果两种方法都失败，返回错误
+                if (frontendError) {
+                    throw new Error(`模型列表获取失败: 前端直接获取(${frontendError.message})和后端获取(${backendError.message})均失败`);
+                } else {
+                    throw new Error(`模型列表获取失败: ${error.message}`);
+                }
+            }
+        }
+        
+        // 如果没有成功获取模型列表但也没有抛出错误，返回一个空数组
+        return [];
+    },
 }; 

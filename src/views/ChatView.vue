@@ -796,10 +796,9 @@ const handleSend = async (content) => {
     //   throw new Error('API Key not configured');
     // }
 
-    // Call API - 使用新的带故障转移的API方法
-    result = await messageHandler.sendMessageWithFailover(
+    // Call API - 使用新的后端 API 方法
+    result = await messageHandler.sendMessageViaBackend(
         apiMessages,
-        settingsStore, // 直接传递整个设置对象
         {
           model: settingsStore.model,
           temperature: settingsStore.temperature,
@@ -852,8 +851,8 @@ const handleSend = async (content) => {
               saveMessages();
             }
           }
-        },
-        false // isRegeneration = false
+        }
+        // Note: isRegeneration defaults to false, no need to pass it explicitly here
       );
       
       // Save controller for potential abortion
@@ -861,19 +860,9 @@ const handleSend = async (content) => {
         activeController.value = result.controller;
       }
       
-      // 处理非中断失败
+      // Handle non-aborted failures
       if (result && !result.success && !result.aborted) {
-        // 只显示更具体的错误信息
-        if (result.frontendError && result.backendError) {
-          ElMessage.error(`消息发送失败: 前端和后端API都无法连接。请检查网络和API配置。`);
-        } else if (result.frontendError) {
-          ElMessage.error(`前端API连接失败: ${result.frontendError.message}`);
-        } else if (result.backendError) {
-          ElMessage.error(`后端API连接失败: ${result.backendError.message}`);
-        } else {
-          ElMessage.error(`消息发送失败，请稍后重试`);
-        }
-        
+        ElMessage.error('消息发送失败，请稍后重试');
         // Remove the placeholder assistant message
         const lastMessage = chatStore.messages[chatStore.messages.length - 1];
         if (lastMessage && lastMessage.role === 'assistant' && lastMessage.content === '') {
@@ -1463,28 +1452,14 @@ const handleModelChange = (modelValue) => {
 
 // 添加模型解析功能
 const parseModels = async () => {
-    if (!settingsForm.value.apiKey && !settingsStore.actualApiKey) {
-        ElMessage.warning('请先填写API Key');
-        return;
-    }
-    
-    if (!settingsForm.value.apiEndpoint && !settingsStore.actualApiEndpoint) {
-        ElMessage.warning('请先填写API Endpoint');
-        return;
-    }
-    
+    // 无需检查前端 API Key，故障转移机制会处理
     isParsingModels.value = true;
     
     try {
-        const apiKey = settingsForm.value.apiKey || settingsStore.actualApiKey;
-        const apiEndpoint = settingsForm.value.apiEndpoint || settingsStore.actualApiEndpoint;
+        // 使用带故障转移的模型列表获取方法
+        const modelsList = await messageHandler.fetchModelListWithFailover(settingsStore);
         
-        const modelsList = await fetchModelList(
-            apiEndpoint,
-            apiKey
-        );
-        
-        console.log('Fetched models:', modelsList);
+        console.log('成功获取模型列表:', modelsList);
         
         if (modelsList.length > 0) {
             // 使用store的action添加新模型，传入true作为第二个参数以清除现有模型
@@ -1504,7 +1479,7 @@ const parseModels = async () => {
         }
     } catch (error) {
         console.error('解析模型失败:', error);
-        ElMessage.error(`解析模型失败！检查网络连通性重试`);
+        ElMessage.error(`解析模型失败: ${error.message}`);
     } finally {
         isParsingModels.value = false;
     }
@@ -1698,16 +1673,20 @@ const handleRegenerate = async (messageToRegenerate) => {
 
     console.log('[ChatView] Regenerating with API messages:', JSON.parse(JSON.stringify(apiMessages)));
 
-    // 无需检查 API Key，故障转移机制会处理
-
+    if (!settingsStore.actualApiKey) {
+      ElMessage.error('请在设置中配置有效的API Key');
+      showSettings.value = true;
+      throw new Error('API Key not configured');
+    }
     if (apiMessages.filter(m => m.role ==='user').length === 0) {
       ElMessage.error('无法重新生成，因为没有有效的用户消息作为上下文。');
       throw new Error('No valid user messages for regeneration context.');
     }
     
-    result = await messageHandler.sendMessageWithFailover(
+    result = await messageHandler.sendMessage(
       apiMessages,
-      settingsStore, // 直接传递整个设置对象
+      settingsStore.actualApiKey,
+      settingsStore.actualApiEndpoint || 'https://api.openai.com/v1/chat/completions',
       {
         model: settingsStore.model,
         temperature: settingsStore.temperature,
@@ -1753,17 +1732,7 @@ const handleRegenerate = async (messageToRegenerate) => {
     }
     
     if (result && !result.success && !result.aborted) {
-      // 提供更详细的错误信息
-      if (result.frontendError && result.backendError) {
-        ElMessage.error(`重新生成失败: 前端和后端API都无法连接。请检查网络和API配置。`);
-      } else if (result.frontendError) {
-        ElMessage.error(`前端API连接失败: ${result.frontendError.message}`);
-      } else if (result.backendError) {
-        ElMessage.error(`后端API连接失败: ${result.backendError.message}`);
-      } else {
-        ElMessage.error(`重新生成失败，请稍后重试`);
-      }
-      
+      ElMessage.error('重新生成失败，请稍后重试');
       const lastMessage = chatStore.messages[chatStore.messages.length - 1];
       if (lastMessage && lastMessage.role === 'assistant' && lastMessage.content === '') {
         chatStore.messages.pop(); // Clean up placeholder
