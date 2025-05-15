@@ -1,4 +1,60 @@
 // 获取可用模型列表的 API 路由
+import https from 'https';
+
+// 自定义 fetch 函数，使用原生 https 模块
+const customFetch = (url, options) => {
+  return new Promise((resolve, reject) => {
+    const urlObj = new URL(url);
+    
+    const requestOptions = {
+      hostname: urlObj.hostname,
+      path: urlObj.pathname + urlObj.search,
+      method: options.method || 'GET',
+      headers: options.headers || {}
+    };
+    
+    const req = https.request(requestOptions, (res) => {
+      let data = '';
+      res.on('data', (chunk) => {
+        data += chunk;
+      });
+      res.on('end', () => {
+        try {
+          if (data) {
+            const parsedData = JSON.parse(data);
+            resolve({ 
+              ok: res.statusCode >= 200 && res.statusCode < 300, 
+              status: res.statusCode, 
+              statusText: res.statusMessage,
+              json: () => Promise.resolve(parsedData),
+              text: () => Promise.resolve(data)
+            });
+          } else {
+            resolve({ 
+              ok: res.statusCode >= 200 && res.statusCode < 300, 
+              status: res.statusCode, 
+              statusText: res.statusMessage,
+              json: () => Promise.resolve({}),
+              text: () => Promise.resolve('')
+            });
+          }
+        } catch (e) {
+          reject(new Error(`解析响应失败: ${e.message}`));
+        }
+      });
+    });
+
+    req.on('error', (error) => {
+      reject(error);
+    });
+
+    if (options.body) {
+      req.write(options.body);
+    }
+    req.end();
+  });
+};
+
 export default async function handler(req, res) {
   // 只接受 GET 请求
   if (req.method !== 'GET') {
@@ -22,11 +78,12 @@ export default async function handler(req, res) {
     const modelUrl = `${apiUrl.endsWith('/') ? apiUrl.slice(0, -1) : apiUrl}`;
     const modelsEndpoint = `${modelUrl}/models`;
     
-    // 调用外部 API 获取模型列表
-    const response = await fetch(modelsEndpoint, {
+    // 调用外部 API 获取模型列表 (使用自定义 fetch)
+    const response = await customFetch(modelsEndpoint, {
       method: 'GET',
       headers: {
-        'Authorization': `Bearer ${apiKey}`
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json'
       }
     });
     
@@ -55,7 +112,7 @@ export default async function handler(req, res) {
     
     return res.status(200).json({
       models,
-      source: 'backend-api',
+      source: 'backend-api-vercel',
       endpoint: modelsEndpoint
     });
   } catch (error) {

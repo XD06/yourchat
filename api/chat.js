@@ -1,4 +1,60 @@
 // 处理 AI 聊天请求的 API 路由
+import https from 'https';
+
+// 自定义 fetch 函数，使用原生 https 模块
+const customFetch = (url, options) => {
+  return new Promise((resolve, reject) => {
+    const urlObj = new URL(url);
+    
+    const requestOptions = {
+      hostname: urlObj.hostname,
+      path: urlObj.pathname + urlObj.search,
+      method: options.method || 'GET',
+      headers: options.headers || {}
+    };
+    
+    const req = https.request(requestOptions, (res) => {
+      let data = '';
+      res.on('data', (chunk) => {
+        data += chunk;
+      });
+      res.on('end', () => {
+        try {
+          if (data) {
+            const parsedData = JSON.parse(data);
+            resolve({ 
+              ok: res.statusCode >= 200 && res.statusCode < 300, 
+              status: res.statusCode, 
+              statusText: res.statusMessage,
+              json: () => Promise.resolve(parsedData),
+              text: () => Promise.resolve(data)
+            });
+          } else {
+            resolve({ 
+              ok: res.statusCode >= 200 && res.statusCode < 300, 
+              status: res.statusCode, 
+              statusText: res.statusMessage,
+              json: () => Promise.resolve({}),
+              text: () => Promise.resolve('')
+            });
+          }
+        } catch (e) {
+          reject(new Error(`解析响应失败: ${e.message}`));
+        }
+      });
+    });
+
+    req.on('error', (error) => {
+      reject(error);
+    });
+
+    if (options.body) {
+      req.write(options.body);
+    }
+    req.end();
+  });
+};
+
 export default async function handler(req, res) {
   // 只接受 POST 请求
   if (req.method !== 'POST') {
@@ -19,8 +75,8 @@ export default async function handler(req, res) {
       });
     }
     
-    // 调用外部 API
-    const response = await fetch(apiUrl, {
+    // 使用自定义 fetch 函数调用外部 API
+    const response = await customFetch(apiUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

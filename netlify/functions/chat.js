@@ -1,12 +1,63 @@
 // 处理 AI 聊天请求的 Netlify 函数
-let fetch;
+import https from 'https';
+
+// 使用原生 https 模块创建请求，避免使用 node-fetch
+const makeRequest = (url, options) => {
+  return new Promise((resolve, reject) => {
+    const urlObj = new URL(url);
+    
+    const requestOptions = {
+      hostname: urlObj.hostname,
+      path: urlObj.pathname + urlObj.search,
+      method: options.method || 'GET',
+      headers: options.headers || {}
+    };
+    
+    const req = https.request(requestOptions, (res) => {
+      let data = '';
+      res.on('data', (chunk) => {
+        data += chunk;
+      });
+      res.on('end', () => {
+        try {
+          if (data) {
+            const parsedData = JSON.parse(data);
+            resolve({ 
+              ok: res.statusCode >= 200 && res.statusCode < 300, 
+              status: res.statusCode, 
+              statusText: res.statusMessage,
+              json: () => Promise.resolve(parsedData),
+              text: () => Promise.resolve(data),
+              headers: res.headers
+            });
+          } else {
+            resolve({ 
+              ok: res.statusCode >= 200 && res.statusCode < 300, 
+              status: res.statusCode, 
+              statusText: res.statusMessage,
+              json: () => Promise.resolve({}),
+              text: () => Promise.resolve(''),
+              headers: res.headers
+            });
+          }
+        } catch (e) {
+          reject(new Error(`解析响应失败: ${e.message}`));
+        }
+      });
+    });
+
+    req.on('error', (error) => {
+      reject(error);
+    });
+
+    if (options.body) {
+      req.write(options.body);
+    }
+    req.end();
+  });
+};
 
 export const handler = async function(event, context) {
-  // 动态导入 node-fetch
-  if (!fetch) {
-    fetch = (await import('node-fetch')).default;
-  }
-  
   // 只接受 POST 请求
   if (event.httpMethod !== 'POST') {
     return { 
@@ -34,7 +85,7 @@ export const handler = async function(event, context) {
     }
     
     // 调用外部 API
-    const response = await fetch(apiUrl, {
+    const response = await makeRequest(apiUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
