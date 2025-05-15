@@ -25,7 +25,7 @@ const websiteCode = import.meta.env.WEBSITE_CODE || '';
 
 // 以下变量不再从环境变量中读取，而是通过后端 API 安全处理
 // 不再需要: const ENV_API_KEY = import.meta.env.VITE_API_KEY || '';
-// 不再需要: const ENV_API_URL = import.meta.env.VITE_API_URL || 'https://api.openai.com/v1/chat/completions';
+const ENV_API_URL = import.meta.env.API_URL || import.meta.env.VITE_API_URL || 'https://api.openai.com/v1/chat/completions';
 
 // 定义一个名为 'settings' 的 store
 export const useSettingsStore = defineStore('settings', {
@@ -88,8 +88,8 @@ export const useSettingsStore = defineStore('settings', {
             if (state.userCustomizedAPI) {
                 return state.apiEndpoint || '';
             }
-            // 否则返回默认端点
-            return 'https://api.openai.com/v1/chat/completions';
+            // 否则返回环境变量中的API端点或默认端点
+            return ENV_API_URL;
         },
         
         // 获取显示在UI上的API Key值
