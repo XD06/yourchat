@@ -1119,8 +1119,8 @@ const scrollToBottom = (forceScroll = false) => {
       }
       
       window._scrollAnimationFrame = requestAnimationFrame(() => {
-        messagesContainer.value.scrollTo({
-          top: messagesContainer.value.scrollHeight,
+      messagesContainer.value.scrollTo({
+        top: messagesContainer.value.scrollHeight,
           // 对于AI流式输出，使用auto而不是smooth，减少动画开销
           behavior: forceScroll ? 'smooth' : 'auto'
         });

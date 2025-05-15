@@ -80,6 +80,53 @@ npm run dev
 npm run build
 ```
 
+### 使用 Docker
+
+本项目支持使用 Docker 进行部署，提供了多容器设置的 Docker Compose 配置。
+
+#### 前提条件
+
+- [Docker](https://docs.docker.com/get-docker/) 和 [Docker Compose](https://docs.docker.com/compose/install/) 已安装
+
+#### 使用 Docker Compose 部署
+
+1. 构建并启动容器：
+
+```bash
+docker-compose up -d
+```
+
+2. 应用将在 http://localhost:3000 上运行
+
+3. 停止容器：
+
+```bash
+docker-compose down
+```
+
+#### 仅使用 Docker 部署
+
+1. 构建 Docker 镜像：
+
+```bash
+docker build -t yourchat .
+```
+
+2. 运行容器：
+
+```bash
+docker run -d -p 3000:80 --name yourchat-app yourchat
+```
+
+3. 应用将在 http://localhost:3000 上运行
+
+4. 停止容器：
+
+```bash
+docker stop yourchat-app
+docker rm yourchat-app
+```
+
 ## 📄 许可证
 
 本项目采用MIT许可证

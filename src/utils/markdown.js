@@ -24,7 +24,7 @@ const md = new MarkdownIt({
         // 统计代码行数，但不设置固定高度
         const lines = str.split('\n');
         const lineCount = lines.length;
-        
+
         // 移除内联样式预设高度，让代码块自适应内容
         const preClass = `code-block`;
         
@@ -309,7 +309,7 @@ export const renderMarkdown = (content, options = {}) => {
     let html = renderer.render(content);
   
     // 处理数学公式
-    html = renderMathFormulas(html);
+  html = renderMathFormulas(html);
   
     // 标记代码块，添加初始隐藏状态以避免布局变化
     if (smoothOutput) {
@@ -320,7 +320,7 @@ export const renderMarkdown = (content, options = {}) => {
       });
     }
   
-    return html;
+  return html;
   } catch (error) {
     console.error('Markdown rendering error:', error);
     return `<div class="markdown-error">Error rendering content: ${error.message}</div>`;

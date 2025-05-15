@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    container_name: aichat-app
+    ports:
+      - "3000:80"
+    restart: unless-stopped
+    
+  # Optional: Add backend API service if needed
+  # api:
+  #   build: 
+  #     context: .
+  #     dockerfile: api.Dockerfile
+  #   container_name: aichat-api
+  #   ports:
+  #     - "3001:3000"
+  #   restart: unless-stopped
+  #   env_file:
+  #     - .env
+  #   environment:
+  #     - NODE_ENV=production 

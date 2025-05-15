@@ -288,10 +288,10 @@ export const messageHandler = {
                 
                 let batchContent = '';
                 for (let i = 0; i < batchSize; i++) {
-                    const char = charBuffer.shift();
+                const char = charBuffer.shift();
                     batchContent += char;
-                    // 检查特殊内容
-                    checkForSpecialContent(char);
+                // 检查特殊内容
+                checkForSpecialContent(char);
                 }
                 
                 full_content += batchContent;
@@ -323,7 +323,7 @@ export const messageHandler = {
                         full_content = tempContent;
                         totalCharsOutput += batch.length;
                         
-                        updateMessage({
+            updateMessage({
                             content: full_content,
                             thinkingContent: full_reasonResponse
                         });
