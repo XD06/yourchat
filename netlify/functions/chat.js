@@ -1,7 +1,12 @@
 // 处理 AI 聊天请求的 Netlify 函数
-const fetch = require('node-fetch');
+let fetch;
 
 exports.handler = async function(event, context) {
+  // 动态导入 node-fetch
+  if (!fetch) {
+    fetch = (await import('node-fetch')).default;
+  }
+  
   // 只接受 POST 请求
   if (event.httpMethod !== 'POST') {
     return { 
